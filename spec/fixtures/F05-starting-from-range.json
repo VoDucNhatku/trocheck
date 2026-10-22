@@ -1,0 +1,95 @@
+{
+  "id": "F05-starting-from-range",
+  "is_demo": true,
+  "description": "'Từ 4tr' là starting_from, diện tích là khoảng; không dùng cho trung vị (AT03). Một listing CHDV nên luật CTX_BASIS_UNIT_SINGLE cho basis = per_unit.",
+  "input": {
+    "idempotency_key": "fixture:F05-starting-from-range",
+    "source_type": "fixture",
+    "text": "Căn hộ dịch vụ full đồ, giá từ 4tr/tháng, diện tích 25-35m2 tùy phòng. Cọc 1 tháng. LH [SĐT]",
+    "text_complete": true,
+    "phone_masked": true
+  },
+  "expected": {
+    "post_type": "rental_offer",
+    "listings": [
+      {
+        "listing_index": 0,
+        "rent": {
+          "visibility": "disclosed",
+          "amount_form": "starting_from",
+          "amount_vnd": null,
+          "min_vnd": 4000000,
+          "max_vnd": null,
+          "basis": "per_unit",
+          "period": "month",
+          "includes": [],
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 28,
+              "end": 40,
+              "quote": "từ 4tr/tháng",
+              "label": "PRICE",
+              "method": "human"
+            }
+          ]
+        },
+        "area": {
+          "amount_form": "range",
+          "value_m2": null,
+          "min_m2": 25,
+          "max_m2": 35,
+          "from_dimensions": false,
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 52,
+              "end": 59,
+              "quote": "25-35m2",
+              "label": "AREA",
+              "method": "human"
+            }
+          ]
+        },
+        "room": {
+          "property_type": "can_ho_dich_vu",
+          "furnishing": "full",
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 0,
+              "end": 14,
+              "quote": "Căn hộ dịch vụ",
+              "label": "ROOM",
+              "method": "human"
+            }
+          ]
+        },
+        "location": {
+          "landmark": null,
+          "ward_code": null,
+          "resolution": "unresolved",
+          "decision": "abstained",
+          "abstain_reason": "not_in_text"
+        },
+        "fees": [
+          {
+            "type": "deposit",
+            "amount_vnd": null,
+            "unit": "months_of_rent",
+            "months": 1,
+            "evidence": [
+              {
+                "start": 71,
+                "end": 82,
+                "quote": "Cọc 1 tháng",
+                "label": "FEE",
+                "method": "human"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

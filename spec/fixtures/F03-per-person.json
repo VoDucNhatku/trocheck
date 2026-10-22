@@ -1,0 +1,113 @@
+{
+  "id": "F03-per-person",
+  "is_demo": true,
+  "description": "Giá theo người: basis = per_person, không nhân với số người (AT04).",
+  "input": {
+    "idempotency_key": "fixture:F03-per-person",
+    "source_type": "fixture",
+    "text": "Cho thuê phòng 30m2 ở được 2 người, giá 1tr5/người/tháng, wifi free, gửi xe 100k. Gần ĐH Quốc gia. LH [SĐT]",
+    "text_complete": true,
+    "phone_masked": true
+  },
+  "expected": {
+    "post_type": "rental_offer",
+    "listings": [
+      {
+        "listing_index": 0,
+        "rent": {
+          "visibility": "disclosed",
+          "amount_form": "exact",
+          "amount_vnd": 1500000,
+          "basis": "per_person",
+          "period": "month",
+          "includes": [],
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 40,
+              "end": 56,
+              "quote": "1tr5/người/tháng",
+              "label": "PRICE",
+              "method": "human"
+            }
+          ]
+        },
+        "area": {
+          "amount_form": "exact",
+          "value_m2": 30,
+          "from_dimensions": false,
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 15,
+              "end": 19,
+              "quote": "30m2",
+              "label": "AREA",
+              "method": "human"
+            }
+          ]
+        },
+        "room": {
+          "property_type": "unknown",
+          "furnishing": "unknown",
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 9,
+              "end": 14,
+              "quote": "phòng",
+              "label": "ROOM",
+              "method": "human"
+            }
+          ]
+        },
+        "location": {
+          "landmark": "Gần ĐH Quốc gia",
+          "ward_code": null,
+          "resolution": "unresolved",
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 82,
+              "end": 97,
+              "quote": "Gần ĐH Quốc gia",
+              "label": "LOC",
+              "method": "human"
+            }
+          ]
+        },
+        "fees": [
+          {
+            "type": "internet",
+            "amount_vnd": 0,
+            "unit": "unknown",
+            "free": true,
+            "evidence": [
+              {
+                "start": 58,
+                "end": 67,
+                "quote": "wifi free",
+                "label": "FEE",
+                "method": "human"
+              }
+            ]
+          },
+          {
+            "type": "parking",
+            "amount_vnd": 100000,
+            "unit": "unknown",
+            "evidence": [
+              {
+                "start": 69,
+                "end": 80,
+                "quote": "gửi xe 100k",
+                "label": "FEE",
+                "method": "human"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

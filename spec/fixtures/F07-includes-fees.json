@@ -1,0 +1,111 @@
+{
+  "id": "F07-includes-fees",
+  "is_demo": true,
+  "description": "Giá bao điện nước: includes = [electricity, water]; phí dịch vụ tách riêng; không tự cộng tổng.",
+  "input": {
+    "idempotency_key": "fixture:F07-includes-fees",
+    "source_type": "fixture",
+    "text": "Cho thuê CCMN 35m2 2PN1WC, 6tr/tháng bao điện nước, dịch vụ 200k/phòng. Đường Trần Phú. LH [SĐT]",
+    "text_complete": true,
+    "phone_masked": true
+  },
+  "expected": {
+    "post_type": "rental_offer",
+    "listings": [
+      {
+        "listing_index": 0,
+        "rent": {
+          "visibility": "disclosed",
+          "amount_form": "exact",
+          "amount_vnd": 6000000,
+          "basis": "per_unit",
+          "period": "month",
+          "includes": [
+            "electricity",
+            "water"
+          ],
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 27,
+              "end": 50,
+              "quote": "6tr/tháng bao điện nước",
+              "label": "PRICE",
+              "method": "human"
+            }
+          ]
+        },
+        "area": {
+          "amount_form": "exact",
+          "value_m2": 35,
+          "from_dimensions": false,
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 14,
+              "end": 18,
+              "quote": "35m2",
+              "label": "AREA",
+              "method": "human"
+            }
+          ]
+        },
+        "room": {
+          "property_type": "ccmn",
+          "bedrooms": 2,
+          "bathrooms": 1,
+          "furnishing": "unknown",
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 9,
+              "end": 13,
+              "quote": "CCMN",
+              "label": "ROOM",
+              "method": "human"
+            },
+            {
+              "start": 19,
+              "end": 25,
+              "quote": "2PN1WC",
+              "label": "ROOM",
+              "method": "human"
+            }
+          ]
+        },
+        "location": {
+          "landmark": null,
+          "street": "Đường Trần Phú",
+          "ward_code": null,
+          "resolution": "unresolved",
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 72,
+              "end": 86,
+              "quote": "Đường Trần Phú",
+              "label": "LOC",
+              "method": "human"
+            }
+          ]
+        },
+        "fees": [
+          {
+            "type": "service",
+            "amount_vnd": 200000,
+            "unit": "per_unit_month",
+            "evidence": [
+              {
+                "start": 52,
+                "end": 70,
+                "quote": "dịch vụ 200k/phòng",
+                "label": "FEE",
+                "method": "human"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

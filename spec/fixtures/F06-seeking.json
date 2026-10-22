@@ -1,0 +1,16 @@
+{
+  "id": "F06-seeking",
+  "is_demo": true,
+  "description": "Bài cần thuê: không tạo listing; '3tr' là ngân sách người tìm, không phải giá chào (AT07).",
+  "input": {
+    "idempotency_key": "fixture:F06-seeking",
+    "source_type": "fixture",
+    "text": "Mình cần tìm phòng trọ dưới 3tr gần ĐH FPT, ai có ib mình nhé",
+    "text_complete": true,
+    "phone_masked": true
+  },
+  "expected": {
+    "post_type": "seeking",
+    "listings": []
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rener-vn.local/spec/ingest-post.schema.json",
+  "title": "IngestPost",
+  "description": "One post sent by the browser extension (collect or assess mode). Text must already have phone numbers masked as [SĐT].",
+  "type": "object",
+  "required": ["idempotency_key", "source_type", "text", "text_complete", "phone_masked"],
+  "additionalProperties": false,
+  "properties": {
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 200,
+      "description": "collect: fb:<group_id>:<post_id>; assess: assess:<post_id>:<epoch_seconds>"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": ["facebook_group", "manual_paste", "import_file", "fixture"]
+    },
+    "source_group_id": {"type": "string", "maxLength": 100},
+    "source_group_name": {"type": "string", "maxLength": 300},
+    "permalink": {"type": "string", "format": "uri", "maxLength": 2000},
+    "external_post_id": {"type": "string", "maxLength": 100},
+    "posted_at": {"type": "string", "format": "date-time", "description": "UTC, if the extension could parse it"},
+    "posted_at_raw": {"type": "string", "maxLength": 100, "description": "Timestamp exactly as displayed on the page"},
+    "text": {"type": "string", "minLength": 1, "maxLength": 20000},
+    "text_complete": {"type": "boolean", "description": "false if 'See more' could not be expanded"},
+    "phone_masked": {"const": true, "description": "Server rejects posts where masking was not applied"}
+  }
+}

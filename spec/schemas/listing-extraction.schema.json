@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rener-vn.local/spec/listing-extraction.schema.json",
+  "title": "PostExtraction",
+  "description": "Normalized extraction result for one post: post type plus zero or more listings. Field names and enums follow docs/02-data/01-tu-dien-du-lieu.md.",
+  "type": "object",
+  "required": ["post_type", "listings"],
+  "additionalProperties": false,
+  "properties": {
+    "post_type": {"enum": ["rental_offer", "seeking", "roommate", "sale", "spam", "other"]},
+    "listings": {"type": "array", "items": {"$ref": "#/$defs/listing"}}
+  },
+  "$defs": {
+    "decision": {"enum": ["answered", "abstained", "needs_review"]},
+    "agreement": {"enum": ["both_agree", "regex_only", "llm_only", "conflict", "human"]},
+    "abstain_reason": {"enum": ["not_in_text", "ambiguous_source", "conflict", "llm_error", "unsupported_format"]},
+    "fee_type": {"enum": ["deposit", "electricity", "water", "service", "internet", "parking", "other"]},
+    "evidence": {
+      "type": "object",
+      "required": ["start", "end", "quote", "label", "method"],
+      "additionalProperties": false,
+      "properties": {
+        "start": {"type": "integer", "minimum": 0, "description": "Unicode code point offset in post text"},
+        "end": {"type": "integer", "minimum": 0},
+        "quote": {"type": "string", "minLength": 1, "description": "Must equal text[start:end]"},
+        "label": {"enum": ["PRICE", "AREA", "LOC", "ROOM", "FEE"]},
+        "method": {"enum": ["regex", "llm", "human"]},
+        "rule_id": {"type": "string"}
+      }
+    },
+    "field_meta": {
+      "type": "object",
+      "properties": {
+        "decision": {"$ref": "#/$defs/decision"},
+        "abstain_reason": {"$ref": "#/$defs/abstain_reason"},
+        "agreement": {"$ref": "#/$defs/agreement"},
+        "evidence": {"type": "array", "items": {"$ref": "#/$defs/evidence"}}
+      }
+    },
+    "rent": {
+      "allOf": [{"$ref": "#/$defs/field_meta"}],
+      "type": "object",
+      "required": ["visibility", "amount_form", "decision"],
+      "properties": {
+        "visibility": {"enum": ["disclosed", "hidden_explicit", "not_stated", "ambiguous"]},
+        "amount_form": {"enum": ["exact", "range", "starting_from", "none"]},
+        "amount_vnd": {"type": ["integer", "null"], "minimum": 0},
+        "min_vnd": {"type": ["integer", "null"], "minimum": 0},
+        "max_vnd": {"type": ["integer", "null"], "minimum": 0},
+        "basis": {"enum": ["per_unit", "per_person", "unknown"]},
+        "period": {"enum": ["month", "day", "unknown"]},
+        "includes": {"type": "array", "items": {"$ref": "#/$defs/fee_type"}}
+      }
+    },
+    "area": {
+      "allOf": [{"$ref": "#/$defs/field_meta"}],
+      "type": "object",
+      "required": ["amount_form", "decision"],
+      "properties": {
+        "amount_form": {"enum": ["exact", "range", "none"]},
+        "value_m2": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "min_m2": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "max_m2": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "from_dimensions": {"type": "boolean"}
+      }
+    },
+    "room": {
+      "allOf": [{"$ref": "#/$defs/field_meta"}],
+      "type": "object",
+      "required": ["property_type", "decision"],
+      "properties": {
+        "property_type": {"enum": ["phong_tro", "ccmn", "can_ho_dich_vu", "nha_nguyen_can", "unknown"]},
+        "bedrooms": {"type": ["integer", "null"], "minimum": 0},
+        "bathrooms": {"type": ["integer", "null"], "minimum": 0},
+        "mezzanine": {"type": ["boolean", "null"]},
+        "private_bathroom": {"type": ["boolean", "null"]},
+        "furnishing": {"enum": ["full", "basic", "none", "unknown"]}
+      }
+    },
+    "location": {
+      "allOf": [{"$ref": "#/$defs/field_meta"}],
+      "type": "object",
+      "required": ["resolution", "decision"],
+      "properties": {
+        "landmark": {"type": ["string", "null"]},
+        "street": {"type": ["string", "null"]},
+        "ward_code": {"type": ["string", "null"]},
+        "ward_name": {"type": ["string", "null"]},
+        "old_ward_name": {"type": ["string", "null"]},
+        "old_district_name": {"type": ["string", "null"]},
+        "resolution": {"enum": ["exact", "from_street", "from_landmark", "unresolved"]}
+      }
+    },
+    "fee": {
+      "type": "object",
+      "required": ["type", "unit"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {"$ref": "#/$defs/fee_type"},
+        "amount_vnd": {"type": ["integer", "null"], "minimum": 0},
+        "unit": {"enum": ["per_kwh", "per_m3", "per_person_month", "per_unit_month", "months_of_rent", "one_time", "unknown"]},
+        "months": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "free": {"type": "boolean"},
+        "state_rate": {"type": "boolean"},
+        "evidence": {"type": "array", "items": {"$ref": "#/$defs/evidence"}}
+      }
+    },
+    "listing": {
+      "type": "object",
+      "required": ["listing_index", "rent", "area", "room", "location", "fees"],
+      "properties": {
+        "listing_index": {"type": "integer", "minimum": 0},
+        "rent": {"$ref": "#/$defs/rent"},
+        "area": {"$ref": "#/$defs/area"},
+        "room": {"$ref": "#/$defs/room"},
+        "location": {"$ref": "#/$defs/location"},
+        "fees": {"type": "array", "items": {"$ref": "#/$defs/fee"}},
+        "review_status": {"enum": ["auto_accepted", "needs_review", "approved", "rejected", "duplicate"]}
+      }
+    }
+  }
+}

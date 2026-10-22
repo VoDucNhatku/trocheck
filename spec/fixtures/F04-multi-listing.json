@@ -1,0 +1,217 @@
+{
+  "id": "F04-multi-listing",
+  "is_demo": true,
+  "description": "Hai phòng trong một bài: giá và diện tích phải đi đúng cặp (AT05). Không có /phòng nên basis = unknown.",
+  "input": {
+    "idempotency_key": "fixture:F04-multi-listing",
+    "source_type": "fixture",
+    "text": "Nhà mình còn 2 phòng: P1 20m2 2tr8/tháng, P2 30m2 có gác 3tr5/tháng. Điện 4k/số, nước 25k/khối. Ngõ 12 Trần Phú. LH [SĐT]",
+    "text_complete": true,
+    "phone_masked": true
+  },
+  "expected": {
+    "post_type": "rental_offer",
+    "listings": [
+      {
+        "listing_index": 0,
+        "rent": {
+          "visibility": "disclosed",
+          "amount_form": "exact",
+          "amount_vnd": 2800000,
+          "basis": "unknown",
+          "period": "month",
+          "includes": [],
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 30,
+              "end": 40,
+              "quote": "2tr8/tháng",
+              "label": "PRICE",
+              "method": "human"
+            }
+          ]
+        },
+        "area": {
+          "amount_form": "exact",
+          "value_m2": 20,
+          "from_dimensions": false,
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 25,
+              "end": 29,
+              "quote": "20m2",
+              "label": "AREA",
+              "method": "human"
+            }
+          ]
+        },
+        "room": {
+          "property_type": "unknown",
+          "furnishing": "unknown",
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 22,
+              "end": 24,
+              "quote": "P1",
+              "label": "ROOM",
+              "method": "human"
+            }
+          ]
+        },
+        "location": {
+          "landmark": null,
+          "street": "Ngõ 12 Trần Phú",
+          "ward_code": null,
+          "resolution": "unresolved",
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 96,
+              "end": 111,
+              "quote": "Ngõ 12 Trần Phú",
+              "label": "LOC",
+              "method": "human"
+            }
+          ]
+        },
+        "fees": [
+          {
+            "type": "electricity",
+            "amount_vnd": 4000,
+            "unit": "per_kwh",
+            "evidence": [
+              {
+                "start": 69,
+                "end": 79,
+                "quote": "Điện 4k/số",
+                "label": "FEE",
+                "method": "human"
+              }
+            ]
+          },
+          {
+            "type": "water",
+            "amount_vnd": 25000,
+            "unit": "per_m3",
+            "evidence": [
+              {
+                "start": 81,
+                "end": 94,
+                "quote": "nước 25k/khối",
+                "label": "FEE",
+                "method": "human"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "listing_index": 1,
+        "rent": {
+          "visibility": "disclosed",
+          "amount_form": "exact",
+          "amount_vnd": 3500000,
+          "basis": "unknown",
+          "period": "month",
+          "includes": [],
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 57,
+              "end": 67,
+              "quote": "3tr5/tháng",
+              "label": "PRICE",
+              "method": "human"
+            }
+          ]
+        },
+        "area": {
+          "amount_form": "exact",
+          "value_m2": 30,
+          "from_dimensions": false,
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 45,
+              "end": 49,
+              "quote": "30m2",
+              "label": "AREA",
+              "method": "human"
+            }
+          ]
+        },
+        "room": {
+          "property_type": "unknown",
+          "mezzanine": true,
+          "furnishing": "unknown",
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 42,
+              "end": 44,
+              "quote": "P2",
+              "label": "ROOM",
+              "method": "human"
+            },
+            {
+              "start": 50,
+              "end": 56,
+              "quote": "có gác",
+              "label": "ROOM",
+              "method": "human"
+            }
+          ]
+        },
+        "location": {
+          "landmark": null,
+          "street": "Ngõ 12 Trần Phú",
+          "ward_code": null,
+          "resolution": "unresolved",
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 96,
+              "end": 111,
+              "quote": "Ngõ 12 Trần Phú",
+              "label": "LOC",
+              "method": "human"
+            }
+          ]
+        },
+        "fees": [
+          {
+            "type": "electricity",
+            "amount_vnd": 4000,
+            "unit": "per_kwh",
+            "evidence": [
+              {
+                "start": 69,
+                "end": 79,
+                "quote": "Điện 4k/số",
+                "label": "FEE",
+                "method": "human"
+              }
+            ]
+          },
+          {
+            "type": "water",
+            "amount_vnd": 25000,
+            "unit": "per_m3",
+            "evidence": [
+              {
+                "start": 81,
+                "end": 94,
+                "quote": "nước 25k/khối",
+                "label": "FEE",
+                "method": "human"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

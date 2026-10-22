@@ -1,0 +1,115 @@
+{
+  "id": "F02-hidden-price",
+  "is_demo": true,
+  "description": "'Giá ib' là giấu giá: không có số, không vào trung vị (AT02).",
+  "input": {
+    "idempotency_key": "fixture:F02-hidden-price",
+    "source_type": "fixture",
+    "text": "Cho thuê phòng trọ khép kín 25m2 gần chợ, có gác lửng. Giá ib nhé, điện nước giá nhà nước. LH [SĐT]",
+    "text_complete": true,
+    "phone_masked": true
+  },
+  "expected": {
+    "post_type": "rental_offer",
+    "listings": [
+      {
+        "listing_index": 0,
+        "rent": {
+          "visibility": "hidden_explicit",
+          "amount_form": "none",
+          "amount_vnd": null,
+          "basis": "unknown",
+          "period": "unknown",
+          "includes": [],
+          "decision": "abstained",
+          "abstain_reason": "not_in_text"
+        },
+        "area": {
+          "amount_form": "exact",
+          "value_m2": 25,
+          "from_dimensions": false,
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 28,
+              "end": 32,
+              "quote": "25m2",
+              "label": "AREA",
+              "method": "human"
+            }
+          ]
+        },
+        "room": {
+          "property_type": "phong_tro",
+          "mezzanine": true,
+          "private_bathroom": true,
+          "furnishing": "unknown",
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 9,
+              "end": 27,
+              "quote": "phòng trọ khép kín",
+              "label": "ROOM",
+              "method": "human"
+            },
+            {
+              "start": 45,
+              "end": 53,
+              "quote": "gác lửng",
+              "label": "ROOM",
+              "method": "human"
+            }
+          ]
+        },
+        "location": {
+          "landmark": "gần chợ",
+          "ward_code": null,
+          "resolution": "unresolved",
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 33,
+              "end": 40,
+              "quote": "gần chợ",
+              "label": "LOC",
+              "method": "human"
+            }
+          ]
+        },
+        "fees": [
+          {
+            "type": "electricity",
+            "amount_vnd": null,
+            "unit": "unknown",
+            "state_rate": true,
+            "evidence": [
+              {
+                "start": 67,
+                "end": 89,
+                "quote": "điện nước giá nhà nước",
+                "label": "FEE",
+                "method": "human"
+              }
+            ]
+          },
+          {
+            "type": "water",
+            "amount_vnd": null,
+            "unit": "unknown",
+            "state_rate": true,
+            "evidence": [
+              {
+                "start": 67,
+                "end": 89,
+                "quote": "điện nước giá nhà nước",
+                "label": "FEE",
+                "method": "human"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

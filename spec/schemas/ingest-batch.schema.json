@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rener-vn.local/spec/ingest-batch.schema.json",
+  "title": "IngestBatch",
+  "description": "Body of POST /api/v1/ingest/batch (collect mode).",
+  "type": "object",
+  "required": ["client", "posts"],
+  "additionalProperties": false,
+  "properties": {
+    "client": {
+      "type": "object",
+      "required": ["extension_version", "session_id"],
+      "additionalProperties": false,
+      "properties": {
+        "extension_version": {"type": "string", "maxLength": 30},
+        "session_id": {"type": "string", "maxLength": 100}
+      }
+    },
+    "posts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {"$ref": "ingest-post.schema.json"}
+    }
+  }
+}

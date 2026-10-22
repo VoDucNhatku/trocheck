@@ -1,0 +1,135 @@
+{
+  "id": "F01-basic-ccmn",
+  "is_demo": true,
+  "description": "Giá rõ /phòng/tháng, ba khoản phí không được lấy làm giá (AT01).",
+  "input": {
+    "idempotency_key": "fixture:F01-basic-ccmn",
+    "source_type": "fixture",
+    "text": "Cho thuê CCMN 1PN 30m2 ngay gần ĐH FPT, full nội thất. Giá 5tr5/th/phòng, điện 3k5/số, nước 100k/người, cọc 1 tháng. LH [SĐT]",
+    "text_complete": true,
+    "phone_masked": true
+  },
+  "expected": {
+    "post_type": "rental_offer",
+    "listings": [
+      {
+        "listing_index": 0,
+        "rent": {
+          "visibility": "disclosed",
+          "amount_form": "exact",
+          "amount_vnd": 5500000,
+          "basis": "per_unit",
+          "period": "month",
+          "includes": [],
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 59,
+              "end": 72,
+              "quote": "5tr5/th/phòng",
+              "label": "PRICE",
+              "method": "human"
+            }
+          ]
+        },
+        "area": {
+          "amount_form": "exact",
+          "value_m2": 30,
+          "from_dimensions": false,
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 18,
+              "end": 22,
+              "quote": "30m2",
+              "label": "AREA",
+              "method": "human"
+            }
+          ]
+        },
+        "room": {
+          "property_type": "ccmn",
+          "bedrooms": 1,
+          "furnishing": "full",
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 9,
+              "end": 13,
+              "quote": "CCMN",
+              "label": "ROOM",
+              "method": "human"
+            },
+            {
+              "start": 14,
+              "end": 17,
+              "quote": "1PN",
+              "label": "ROOM",
+              "method": "human"
+            }
+          ]
+        },
+        "location": {
+          "landmark": "gần ĐH FPT",
+          "ward_code": null,
+          "resolution": "unresolved",
+          "decision": "answered",
+          "evidence": [
+            {
+              "start": 28,
+              "end": 38,
+              "quote": "gần ĐH FPT",
+              "label": "LOC",
+              "method": "human"
+            }
+          ]
+        },
+        "fees": [
+          {
+            "type": "electricity",
+            "amount_vnd": 3500,
+            "unit": "per_kwh",
+            "evidence": [
+              {
+                "start": 74,
+                "end": 85,
+                "quote": "điện 3k5/số",
+                "label": "FEE",
+                "method": "human"
+              }
+            ]
+          },
+          {
+            "type": "water",
+            "amount_vnd": 100000,
+            "unit": "per_person_month",
+            "evidence": [
+              {
+                "start": 87,
+                "end": 102,
+                "quote": "nước 100k/người",
+                "label": "FEE",
+                "method": "human"
+              }
+            ]
+          },
+          {
+            "type": "deposit",
+            "amount_vnd": null,
+            "unit": "months_of_rent",
+            "months": 1,
+            "evidence": [
+              {
+                "start": 104,
+                "end": 115,
+                "quote": "cọc 1 tháng",
+                "label": "FEE",
+                "method": "human"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
