@@ -1,0 +1,13 @@
+# DEMO ONLY. Used exclusively for posts with is_demo = true (seed data). Codes are invented
+# and prefixed DEMO- so they can never be mistaken for official codes or enter real statistics.
+version: "demo-1"
+wards:
+  - code: "DEMO-CAU-GIAY"
+    name: "Phường Cầu Giấy"
+    aliases: ["Cầu Giấy"]
+  - code: "DEMO-YEN-HOA"
+    name: "Phường Yên Hòa"
+    aliases: ["Yên Hòa"]
+  - code: "DEMO-NGHIA-DO"
+    name: "Phường Nghĩa Đô"
+    aliases: ["Nghĩa Đô"]

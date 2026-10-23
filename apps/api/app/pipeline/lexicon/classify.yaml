@@ -1,0 +1,32 @@
+# M2 keyword rules (pipeline-xu-ly §M2), folded text (no diacritics, lowercase).
+# The earliest keyword in the post decides. When no keyword matches, the post type is
+# "uncertain" and the LLM decides in the same M3b call; without an LLM the fallback below applies.
+version: "1.0.0"
+keywords:
+  roommate:
+    - 'tim (?:nguoi|ban|nu|nam) (?:o )?ghep'
+    - 'can (?:tim )?(?:nguoi|ban|nu|nam) (?:o )?ghep'
+    - 'tuyen (?:nguoi|ban) o ghep'
+    - '\bpass slot\b'
+    - '\btim \d+ (?:ban|nguoi) o (?:cung|ghep)'
+  seeking:
+    - 'can tim (?:phong|tro|nha|can ho|ccmn|chung cu)'
+    - '\bcan thue\b'
+    - '(?<!cho )\btim (?:phong|tro|nha|can ho)\b'
+    - '\bcan (?:1|mot) phong\b'
+  sale:
+    - '\bsang nhuong\b'
+    - '\bban (?:nha|dat|can ho|chung cu|gap)\b'
+    - '\bcan ban\b'
+    - '\bthanh ly\b'
+  rental_offer:
+    - '\bcho thue\b'
+    - '\bcon (?:\d+ )?(?:phong|can|ccmn)\b'
+    - '\b(?:phong|can) (?:con )?trong\b'
+    - '\bcho (?:nu|nam|sinh vien|sv) thue\b'
+    - '\bcan cho thue\b'
+# No keyword at all: a post with a disclosed rent or an area is treated as an offer,
+# anything else as `other` (stopped at M2). The LLM overrides this when it runs.
+fallback:
+  with_price_or_area: rental_offer
+  otherwise: other

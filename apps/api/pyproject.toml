@@ -1,0 +1,76 @@
+[project]
+name = "rener-api"
+version = "0.1.0"
+description = "ReNER-VN API, extraction pipeline (M0-M9) and job worker"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "sqlalchemy>=2.0",
+  "pydantic>=2.7",
+  "pydantic-settings>=2.3",
+  "pyyaml>=6",
+  "httpx>=0.27",
+  "alembic>=1.13",
+  "jsonschema>=4.22",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+  "import-linter>=2.0",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.setuptools.package-data]
+"app.pipeline" = ["lexicon/*.yaml", "prompts/*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+# Layer rules from docs/03-system/01-kien-truc.md §4, checked by `lint-imports`
+# (tests/test_architecture.py runs it too).
+[tool.importlinter]
+root_package = "app"
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Router -> service -> pipeline/models layering"
+type = "layers"
+layers = [
+  "app.main",
+  "app.api",
+  "app.services",
+  "app.models | app.pipeline",
+]
+
+[[tool.importlinter.contracts]]
+name = "Pipeline stays pure: no web framework, DB or ORM"
+type = "forbidden"
+source_modules = ["app.pipeline"]
+forbidden_modules = ["fastapi", "sqlalchemy", "app.models", "app.services", "app.api", "app.core.db"]
+ignore_imports = [
+  "app.pipeline.llm_client -> httpx",
+]
+
+[[tool.importlinter.contracts]]
+name = "Only the LLM client talks to the network"
+type = "forbidden"
+source_modules = [
+  "app.pipeline.preprocess",
+  "app.pipeline.classify",
+  "app.pipeline.regex_extractor",
+  "app.pipeline.normalize",
+  "app.pipeline.reconcile",
+  "app.pipeline.dedup",
+  "app.pipeline.market",
+  "app.pipeline.privacy",
+]
+forbidden_modules = ["httpx", "app.pipeline.llm_client"]

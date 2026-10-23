@@ -1,0 +1,10 @@
+# Team dictionary: street / landmark -> ward (quy-tac-chuan-hoa §5.3).
+# Only add an entry after checking it on a map; vague landmarks ("gần trường") are never mapped.
+#
+# - kind: street | landmark
+#   match: "Trần Phú"          # compared without diacritics, case-insensitive
+#   ward_code: "<code from wards.yaml>"
+#   added_by: "<member>"
+#   checked_at: "YYYY-MM-DD"
+version: "0.0.0"
+places: []

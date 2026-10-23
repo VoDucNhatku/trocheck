@@ -1,0 +1,10 @@
+# Wards covered by the team (new 2-level administrative system, from 01/07/2025).
+# Fill in when the 3-5 wards are chosen (lo-trinh M1). `code` must come from an official
+# source (e.g. the admin-units library cited in the proposal, ref. [21]); never invent one.
+#
+# - code: "<official ward code>"
+#   name: "Phường <Tên>"
+#   aliases: ["<Tên>", "P. <Tên>"]
+#   old_names: ["<tên phường/xã cũ>"]   # optional, for posts that still use old names
+version: "0.0.0"
+wards: []

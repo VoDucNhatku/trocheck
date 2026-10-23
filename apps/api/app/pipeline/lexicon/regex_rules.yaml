@@ -1,0 +1,177 @@
+# M3a Regex rules (pipeline-xu-ly §M3a). Data, not code: every rule has an id, a label,
+# the text view it runs on, examples it must match and examples it must not match.
+# tests/test_regex_rules.py checks the examples. Bump `version` on any change.
+#
+# view: folded = lowercase without diacritics ("phòng" -> "phong");
+#       lower  = lowercase with diacritics (needed where unaccented text is ambiguous).
+# Shared building blocks are written as {NUM}, {MONEY}, {SUFFIX}, {INCLUDES}, {NAME}.
+version: "1.0.0"
+
+blocks:
+  NUM: '\d+(?:[.,]\d+)*'
+  MONEY: '(?<![\w.,])\d+(?:[.,]\d+)*\s?(?:(?:trieu|tr|cu)(?:\s?\d{1,3}(?![\d.,])(?!\s?(?:m2|m\b|met|k\b|tr|nguoi|ng\b|pn|wc|phong|p\d|x\b|%)))?(?![a-z])|(?:k|nghin|ngan)\d?(?![a-z\d])|(?:vnd|dong|d)\b)'
+  BIGNUM: '(?<![\w.,])(?:\d{1,3}(?:[.,]\d{3}){2,}|\d{6,9})(?![\d])\s?(?:vnd|dong|d\b)?'
+  SUFFIX: '(?:\s?/\s?(?:thang|th|t|nguoi|ng|phong|p|can|ngay)\b)*'
+  INCLUDES: '(?:\s+bao\s+(?:dien|nuoc|wifi|internet|mang|dich vu|dv|gui xe)(?:\s*(?:va|\+|&)?\s*(?:dien|nuoc|wifi|internet|mang|dich vu|dv|gui xe))*)?'
+  NAME: '[^\W\d_][\w]*(?:\s+(?!(?:giá|full|lh|liên|lien|điện|dien|nước|nuoc|cọc|coc|có|phòng|phong|dt|diện|cho|cần|chỉ|ib|inbox|free|wifi|gần|gan|cách|cach|đối|doi|cạnh|canh|sát|sat|từ|tại|ở|và|cc|nội|noi|giờ|gio|wc|vs|pn|đi|thuận|thuan|tiện|tien|mới|rộng|rong|sạch|sach|đẹp|dep|thoáng|thoang|tự|chính|chinh|chủ|miễn|mien|bao|dịch|dich|xe|gửi|gui|vệ|ve|internet|mạng|mang|ngay|đủ|đầy|nhé|nhe|ạ|mình|minh|chị)\b)[\w]+){0,4}'
+
+rules:
+  # ---------------- PRICE (classified PRICE/FEE by context in code) ----------------
+  - id: PRICE_RANGE
+    label: PRICE
+    view: folded
+    pattern: '(?<![\w.,])\d+(?:[.,]\d+)?\s?(?:(?:trieu|tr|cu)\d{0,3}|k)?\s?(?:-|–|~|den|toi)\s?{MONEY}{SUFFIX}{INCLUDES}'
+    examples: ["3 - 3,5tr", "3tr-3tr5/th", "2tr8 den 3tr2"]
+    not_examples: ["25-35m2", "0912-345-678"]
+  - id: PRICE_FROM
+    label: PRICE
+    view: folded
+    pattern: '\btu\s+{MONEY}{SUFFIX}{INCLUDES}'
+    examples: ["từ 3tr", "từ 4tr/tháng"]
+    not_examples: ["tủ lạnh"]
+  - id: PRICE_MONEY
+    label: PRICE
+    view: folded
+    pattern: '{MONEY}{SUFFIX}{INCLUDES}'
+    examples: ["5tr5/th/phòng", "5,5 triệu", "5 triệu 5", "2800k", "1tr5/người/tháng", "6tr/tháng bao điện nước", "5 củ", "3k5/số", "200k/ngày"]
+    not_examples: ["30m2", "2PN1WC", "LH [SĐT]"]
+  - id: PRICE_BIGNUM
+    label: PRICE
+    view: folded
+    pattern: '{BIGNUM}{SUFFIX}{INCLUDES}'
+    examples: ["2.800.000đ/tháng", "3500000"]
+    not_examples: ["2020", "30m2"]
+  - id: PRICE_HIDDEN
+    label: PRICE
+    view: folded
+    pattern: '\bgia\s+(?:ib|inbox|ibx|thoa\s*thuan|lien\s*he)\b|\b(?:ib|inbox)\s+(?:de\s+)?(?:biet\s+)?gia\b|\blien\s*he\s+de\s+biet\s+gia\b'
+    examples: ["Giá ib", "giá thỏa thuận", "ib giá", "liên hệ để biết giá"]
+    not_examples: ["ib mình nhé"]
+  - id: PRICE_INBOX_ONLY
+    label: PRICE
+    view: folded
+    pattern: '\binbox\b'
+    examples: ["inbox"]
+    not_examples: ["ib"]
+  - id: PRICE_SLANG_UNSURE
+    label: PRICE
+    view: folded
+    pattern: '(?<![\w.,])\d+(?:[.,]\d+)?\s?(?:lit|chai)\b'
+    examples: ["5 lít", "3 chai"]
+    not_examples: ["5tr"]
+
+  # ---------------- FEE without an amount ----------------
+  - id: FEE_STATE_RATE
+    label: FEE
+    view: folded
+    pattern: '\b(?:dien\s+nuoc|dien|nuoc)\s+(?:theo\s+|tinh\s+)?gia\s+nha\s+nuoc\b'
+    examples: ["điện nước giá nhà nước", "điện giá nhà nước"]
+    not_examples: ["giá 3tr"]
+  - id: FEE_DEPOSIT_MONTHS
+    label: FEE
+    view: folded
+    pattern: '\b(?:dat\s+)?coc\s+\d+(?:[.,]5)?\s*(?:thang|th)\b'
+    examples: ["cọc 1 tháng", "Cọc 1 tháng", "đặt cọc 2 th"]
+    not_examples: ["cọc 3tr"]
+  - id: FEE_FREE
+    label: FEE
+    view: folded
+    pattern: '\b(?:free|mien\s+phi)\s+(?:wifi|internet|mang|nuoc|dien|gui\s+xe|xe|dich\s+vu)\b|\b(?:wifi|internet|mang|gui\s+xe|dich\s+vu)\s+(?:free|mien\s+phi)\b'
+    examples: ["wifi free", "free wifi", "miễn phí internet", "gửi xe miễn phí"]
+    not_examples: ["free"]
+
+  # ---------------- AREA ----------------
+  - id: AREA_RANGE
+    label: AREA
+    view: folded
+    pattern: '(?<![\w.,])\d+(?:[.,]\d+)?\s?(?:-|–|~|den)\s?\d+(?:[.,]\d+)?\s?(?:m2|m²|met vuong|m vuong)'
+    examples: ["25-35m2", "20 - 25 m2"]
+    not_examples: ["30m2"]
+  - id: AREA_DIMENSIONS
+    label: AREA
+    view: folded
+    pattern: '(?<![\w.,])\d+(?:[.,]\d+)?\s?x\s?\d+(?:[.,]\d+)?(?:\s?m2|\s?m\b)?(?![\d.,])'
+    examples: ["4x8m", "4 x 8", "5x16m2"]
+    not_examples: ["2PN1WC"]
+  - id: AREA_M2
+    label: AREA
+    view: folded
+    pattern: '(?<![\w.,])\d+(?:[.,]\d+)?\s?(?:m2|m²|met vuong|m vuong)'
+    examples: ["30m2", "30 m2", "30m²", "30 mét vuông"]
+    not_examples: ["3tr"]
+  - id: AREA_DT_M
+    label: AREA
+    view: folded
+    pattern: '\b(?:dt|dien tich)\s*:?\s*\d+(?:[.,]\d+)?\s?m\b'
+    examples: ["DT 30m", "diện tích: 30m"]
+    not_examples: ["30m"]
+
+  # ---------------- ROOM ----------------
+  - id: ROOM_TYPE
+    label: ROOM
+    view: folded
+    pattern: '\b(?:ccmn|chung cu mini|can ho dich vu|chdv|nha nguyen can|nha rieng|phong tro(?:\s+khep kin)?|phong khep kin)\b'
+    examples: ["CCMN", "căn hộ dịch vụ", "phòng trọ khép kín", "nhà nguyên căn"]
+    not_examples: ["phòng 2 người"]
+  - id: ROOM_BED_BATH
+    label: ROOM
+    view: folded
+    pattern: '(?<![\w.,])\d+\s?pn\s?\d+\s?(?:wc|vs)\b|(?<![\w.,])\d+\s?(?:pn|phong ngu)\b|\bstudio\b'
+    examples: ["2PN1WC", "1PN", "1 phòng ngủ", "studio"]
+    not_examples: ["P1"]
+  - id: ROOM_FEATURE
+    label: ROOM
+    view: folded
+    pattern: '\b(?:gac lung|co gac|gac xep|khep kin|(?:wc|vs|ve sinh) rieng)\b'
+    examples: ["gác lửng", "có gác", "WC riêng"]
+    not_examples: ["gác"]
+  - id: ROOM_FURNISHING
+    label: ROOM
+    view: folded
+    pattern: '\b(?:(?:full|day du)\s+(?:noi that|do)|noi that co ban|khong noi that)\b'
+    examples: ["full nội thất", "đầy đủ nội thất", "full đồ"]
+    not_examples: ["nội thất"]
+  - id: ROOM_GENERIC
+    label: ROOM
+    view: folded
+    pattern: '\bphong\b(?!\s?(?:ngu|tro|khep))'
+    examples: ["phòng"]
+    not_examples: ["phòng ngủ", "phòng trọ"]
+
+  # ---------------- LOC ----------------
+  - id: LOC_WARD
+    label: LOC
+    view: lower
+    pattern: '(?:\bp\.\s?|\bphường\s+|\bxã\s+){NAME}'
+    examples: ["phường Cầu Giấy", "P.Yên Hòa", "xã Hòa Lạc"]
+    not_examples: ["không xa trường"]
+  - id: LOC_OLD_DISTRICT
+    label: LOC
+    view: lower
+    pattern: '(?:\bq\.\s?|\bquận\s+|\bhuyện\s+){NAME}'
+    examples: ["Q. Thạch Thất", "quận Cầu Giấy"]
+    not_examples: ["quán cà phê"]
+  - id: LOC_STREET
+    label: LOC
+    view: lower
+    pattern: '\b(?:đường|ngõ|ngách|hẻm|kiệt|phố|duong|ngo|ngach|hem)\s+(?:số\s+)?(?:\d+[a-z]?(?:/\d+)?\s+)?{NAME}'
+    examples: ["Ngõ 12 Trần Phú", "Đường Trần Phú", "phố Duy Tân"]
+    not_examples: ["giá 3tr"]
+  - id: LOC_LANDMARK
+    label: LOC
+    view: lower
+    pattern: '\b(?:gần|đối diện|cạnh|sát|gan|doi dien|canh)\s+{NAME}'
+    examples: ["gần ĐH FPT", "Gần ĐH Quốc gia", "gần chợ", "gan dh"]
+    not_examples: ["giá 3tr"]
+
+# Multi-listing markers: "P1 … P2 …", "phòng 1 … phòng 2 …".
+listing_markers:
+  id: LISTING_MARKER
+  view: folded
+  pattern: '(?<![\w.,])(?:p|phong|can)\s?\.?\s?(\d{1,2})(?![\d.,]|\s?(?:nguoi|ng\b|pn|wc|tr|k\b|m2|m\b|x\b))'
+
+# Words before a money amount that make it a fee, not the rent (pipeline-xu-ly §M3a).
+fee_context:
+  window_chars: 25
+  keywords: '\b(?:dat\s+)?coc\b|\bdien\b|\bnuoc\b|\bdich vu\b|\bdv\b|\bphi\b|\bwifi\b|\binternet\b|\bmang\b|\bgui\s+xe\b|\bve sinh\b|\brac\b'
+  rent_keywords: '\bgia\b|\bthue\b|\bchi\b|\bcon\b'

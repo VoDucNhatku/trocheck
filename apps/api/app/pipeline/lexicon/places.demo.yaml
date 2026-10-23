@@ -1,0 +1,13 @@
+# DEMO ONLY (see wards.demo.yaml).
+version: "demo-1"
+places:
+  - kind: street
+    match: "Duy Tân"
+    ward_code: "DEMO-CAU-GIAY"
+    added_by: "seed"
+    checked_at: "2026-10-22"
+  - kind: landmark
+    match: "công viên Nghĩa Đô"
+    ward_code: "DEMO-NGHIA-DO"
+    added_by: "seed"
+    checked_at: "2026-10-22"
