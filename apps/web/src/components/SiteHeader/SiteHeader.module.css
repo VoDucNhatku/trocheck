@@ -1,0 +1,176 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--night);
+  backdrop-filter: saturate(1.4) blur(10px);
+  -webkit-backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--dur-base) var(--ease);
+}
+
+.scrolled {
+  border-bottom-color: var(--edge);
+}
+
+.home { background: var(--night); }
+.home .brand { color: var(--hl-text); }
+.home .nav { margin-left: auto; }
+.home .actions { margin-left: auto; }
+.home .cta { background: var(--button-primary-bg); color: var(--button-primary-ink); border-radius: 5px; }
+.home .cta:hover { background: var(--accent-hover); }
+
+.inner {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  height: var(--header-h);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  border-radius: var(--r-sm);
+}
+
+.nav {
+  display: flex;
+  gap: var(--s-1);
+}
+
+.link {
+  position: relative;
+  padding: 6px 10px;
+  border-radius: var(--r-md);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--on-night2);
+  transition:
+    color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.link:hover {
+  color: var(--on-night);
+  background: var(--night3);
+}
+
+.active {
+  color: var(--on-night);
+}
+
+/* Gạch chân kiểu bút dạ quang cho trang hiện tại */
+.active::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 3px;
+  height: 6px;
+  background: var(--accent-subtle);
+  border-radius: 2px;
+  z-index: -1;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-left: auto;
+}
+
+.ghost {
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--on-night2);
+  border-radius: var(--r-md);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.ghost:hover {
+  color: var(--on-night);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--r-md);
+  background: var(--button-primary-bg);
+  color: var(--button-primary-ink);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color var(--dur-fast) var(--ease);
+}
+
+.cta:hover {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.burger {
+  display: none;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--edge2);
+  border-radius: var(--r-md);
+  background: var(--night2);
+}
+
+.tools { display: flex; flex: none; align-items: center; gap: var(--s-2); }
+
+.sheet {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .tools { margin-left: auto; }
+  .inner { gap: var(--s-2); }
+  .nav,
+  .actions {
+    display: none;
+  }
+  .burger {
+    display: inline-flex;
+  }
+  .sheet:not([hidden]) {
+    position: absolute;
+    right: 0;
+    width: min(360px, 100%);
+    display: grid;
+    gap: var(--s-1);
+    padding: var(--s-2) var(--s-4) var(--s-4);
+    border-bottom: 1px solid var(--edge);
+    background: var(--night);
+    border-left: 1px solid var(--edge);
+    box-shadow: var(--shadow-overlay);
+  }
+  .sheetLink {
+    padding: 10px 4px;
+    font-size: 15px;
+    font-weight: 500;
+    border-bottom: 1px solid var(--edge);
+  }
+  .sheet .cta {
+    justify-content: center;
+    height: auto;
+    min-height: 44px;
+    white-space: normal;
+    text-align: center;
+    margin-top: var(--s-2);
+  }
+}
+
+
+/* Design-v4 action colors and pointer feedback. */
+.cta { background:var(--hl); color:var(--ink); border:1.5px solid var(--ink); box-shadow:4px 4px 0 var(--btn-shadow); border-radius:8px; min-height:48px; font-weight:700; }
+.cta, .burger { transition:transform var(--t-press) var(--ease-enter),background-color var(--t-ui) var(--ease-enter); }
+@media(hover:hover) and (pointer:fine) { .cta:hover:not(:disabled), .burger:hover:not(:disabled) { transform:translate(-2px,-2px); } }
+.cta:active:not(:disabled), .burger:active:not(:disabled) { transform:scale(.97); transition-duration:100ms; }
+@media(prefers-reduced-motion:reduce) { .cta, .burger, .cta:hover:not(:disabled), .burger:hover:not(:disabled), .cta:active:not(:disabled), .burger:active:not(:disabled) { transform:none; transition:none; } }

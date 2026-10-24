@@ -1,0 +1,103 @@
+.text {
+  color: var(--on-night);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.md {
+  font-size: 15px;
+  line-height: 2.6;
+}
+
+.lg {
+  font-family: var(--font-serif);
+  font-size: 21px;
+  line-height: 2.5;
+  letter-spacing: -0.005em;
+}
+
+.mark {
+  position: relative;
+  display: inline;
+  padding: 3px 3px 2px;
+  margin: 0 1px;
+  border: 0;
+  border-radius: 3px;
+  color: var(--mk-ink);
+  font: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  background-color: var(--mk);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition:
+    opacity var(--dur-base) var(--ease),
+    box-shadow var(--dur-base) var(--ease);
+}
+
+/* Buttons render as inline-block, so they must not inherit the tall paragraph line-height. */
+button.mark {
+  cursor: pointer;
+  line-height: 1.35;
+  vertical-align: baseline;
+}
+
+button.mark:hover {
+  box-shadow: inset 0 -2px 0 var(--on-night);
+}
+
+.PRICE {
+  --mk: var(--mk-price);
+}
+.AREA {
+  --mk: var(--mk-area);
+}
+.LOC {
+  --mk: var(--mk-loc);
+}
+.ROOM {
+  --mk: var(--mk-room);
+}
+.FEE {
+  --mk: var(--mk-fee);
+}
+
+/* Label above the span, like Hình 2 in the proposal: readable without colour. */
+.tag {
+  position: absolute;
+  left: 2px;
+  bottom: calc(100% - 1px);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: var(--on-night2);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.lg .tag {
+  font-size: 12px;
+  bottom: calc(100% + 1px);
+}
+
+.rule {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+
+.dimmed .mark:not(.active) {
+  opacity: 0.38;
+}
+
+.active {
+  box-shadow: 0 0 0 2px var(--on-night);
+}
+
+.mismatch {
+  outline: 2px dashed var(--v-higher);
+  outline-offset: 1px;
+}

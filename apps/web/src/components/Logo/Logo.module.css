@@ -1,0 +1,26 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.mark {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: 4px;
+  background: var(--logo-icon-surface);
+}
+.word, .word img { width: 108px; height: 24px; }
+.word img { object-fit: contain; }
+.dark { display: none; }
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme='light'])) .light { display: none; }
+  :global(:root:not([data-theme='light'])) .dark { display: block; }
+}
+:global(:root[data-theme='dark']) .light { display: none; }
+:global(:root[data-theme='dark']) .dark { display: block; }
+:global(:root[data-theme='light']) .light { display: block; }
+:global(:root[data-theme='light']) .dark { display: none; }
+.logo[data-logo-inverse] .light { display: none; }
+.logo[data-logo-inverse] .dark { display: block; }
