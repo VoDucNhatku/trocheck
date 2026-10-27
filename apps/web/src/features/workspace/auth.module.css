@@ -1,0 +1,31 @@
+.stage { min-height:100svh; display:grid; grid-template-columns:1fr 1fr; padding:24px; gap:24px; max-width:1680px; margin:auto; }
+.form { display:flex; flex-direction:column; justify-content:space-between; padding:24px 48px; min-width:0; }
+.body { width:100%; max-width:390px; align-self:center; padding:32px 0; }
+.body h1 { font-family:var(--font-serif); font-size:32px; font-weight:500; line-height:1.3; margin-bottom:8px; }
+.body form { margin-top:28px; gap:18px; }
+.body input:not([type=checkbox]) { min-height:52px; border-radius:14px; font-size:16px; }
+.body button[type=submit] { min-height:52px; font-size:14px; border-radius:14px; width:100%; }
+.body input + button, .body div:has(> input[type=password]) > button { top:4px; right:4px; min-height:44px; width:44px; }
+.switch { margin:24px 0 18px; font-size:14px; }
+.art { margin:0; display:flex; flex-direction:column; min-width:0; background:var(--panel1); border-radius:20px; overflow:hidden; }
+.image { flex:1; min-height:430px; position:relative; overflow:hidden; }
+.image img { width:100%; height:100%; object-fit:cover; position:absolute; object-position:50% 55%; }
+.art figcaption { display:grid; gap:6px; padding:28px 32px; }
+.art strong { font-family:var(--font-serif); font-size:30px; font-weight:500; }
+.art span { font-size:12px; color:var(--muted); }
+.fieldError { font-size:13px; color:var(--danger); }
+.strength { display:grid; gap:6px; margin-top:3px; }
+.strength > div { display:flex; gap:4px; }
+.strength span { height:3px; background:var(--edge); flex:1; }
+.strength span[data-met=true] { background:var(--accent); }
+.terms { margin-top:8px; font-size:13px; color:var(--on-night2); scroll-margin:20px; }
+.terms summary { cursor:pointer; padding:6px 0; }
+.terms p { padding:8px 0; }
+.register { justify-content:flex-start; gap:24px; }
+.register > p { margin-top:auto; }
+.register .body { padding:12px 0 24px; }
+@media(max-width:1000px) { .stage { padding:16px; gap:16px; } .form { padding:16px; } .art figcaption { padding:20px; } .art strong { font-size:24px; } }
+@media(max-width:700px) { .stage { grid-template-columns:minmax(0,1fr); } .form { min-height:calc(100svh - 32px); padding:16px 8px; } .body { padding:32px 0; } .art { display:none; } }
+
+.body :global(p) { font-size:13px; }
+@media(max-width:700px) { .body h1 { font-size:28px; } }

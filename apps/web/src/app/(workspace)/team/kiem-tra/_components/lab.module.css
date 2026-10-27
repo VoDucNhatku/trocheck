@@ -1,0 +1,82 @@
+.stack { display: grid; gap: 24px; min-width: 0; }
+.section { padding:24px 0; border-top:1px solid var(--edge); min-width:0; }
+.inputSheet { padding:28px; background:var(--night2); border:1px solid var(--edge); border-radius:16px; min-width:0; }
+.heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+.heading h2 { margin: 0; font-size: 16px; font-weight: 600; }
+.step { font-family: var(--font-mono); color: var(--muted); font-size: 12px; margin-right: 10px; }
+.inputGrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, .45fr); gap: 24px; align-items: start; }
+.modes { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0 0 18px; padding: 0; border: 0; }
+.modes legend { font-size: 12px; font-weight: 600; color: var(--on-night2); margin-bottom: 8px; }
+.modes label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 13px; cursor: pointer; }
+.modes input { accent-color: var(--accent); width: 18px; height: 18px; }
+.input { min-height: 44px; }
+.textInput { min-height: 170px; }
+.guide { border-left: 2px solid var(--amber); padding-left: 20px; color: var(--on-night2); font-size: 13px; line-height: 1.8; }
+.guide h3 { color: var(--on-night); font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.guide p + p { margin-top: 12px; }
+.hint { font-size: 12px; color: var(--muted); line-height: 1.75; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 16px; }
+.actions button { min-height: 44px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; list-style: none; padding: 0; margin: 16px 0 20px; font-size: 12px; }
+.legend li { display: inline-flex; align-items: center; gap: 6px; }
+.swatch { border-radius: 3px; padding: 3px 6px; font-size: 12px; font-weight: 600; background: var(--mark); color: var(--mk-ink); }
+.PRICE { --mark: var(--mk-price); }
+.AREA { --mark: var(--mk-area); }
+.LOC { --mark: var(--mk-loc); }
+.ROOM { --mark: var(--mk-room); }
+.FEE { --mark: var(--mk-fee); }
+.methods { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 2px solid var(--accent); border-bottom: 1px solid var(--edge); }
+.method { min-width: 0; padding: 20px; background: var(--night2); }
+.method + .method { border-left: 1px solid var(--edge); }
+.methodHead { min-height: 66px; margin-bottom: 20px; }
+.methodHead h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.methodHead p { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.source { overflow-wrap: anywhere; }
+.evidence { white-space: pre-wrap; line-height: 2.5; font-size: 14px; }
+.mark { display: inline; border: 1px solid transparent; border-radius: var(--r-sm); padding: 3px 4px; background: var(--mark); color: var(--mk-ink); font: inherit; box-decoration-break: clone; -webkit-box-decoration-break: clone; text-align: left; }
+.mark[aria-pressed=true] { outline: 2px solid var(--focus); outline-offset: 2px; }
+.tag { font-size: 12px; font-weight: 600; margin-right: 5px; }
+.selection { margin-top: 18px; padding: 14px 16px; border-left: 3px solid var(--accent); background: var(--accent-subtle); color: var(--on-night2); font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
+.selection button { margin-top: 8px; }
+.scroll { max-width: 100%; overflow-x:auto; border-top:1px solid var(--edge2); }
+.table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; font-variant-numeric: tabular-nums; }
+.table caption { text-align: left; padding: 14px 16px; color: var(--on-night2); font-size: 12px; background: var(--night2); }
+.table th, .table td { padding: 14px 16px; border-top: 1px solid var(--edge); vertical-align: top; }
+.table thead th { color: var(--on-night2); background:transparent; font-size:12px; font-weight:600; white-space:nowrap; }
+.table tbody th { font-weight: 500; }
+.table td { min-width: 112px; overflow-wrap: anywhere; }
+.values { table-layout: fixed; }
+.values th:first-child { width: 19%; }
+.values td { min-width: 0; line-height: 1.8; }
+.values td p + p { border-top: 1px solid var(--edge); padding-top: 8px; margin-top: 8px; }
+.fieldButton { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 8px; border: 1px solid var(--edge2); border-radius: var(--r-sm); background: var(--night2); color: var(--on-night); font: inherit; text-align: left; cursor: pointer; }
+.fieldButton[aria-pressed=true] { border-color: var(--accent); box-shadow: inset 3px 0 var(--accent); background: var(--accent-subtle); }
+.disclosure { display: block; position: static; border-top: 1px solid var(--edge); padding: 16px 0; min-width: 0; }
+.tokenScroll { max-height: 32rem; overflow: auto; }
+.different { background: var(--amber-surface); }
+.diffLabel { display: block; color: var(--warn); font: 12px var(--font-sans); margin-top: 4px; }
+.disclosure summary { color: var(--hl-text); font-size: 13px; font-weight: 500; cursor: pointer; padding: 10px 0; min-height: 44px; }
+.disclosure[open] summary { margin-bottom: 12px; }
+.mono { font-family: var(--font-mono); font-size: 12px; overflow-wrap: anywhere; }
+.pre { background: var(--panel1); padding: 16px; font-family: var(--font-mono); font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.stack :is(button, input, textarea, select, summary, [tabindex]):focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) {
+  .fieldButton:hover { background: var(--night3); }
+  .disclosure summary:hover { text-decoration: underline; text-underline-offset: 3px; }
+}
+@media (max-width: 1150px) {
+  .inputGrid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .methods { grid-template-columns: minmax(0, 1fr); }
+  .method + .method { border-left: 0; border-top: 1px solid var(--edge); }
+  .methodHead { min-height: 0; }
+}
+@media (max-width: 600px) {
+  .inputSheet { padding:20px; }
+  .heading { align-items: flex-start; }
+  .values { table-layout: auto; min-width: 620px; }
+  .values th:first-child { width: auto; min-width: 130px; }
+  .method { padding: 18px 14px; }
+  .table th, .table td { padding: 12px; }
+  .guide { padding-left: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .stack * { transition: none; animation: none; scroll-behavior: auto; } }

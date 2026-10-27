@@ -1,0 +1,41 @@
+.layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:24px; align-items:start; }
+.stack { display:grid; gap:20px; min-width:0; }
+.receipt, .source, .questions, .comparison, .contribution { min-width:0; padding:24px; border:1px solid var(--edge); border-radius:var(--r-lg); background:var(--night2); }
+.receiptHead { padding-bottom:20px; border-bottom:1px solid var(--edge); }
+.receiptHead h2 { font-size:14px; font-weight:600; }
+.receiptHead span, .hint { display:block; font-size:12px; color:var(--muted); line-height:1.8; margin-top:8px; }
+.price { width:100%; display:grid; gap:10px; padding:24px 0; border:0; border-bottom:1px solid var(--edge); background:transparent; color:var(--on-night); text-align:left; cursor:pointer; }
+.price > span:first-child { color:var(--hl-text); font-size:14px; font-weight:600; }
+.price strong { font-size:32px; font-weight:700; line-height:1.4; color:var(--rent-text); letter-spacing:-.04em; }
+.price small { font-size:12px; color:var(--muted); }
+.fieldRow, .feeRow { width:100%; display:grid; grid-template-columns:minmax(0,.65fr) minmax(0,1fr); gap:8px 16px; border:0; border-bottom:1px solid var(--edge); background:transparent; text-align:left; color:var(--on-night); padding:16px 0; cursor:pointer; font-size:14px; line-height:1.8; }
+.fieldRow > span, .feeRow > span { color:var(--on-night2); }
+.fieldRow strong, .feeRow strong { min-width:0; font-size:14px; font-weight:500; overflow-wrap:normal; }
+.feeRow small { grid-column:1/-1; color:var(--muted); font-size:12px; }
+.receipt button:disabled { cursor:default; }
+.receipt button[aria-pressed=true] { background:var(--accent-subtle); box-shadow:inset 3px 0 var(--accent); padding-left:8px; padding-right:8px; }
+.receipt h3 { margin:24px 0 12px; font-size:16px; }
+.receipt p { font-size:14px; }
+.receipt .hint { font-size:12px; }
+.roomQuotes { margin-top:16px; font-size:12px; color:var(--on-night2); }
+.roomQuotes summary { cursor:pointer; }
+.roomQuotes ul { padding-left:20px; }
+.roomQuotes button { border:0; background:transparent; color:var(--on-night); font:inherit; text-align:left; padding:6px 0; }
+.deposit { margin-top:20px; border-top:2px solid var(--edge2); }
+.source h2, .questions h2, .comparison h2, .contribution h2 { font-size:18px; line-height:1.5; margin-bottom:16px; }
+.source { scroll-margin-top:24px; }
+.evidence { white-space:pre-wrap; overflow-wrap:anywhere; font-size:15px; line-height:2.7; }
+.evidence .evidencePart { display:inline; font:inherit; word-break:normal; }
+.evidence .evidencePart [data-label] { display:inline-block; white-space:nowrap; line-height:1.8; vertical-align:baseline; }
+.evidence .evidencePart [data-label] > span[aria-hidden=true] { position:static; display:inline; font-size:12px; letter-spacing:0; margin-right:4px; color:inherit; }
+.evidence .evidencePart [data-label]:focus-visible { outline:2px solid var(--focus); outline-offset:3px; }
+.selection { margin-top:20px; padding:12px; background:var(--accent-subtle); font-size:12px; overflow-wrap:anywhere; }
+.questions { background:var(--panel1); }
+.questions ul { padding-left:20px; margin:16px 0; }
+.comparison, .contribution { margin-top:24px; }
+.contribution { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:20px; }
+.contribution h2 { margin-bottom:8px; }
+.contribution p { max-width:660px; }
+.source :focus-visible, .receipt :focus-visible { outline:2px solid var(--focus); outline-offset:3px; }
+@media(max-width:1100px) { .layout { grid-template-columns:minmax(0,1fr); } }
+@media(max-width:480px) { .receipt, .source, .questions, .comparison, .contribution { padding:16px; } .price strong { font-size:28px; } .fieldRow, .feeRow { grid-template-columns:minmax(0,1fr); gap:4px; } }
