@@ -27,6 +27,7 @@
 }
 
 .tab[aria-selected='true'] {
+  background: var(--ink);
   color: var(--paper);
 }
 

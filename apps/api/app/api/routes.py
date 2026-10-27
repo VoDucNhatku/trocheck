@@ -18,6 +18,7 @@ from app.core.errors import ApiError
 from app.models import User
 from app.schemas import IngestBatch, IngestPost, LabRunRequest, LoginRequest, ReviewDecision, TokenCreate
 from app.schemas.public import Comparison, ErrorResponse, ListingDetail, ListingsResponse, StatsOverview
+from app.schemas import workspace as dto
 from app.services import analyses, evaluation, ingest, lab, listings, market, reviews, team, users
 
 router = APIRouter(prefix="/api/v1")
@@ -34,7 +35,7 @@ def health(session: Session = Depends(get_session), settings: Settings = Depends
     return {"status": "ok", "demo_mode": settings.demo_mode}
 
 
-@router.post("/auth/login", tags=["auth"])
+@router.post("/auth/login", tags=["auth"], response_model=dto.SessionUser)
 def login(body: LoginRequest, response: Response, session: Session = Depends(get_session),
           settings: Settings = Depends(settings_dep)):
     user = users.authenticate(session, body.username, body.password)
@@ -47,13 +48,13 @@ def login(body: LoginRequest, response: Response, session: Session = Depends(get
     return users.me(user)
 
 
-@router.post("/auth/logout", tags=["auth"])
+@router.post("/auth/logout", tags=["auth"], response_model=dto.LoggedOut)
 def logout(response: Response, settings: Settings = Depends(settings_dep)):
     response.delete_cookie(settings.session_cookie_name)
     return {"logged_out": True}
 
 
-@router.get("/auth/me", tags=["auth"])
+@router.get("/auth/me", tags=["auth"], response_model=dto.SessionUser)
 def who_am_i(user: User = Depends(current_user)):
     return users.me(user)
 
@@ -66,18 +67,18 @@ def ingest_batch(body: IngestBatch, user: User = Depends(require_roles("collecto
     return ingest.ingest_batch(session, user, body.posts, settings)
 
 
-@router.post("/analyses", status_code=202, tags=["extension"])
+@router.post("/analyses", status_code=202, tags=["extension"], response_model=dto.AnalysisCreated)
 def create_analysis(body: IngestPost, user: User = Depends(current_user), session: Session = Depends(get_session),
                     settings: Settings = Depends(settings_dep)):
     return analyses.create(session, user, body, settings)
 
 
-@router.get("/analyses/{analysis_id}", tags=["extension"])
+@router.get("/analyses/{analysis_id}", tags=["extension"], response_model=dto.AnalysisResult, response_model_exclude_unset=True)
 def get_analysis(analysis_id: str, user: User = Depends(current_user), session: Session = Depends(get_session)):
     return analyses.get(session, user, analysis_id)
 
 
-@router.post("/analyses/{analysis_id}/contribute", tags=["extension"])
+@router.post("/analyses/{analysis_id}/contribute", tags=["extension"], response_model=dto.Contributed)
 def contribute(analysis_id: str, user: User = Depends(current_user), session: Session = Depends(get_session)):
     return analyses.contribute(session, user, analysis_id)
 
@@ -112,7 +113,7 @@ def get_comparison(listing_id: str, user: User | None = Depends(optional_user), 
     return market.comparison(session, listing, settings)
 
 
-@router.get("/market/summary", tags=["renter"])
+@router.get("/market/summary", tags=["renter"], response_model=dto.MarketSummaryDTO)
 def market_summary(ward: list[str] = Query(default=[]), type: list[str] = Query(default=[]),
                    basis: Literal["per_unit", "per_person"] = "per_unit", demo: bool = Depends(demo_flag),
                    session: Session = Depends(get_session), settings: Settings = Depends(settings_dep)):
@@ -128,7 +129,7 @@ def stats_overview(demo: bool = Depends(demo_flag), session: Session = Depends(g
 
 # --- team --------------------------------------------------------------------------
 
-@router.get("/team/posts", tags=["team"])
+@router.get("/team/posts", tags=["team"], response_model=dto.TeamPosts)
 def team_posts(status: str | None = None, group: str | None = None, collector: str | None = None,
                date_from: str | None = None, date_to: str | None = None, post_type: str | None = None,
                page: int = Query(1, ge=1), page_size: int = Query(50, ge=1, le=200),
@@ -137,7 +138,7 @@ def team_posts(status: str | None = None, group: str | None = None, collector: s
                            date_to=date_to, post_type=post_type, page=page, page_size=page_size)
 
 
-@router.post("/team/posts/{post_id}/reprocess", tags=["team"])
+@router.post("/team/posts/{post_id}/reprocess", tags=["team"], response_model=dto.Reprocessed)
 def reprocess(post_id: str, user: User = Depends(require_roles("reviewer")), session: Session = Depends(get_session)):
     return team.reprocess(session, user, post_id)
 
@@ -150,31 +151,31 @@ def export(format: Literal["csv", "json"] = "csv", include_demo: bool = False,
                     headers={"Content-Disposition": f'attachment; filename="rener-listings.{format}"'})
 
 
-@router.get("/team/reviews", tags=["team"])
+@router.get("/team/reviews", tags=["team"], response_model=dto.ReviewQueue)
 def review_queue(reason: str | None = None, page: int = Query(1, ge=1), page_size: int = Query(50, ge=1, le=200),
                  user: User = Depends(require_roles("reviewer")), session: Session = Depends(get_session)):
     return reviews.queue(session, reason=reason, page=page, page_size=page_size)
 
 
-@router.get("/team/reviews/{listing_id}", tags=["team"])
+@router.get("/team/reviews/{listing_id}", tags=["team"], response_model=dto.ReviewDetail, response_model_exclude_unset=True)
 def review_detail(listing_id: str, user: User = Depends(require_roles("reviewer")),
                   session: Session = Depends(get_session), settings: Settings = Depends(settings_dep)):
     return reviews.detail(session, listing_id, settings)
 
 
-@router.post("/team/reviews/{listing_id}/decision", tags=["team"])
+@router.post("/team/reviews/{listing_id}/decision", tags=["team"], response_model=dto.ReviewSaved)
 def review_decision(listing_id: str, body: ReviewDecision, user: User = Depends(require_roles("reviewer")),
                     session: Session = Depends(get_session), settings: Settings = Depends(settings_dep)):
     return reviews.decide(session, user, listing_id, body, settings)
 
 
-@router.post("/team/extension-tokens", status_code=201, tags=["team"])
+@router.post("/team/extension-tokens", status_code=201, tags=["team"], response_model=dto.ExtensionTokenCreated)
 def create_token(body: TokenCreate, user: User = Depends(current_user), session: Session = Depends(get_session),
                  settings: Settings = Depends(settings_dep)):
     return users.create_token(session, user, body.name, settings)
 
 
-@router.get("/team/extension-tokens", tags=["team"])
+@router.get("/team/extension-tokens", tags=["team"], response_model=dto.ExtensionTokens)
 def list_tokens(user: User = Depends(current_user), session: Session = Depends(get_session)):
     return {"items": users.list_tokens(session, user)}
 
@@ -187,23 +188,23 @@ def revoke_token(token_id: str, user: User = Depends(current_user), session: Ses
 
 # --- research ------------------------------------------------------------------------
 
-@router.post("/lab/run", tags=["research"])
+@router.post("/lab/run", tags=["research"], response_model=dto.LabResultDTO, response_model_exclude_unset=True)
 def lab_run(body: LabRunRequest, user: User = Depends(require_roles("researcher")),
             session: Session = Depends(get_session), settings: Settings = Depends(settings_dep)):
     return lab.run(session, settings, text=body.text, post_id=body.post_id)
 
 
-@router.get("/lab/gold/{post_id}", tags=["research"])
+@router.get("/lab/gold/{post_id}", tags=["research"], response_model=dto.GoldResult)
 def lab_gold(post_id: str, user: User = Depends(require_roles("researcher")), session: Session = Depends(get_session)):
     return lab.gold_for(session, post_id)
 
 
-@router.get("/eval/runs", tags=["research"])
+@router.get("/eval/runs", tags=["research"], response_model=dto.EvalRuns)
 def eval_runs(user: User = Depends(require_roles("researcher")), settings: Settings = Depends(settings_dep)):
     return evaluation.list_runs(settings)
 
 
-@router.get("/eval/runs/{run_id}", tags=["research"])
+@router.get("/eval/runs/{run_id}", tags=["research"], response_model=dto.EvalResult)
 def eval_run(run_id: str, user: User = Depends(require_roles("researcher")),
              settings: Settings = Depends(settings_dep)):
     return evaluation.get_run(settings, run_id)

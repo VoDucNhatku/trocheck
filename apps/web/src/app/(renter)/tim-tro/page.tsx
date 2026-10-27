@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { EyeOff, SearchX, X, Info } from 'lucide-react';
+import { EyeOff, SearchX, X } from 'lucide-react';
 import { ApiState } from '@/components/ApiState/ApiState';
-import { StatusBadge } from '@/components/StatusBadge/StatusBadge';
-import { FilterBar, ListingSort } from '@/features/listings/FilterBar';
+import { FilterBar } from '@/features/listings/FilterBar';
 import { ListingGrid } from '@/features/listings/ListingGrid';
 import { Pagination } from '@/features/listings/Pagination';
 import { parseFilters, searchUrl, type SearchParams } from '@/features/listings/filters';
@@ -18,28 +17,19 @@ export const dynamic = 'force-dynamic';
 const FILTER_LABELS: Record<string, (v: string) => string> = {
   phuong: (v) => v,
   loai: (v) => PROPERTY_LABEL[v as keyof typeof PROPERTY_LABEL] ?? v,
-  gia_min: (v) => `Giá từ ${v} tr`,
-  gia_max: (v) => `Giá đến ${v} tr`,
-  dt_min: (v) => `DT từ ${v} m²`,
-  dt_max: (v) => `DT đến ${v} m²`,
-  co_gia: () => 'Chỉ tin có giá',
+  gia_min: (v) => `Giá từ ${v} tr`, gia_max: (v) => `Giá đến ${v} tr`,
+  dt_min: (v) => `DT từ ${v} m²`, dt_max: (v) => `DT đến ${v} m²`, co_gia: () => 'Chỉ tin có giá',
 };
 
 export default async function SearchPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const sp = await searchParams;
   const query = parseFilters(sp);
   // Catalog and filtered data fail independently. Never substitute a partial catalog.
-  const [dataResult, catalogResult] = await Promise.allSettled([
-    getListings(query),
-    getCatalog(query.demo ?? undefined),
-  ]);
-  if (dataResult.status === 'rejected')
-    return (
-      <div className={`container ${styles.page}`}>
-        <h1 className={styles.title}>Tìm trọ</h1>
-        <ApiState title="Chưa tải được danh sách" message={errorMessage(dataResult.reason)} />
-      </div>
-    );
+  const [dataResult, catalogResult] = await Promise.allSettled([getListings(query), getCatalog(query.demo ?? undefined)]);
+  if (dataResult.status === 'rejected') return <div className={`container ${styles.page}`}>
+    <h1 className={styles.title}>Tìm trọ</h1>
+    <ApiState title="Chưa tải được danh sách" message={errorMessage(dataResult.reason)} />
+  </div>;
   const data = dataResult.value;
   const catalog = catalogResult.status === 'fulfilled' ? catalogResult.value : null;
   const modeParams = { ...sp, demo: String(data.is_demo) };
@@ -52,97 +42,24 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     }
   }
   const emptyWarehouse = catalog?.total === 0;
-  return (
-    <div className={`container ${styles.page}`}>
-      <header className={styles.head}>
-        <div>
-          <h1 className={styles.title}>Tìm trọ</h1>
-          <p className={styles.meta}>
-            {data.data_as_of ? `Dữ liệu cập nhật ${formatDate(data.data_as_of)}` : 'Chưa có ngày cập nhật'} · giá chào
-            thuê, không phải giá giao dịch
-          </p>
-        </div>
-        <div className={styles.dataset}>
-          <StatusBadge tone="info">
-            {data.is_demo ? 'Đang xem dữ liệu demo · ví dụ tự tạo' : 'Đang xem kho dữ liệu thật'}
-          </StatusBadge>
-          <Link href={searchUrl({ demo: String(!data.is_demo) })}>
-            {data.is_demo ? 'Xem kho thật' : 'Xem bộ demo (nếu máy chủ cho phép)'}
-          </Link>
-        </div>
-      </header>
-      {catalogResult.status === 'rejected' && (
-        <ApiState title="Chưa tải được danh mục phường" message={errorMessage(catalogResult.reason)} />
-      )}
-      <div className={styles.layout}>
-        <aside className={styles.sidebar} aria-label="Bộ lọc tin">
-          <Suspense>
-            <FilterBar wards={catalog?.wards ?? []} />
-          </Suspense>
-          <p className={styles.tip}>
-            <Info size={17} aria-hidden="true" />
-            <span>Đọc đoạn nguồn trong mỗi tin để kiểm lại giá và phí. ReNER không xác nhận tình trạng còn phòng.</span>
-          </p>
-        </aside>
-        <section className={styles.results} aria-label="Kết quả tìm trọ">
-          <div className={styles.toolbar}>
-            <div className={styles.summary} aria-live="polite">
-              <p>
-                <strong className="num">{data.total}</strong> tin phù hợp
-              </p>
-              {data.hidden_no_price > 0 && (
-                <p className={styles.hidden}>
-                  <EyeOff size={14} aria-hidden="true" /> {data.hidden_no_price} tin không có giá cụ thể bị ẩn vì đang
-                  lọc theo giá
-                </p>
-              )}
-            </div>
-            <Suspense>
-              <ListingSort />
-            </Suspense>
-          </div>
-          {data.items.length > 0 ? (
-            <ListingGrid items={data.items} />
-          ) : (
-            <div className={styles.empty}>
-              <SearchX size={28} strokeWidth={1.5} aria-hidden="true" />
-              <h2>
-                {emptyWarehouse
-                  ? 'Kho chưa có tin'
-                  : data.total > 0
-                    ? 'Trang này không có tin'
-                    : 'Không có tin nào khớp đủ các điều kiện'}
-              </h2>
-              <p>
-                {emptyWarehouse
-                  ? 'Khi có tin đã đóng góp và được chấp nhận, tin sẽ xuất hiện ở đây.'
-                  : data.total > 0
-                    ? 'Dùng phân trang để về trang có dữ liệu.'
-                    : active.length
-                      ? 'Bỏ bớt từng điều kiện dưới đây để xem thêm tin:'
-                      : 'Chưa có tin hiển thị. Hãy thử lại sau.'}
-              </p>
-              {active.length > 0 && (
-                <ul className={styles.remove}>
-                  {active.map((a) => (
-                    <li key={`${a.key}-${a.value}`}>
-                      <Link href={a.href} scroll={false}>
-                        {FILTER_LABELS[a.key](a.value)} <X size={13} aria-label="bỏ điều kiện" />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {active.length > 0 && (
-                <Link className="button-secondary" href={searchUrl({ demo: String(data.is_demo) })}>
-                  Xóa tất cả bộ lọc
-                </Link>
-              )}
-            </div>
-          )}
-          <Pagination page={data.page} pageSize={data.page_size} total={data.total} params={modeParams} />
-        </section>
-      </div>
+  return <div className={`container ${styles.page}`}>
+    <header className={styles.head}>
+      <h1 className={styles.title}>Tìm trọ</h1>
+      <p className={styles.meta}>{data.data_as_of ? `Dữ liệu cập nhật ${formatDate(data.data_as_of)}` : 'Chưa có ngày cập nhật'} · giá chào thuê, không phải giá giao dịch</p>
+      <p>{data.is_demo ? 'Đang xem dữ liệu demo · ví dụ tự tạo' : 'Đang xem kho dữ liệu thật'} · <Link href={searchUrl({ demo: String(!data.is_demo) })}>{data.is_demo ? 'Xem kho thật' : 'Xem bộ demo (nếu máy chủ cho phép)'}</Link></p>
+    </header>
+    {catalogResult.status === 'rejected' && <ApiState title="Chưa tải được danh mục phường" message={errorMessage(catalogResult.reason)} />}
+    <Suspense><FilterBar wards={catalog?.wards ?? []} /></Suspense>
+    <div className={styles.summary} aria-live="polite">
+      <p><strong className="num">{data.total}</strong> tin phù hợp</p>
+      {data.hidden_no_price > 0 && <p className={styles.hidden}><EyeOff size={14} aria-hidden="true" /> {data.hidden_no_price} tin không có giá cụ thể bị ẩn vì đang lọc theo giá</p>}
     </div>
-  );
+    {data.items.length > 0 ? <ListingGrid items={data.items} /> : <div className={styles.empty}>
+      <SearchX size={28} strokeWidth={1.5} aria-hidden="true" />
+      <h2>{emptyWarehouse ? 'Kho chưa có tin' : data.total > 0 ? 'Trang này không có tin' : 'Không có tin nào khớp đủ các điều kiện'}</h2>
+      <p>{emptyWarehouse ? 'Khi có tin đã đóng góp và được chấp nhận, tin sẽ xuất hiện ở đây.' : data.total > 0 ? 'Dùng phân trang để về trang có dữ liệu.' : active.length ? 'Bỏ bớt từng điều kiện dưới đây để xem thêm tin:' : 'Chưa có tin hiển thị. Hãy thử lại sau.'}</p>
+      {active.length > 0 && <ul className={styles.remove}>{active.map((a) => <li key={`${a.key}-${a.value}`}><Link href={a.href} scroll={false}>{FILTER_LABELS[a.key](a.value)} <X size={13} aria-label="bỏ điều kiện" /></Link></li>)}</ul>}
+    </div>}
+    <Pagination page={data.page} pageSize={data.page_size} total={data.total} params={modeParams} />
+  </div>;
 }

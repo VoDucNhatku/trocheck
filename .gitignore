@@ -18,6 +18,8 @@ venv/
 # Node
 node_modules/
 .next/
+# Separate preview/test build outputs (RENER_DIST_DIR)
+.next-*/
 dist/
 build/
 .output/

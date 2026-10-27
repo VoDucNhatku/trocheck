@@ -104,7 +104,7 @@ test('empty dataset, demo on/off, missing ID produces 404', async ({ page, reque
   await expect(page.getByRole('heading', { name: 'Kho chưa có tin' })).toBeVisible();
   await screenshot(page, 'empty-warehouse');
   await page.goto('/?demo=false');
-  await expect(page.getByRole('heading', { name: /Đọc đúng/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Đọc đúng/, level: 1 })).toBeVisible();
   await expect(page.getByText(/Kho chưa có tin/)).toBeVisible();
   await request.post(`${api}/_test/state`, { data: { mode: 'ok', demo_mode: false } });
   await page.goto('/tim-tro?demo=true');
@@ -132,7 +132,7 @@ test('API error and timeout have retry; homepage illustration survives failure',
   await screenshot(page, 'api-timeout');
   await request.post(`${api}/_test/state`, { data: { mode: 'fail' } });
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: /Đọc đúng/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Đọc đúng/, level: 1 })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Chưa tải được số liệu kho' })).toBeVisible();
   await screenshot(page, 'home-stats-error');
 });

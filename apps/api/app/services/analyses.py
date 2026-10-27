@@ -21,7 +21,9 @@ def create(session: Session, user: User, post_in: IngestPost, settings: Settings
         if ingest.running_analyses(session, user) >= settings.max_running_analyses_per_user:
             raise ApiError(429, message="Đang có một bài đang phân tích, chờ xong rồi gửi tiếp",
                            headers={"Retry-After": "5"})
-    result = ingest.ingest_post(session, user, post_in, mode="assess", contributed=False)
+    # A user-facing, explicitly labelled fixture must never enter real-market data.
+    result = ingest.ingest_post(session, user, post_in, mode="assess", contributed=False,
+                                is_demo=post_in.source_type == "fixture")
     session.commit()
     return {"analysis_id": result.post_id, "status": _job_status(session, result.post_id)}
 
@@ -68,6 +70,8 @@ def get(session: Session, user: User, analysis_id: str) -> dict:
         "partial": bool(run and run.llm_status == "error"),
         "llm_status": run.llm_status if run else None,
         "contributed": post.contributed,
+        "is_demo": post.is_demo,
+        "text_complete": post.current_version.text_complete if post.current_version else False,
         "text": post.current_version.text if post.current_version else None,
         "listings": listings if status == "succeeded" or run is not None else [],
         "error": error,

@@ -1,12 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Info, FileText, ReceiptText } from 'lucide-react';
-import { RentDisplay } from '@/components/RentDisplay/RentDisplay';
-import type { ReactNode } from 'react';
+import { Info } from 'lucide-react';
 import { EvidenceHighlighter, evidenceKey } from '@/components/EvidenceHighlighter/EvidenceHighlighter';
 import type { Agreement, Evidence, FeeType, ListingDetail } from '@/lib/api/types';
-import { FEE_LABEL, LABEL_TEXT, PROPERTY_LABEL, feeValue } from '@/lib/format';
+import { FEE_LABEL, LABEL_TEXT, PROPERTY_LABEL, feeValue, formatVnd, rentHeadline } from '@/lib/format';
 import styles from './DetailBody.module.css';
 
 const AGREEMENT: Record<Agreement, string> = {
@@ -29,10 +27,11 @@ interface Row {
   tag: keyof typeof LABEL_TEXT;
 }
 
-export function DetailBody({ detail, comparison }: { detail: ListingDetail; comparison: ReactNode }) {
+export function DetailBody({ detail }: { detail: ListingDetail }) {
   const { listing, post } = detail;
   const [active, setActive] = useState<string | null>(null);
 
+  const rent = rentHeadline(listing.rent);
   const room = listing.room;
   const loc = listing.location;
 
@@ -104,145 +103,119 @@ export function DetailBody({ detail, comparison }: { detail: ListingDetail; comp
 
   return (
     <div className={styles.grid}>
-      <div className={styles.mainColumn}>
-        <section aria-labelledby="evidence-title">
-          <div className={styles.evidenceCard}>
-            <div className={styles.evidenceHead}>
-              <h2 id="evidence-title" className={styles.h2}>
-                <FileText size={19} aria-hidden="true" />
-                Bằng chứng
-              </h2>
-              <span className={styles.hint}>Bấm một trường hoặc một đoạn để đối chiếu</span>
-            </div>
-            <EvidenceHighlighter
-              text={post.text}
-              evidence={allEvidence}
-              active={activeKeys}
-              onSelect={onSpan}
-              size="lg"
-            />
-            <p className={styles.source}>
-              {[post.source_group_name, 'số điện thoại đã che', detail.is_demo ? 'bài ví dụ tự tạo' : null]
-                .filter(Boolean)
-                .join(' · ')}
-              {!post.text_complete && ' · văn bản nguồn chưa đầy đủ'}
-            </p>
-            <ul className={styles.legend} aria-label="Chú thích nhãn">
-              {(['PRICE', 'AREA', 'LOC', 'ROOM', 'FEE'] as const).map((l) => (
-                <li key={l}>
-                  <span className={styles.tag} data-label={l}>
-                    {LABEL_TEXT[l]}
-                  </span>
-                  {{ PRICE: 'giá', AREA: 'diện tích', LOC: 'vị trí', ROOM: 'phòng', FEE: 'phí' }[l]}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-        <section className={styles.feePanel} aria-labelledby="fees-title">
-          <h2 id="fees-title" className={styles.h2}>
-            <ReceiptText size={19} aria-hidden="true" />
-            Bóc tách các khoản phí
-          </h2>
-          <table className={styles.table}>
-            <caption className="visually-hidden">Các khoản phí</caption>
-            <tbody>
-              {FEE_ORDER.map((t) => {
-                const fee = listing.fees.find((f) => f.type === t);
-                const included = listing.rent.includes.includes(t);
-                const id = `fee:${t}`;
-                const clickable = !!fee?.evidence?.length;
-                return (
-                  <tr key={t} className={active === id ? styles.on : undefined}>
-                    <th scope="row">
-                      {clickable ? (
-                        <button type="button" onClick={() => pick(id)} aria-pressed={active === id}>
-                          <span className={styles.tag} data-label="FEE">
-                            PHÍ
-                          </span>
-                          {FEE_LABEL[t]}
-                        </button>
-                      ) : (
-                        <span className={styles.plain}>{FEE_LABEL[t]}</span>
-                      )}
-                    </th>
-                    <td className={!fee && !included ? styles.muted : ''}>
-                      {included ? 'Đã bao trong giá' : fee ? feeValue(fee) : 'Không đề cập'}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          <p className={styles.fine}>
-            Không cộng giá thuê với phí thành tổng, vì chưa biết mức dùng điện, nước và số người.
-          </p>
-        </section>
-      </div>
-      <aside className={styles.sidebar} aria-label="Giá và nhận định">
-        <section className={styles.pricePanel} aria-labelledby="price-title">
-          <h2 id="price-title" className={styles.h2}>
-            Giá thuê trong bài
-          </h2>
-          <button
-            type="button"
-            className={[styles.rent, active === 'rent' ? styles.on : ''].join(' ')}
-            onClick={() => pick('rent')}
-            aria-pressed={active === 'rent'}
-            disabled={!listing.rent.evidence?.length}
-          >
-            <span className={styles.rentLabel}>
-              <span className={styles.tag} data-label="PRICE">
-                GIÁ
-              </span>
-              Giá thuê
+      <section className={styles.fields} aria-labelledby="price-title">
+        <h2 id="price-title" className={styles.h2}>
+          Giá và phí
+        </h2>
+
+        <button
+          type="button"
+          className={[styles.rent, active === 'rent' ? styles.on : ''].join(' ')}
+          onClick={() => pick('rent')}
+          aria-pressed={active === 'rent'}
+          disabled={!listing.rent.evidence?.length}
+        >
+          <span className={styles.rentLabel}>
+            <span className={styles.tag} data-label="PRICE">
+              GIÁ
             </span>
-            <RentDisplay rent={listing.rent} large />
-            {listing.rent.includes.length > 0 && (
-              <span className={styles.includes}>
-                Đã bao: {listing.rent.includes.map((t) => FEE_LABEL[t].toLowerCase()).join(', ')}
-              </span>
-            )}
-            {listing.rent.basis === 'per_person' && (
-              <span className={styles.note}>
-                <Info size={13} aria-hidden="true" /> Giá tính theo người. Không nhân lên theo số người ở.
-              </span>
-            )}
-            {listing.rent.agreement && <span className={styles.src}>{AGREEMENT[listing.rent.agreement]}</span>}
-          </button>
-        </section>
-        <div className={styles.compareSlot}>{comparison}</div>
-        <section className={styles.factsPanel}>
-          <h2 className={styles.h2}>Thông tin chính</h2>
-          <dl className={styles.facts}>
-            {rows.map((r) => (
-              <div key={r.id} className={active === r.id ? styles.on : ''}>
-                <dt>
-                  <button
-                    type="button"
-                    onClick={() => pick(r.id)}
-                    aria-pressed={active === r.id}
-                    disabled={!r.evidence.length}
-                  >
-                    <span className={styles.tag} data-label={r.tag}>
-                      {LABEL_TEXT[r.tag]}
-                    </span>
-                    {r.label}
-                  </button>
-                </dt>
-                <dd className={r.missing ? styles.muted : ''}>
-                  {r.value}
-                  {r.agreement && (
-                    <span className={[styles.src, r.agreement === 'conflict' ? styles.conflict : ''].join(' ')}>
-                      {AGREEMENT[r.agreement]}
-                    </span>
-                  )}
-                </dd>
-              </div>
+            Giá thuê
+          </span>
+          <span className={[styles.rentValue, rent.missing ? styles.rentMissing : ''].join(' ')}>
+            {listing.rent.amount_form === 'exact' && listing.rent.amount_vnd != null ? formatVnd(listing.rent.amount_vnd) : rent.main}
+            {!rent.missing && <small>{rent.suffix}</small>}
+          </span>
+          {listing.rent.includes.length > 0 && (
+            <span className={styles.includes}>Đã bao: {listing.rent.includes.map((t) => FEE_LABEL[t].toLowerCase()).join(', ')}</span>
+          )}
+          {listing.rent.basis === 'per_person' && (
+            <span className={styles.note}>
+              <Info size={13} aria-hidden="true" /> Giá tính theo người. Không nhân lên theo số người ở.
+            </span>
+          )}
+          {listing.rent.agreement && <span className={styles.src}>{AGREEMENT[listing.rent.agreement]}</span>}
+        </button>
+
+        <table className={styles.table}>
+          <caption className="visually-hidden">Các khoản phí</caption>
+          <tbody>
+            {FEE_ORDER.map((t) => {
+              const fee = listing.fees.find((f) => f.type === t);
+              const included = listing.rent.includes.includes(t);
+              const id = `fee:${t}`;
+              const clickable = !!fee?.evidence?.length;
+              return (
+                <tr key={t} className={[active === id ? styles.on : '', clickable ? styles.clickable : ''].join(' ')}>
+                  <th scope="row">
+                    {clickable ? (
+                      <button type="button" onClick={() => pick(id)} aria-pressed={active === id}>
+                        <span className={styles.tag} data-label="FEE">
+                          PHÍ
+                        </span>
+                        {FEE_LABEL[t]}
+                      </button>
+                    ) : (
+                      <span className={styles.plain}>{FEE_LABEL[t]}</span>
+                    )}
+                  </th>
+                  <td className={!fee && !included ? styles.muted : ''}>
+                    {included ? 'Đã bao trong giá' : fee ? feeValue(fee) : 'Không đề cập'}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <p className={styles.fine}>Không cộng giá thuê với phí thành tổng, vì chưa biết mức dùng điện, nước và số người.</p>
+
+        <h2 className={styles.h2}>Thông tin chính</h2>
+        <dl className={styles.facts}>
+          {rows.map((r) => (
+            <div key={r.id} className={active === r.id ? styles.on : ''}>
+              <dt>
+                <button type="button" onClick={() => pick(r.id)} aria-pressed={active === r.id} disabled={!r.evidence.length}>
+                  <span className={styles.tag} data-label={r.tag}>
+                    {LABEL_TEXT[r.tag]}
+                  </span>
+                  {r.label}
+                </button>
+              </dt>
+              <dd className={r.missing ? styles.muted : ''}>
+                {r.value}
+                {r.agreement && <span className={[styles.src, r.agreement === 'conflict' ? styles.conflict : ''].join(' ')}>{AGREEMENT[r.agreement]}</span>}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <section className={styles.evidence} aria-labelledby="evidence-title">
+        <div className={styles.evidenceCard}>
+          <div className={styles.evidenceHead}>
+            <h2 id="evidence-title" className={styles.h2}>
+              Bằng chứng
+            </h2>
+            <span className={styles.hint}>Bấm một trường hoặc một đoạn để đối chiếu</span>
+          </div>
+          <EvidenceHighlighter text={post.text} evidence={allEvidence} active={activeKeys} onSelect={onSpan} size="lg" />
+          <p className={styles.source}>
+            {[post.source_group_name, 'số điện thoại đã che', detail.is_demo ? 'bài ví dụ tự tạo' : null]
+              .filter(Boolean)
+              .join(' · ')}
+            {!post.text_complete && ' · văn bản nguồn chưa đầy đủ'}
+          </p>
+          <ul className={styles.legend} aria-label="Chú thích nhãn">
+            {(['PRICE', 'AREA', 'LOC', 'ROOM', 'FEE'] as const).map((l) => (
+              <li key={l}>
+                <span className={styles.tag} data-label={l}>
+                  {LABEL_TEXT[l]}
+                </span>
+                {{ PRICE: 'giá', AREA: 'diện tích', LOC: 'vị trí', ROOM: 'phòng', FEE: 'phí' }[l]}
+              </li>
             ))}
-          </dl>
-        </section>
-      </aside>
+          </ul>
+        </div>
+      </section>
     </div>
   );
 }

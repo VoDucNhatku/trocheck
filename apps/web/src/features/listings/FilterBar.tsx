@@ -48,12 +48,6 @@ export function FilterBar({ wards }: Props) {
 
   return (
     <div className={styles.bar} data-pending={pending || undefined} data-hydrated={hydrated} aria-busy={pending}>
-      <div className={styles.heading}>
-        <h2>
-          <SlidersHorizontal size={18} aria-hidden="true" />
-          Bộ lọc tìm kiếm
-        </h2>
-      </div>
       <button
         type="button"
         className={styles.mobileToggle}
@@ -111,6 +105,7 @@ export function FilterBar({ wards }: Props) {
             />
             Chỉ tin có giá
           </label>
+          <ListingSort />
           {activeCount > 0 && (
             <button
               type="button"
@@ -135,9 +130,7 @@ export function FilterBar({ wards }: Props) {
 function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button type="button" className={styles.chip} aria-pressed={on} onClick={onClick}>
-      <span className={styles.chipBox} aria-hidden="true">
-        {on && <Check size={12} strokeWidth={2.5} />}
-      </span>
+      {on && <Check size={12} strokeWidth={2.5} aria-hidden="true" />}
       {children}
     </button>
   );
@@ -150,7 +143,7 @@ export function ListingSort() {
   const [pending, startTransition] = useTransition();
   return (
     <label className={styles.sort} aria-busy={pending}>
-      <span>Sắp xếp</span>
+      <span className="visually-hidden">Sắp xếp</span>
       <select
         value={params.get('sap_xep') ?? 'newest'}
         onChange={(e) => {

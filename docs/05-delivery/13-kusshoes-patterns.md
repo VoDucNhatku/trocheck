@@ -1,0 +1,13 @@
+# Học có chọn lọc từ KusShoes
+
+26/10/2026. Chỉ đọc `D:\DEMO kế hoạch kì 5\DEMO kế hoạch kì 5\TMG301\KusShoes`. GitHub public đọc được nhưng README web còn mô tả BE Node khác source local FastAPI; chọn source local và contract thực tế, không suy từ README. Không sửa/chạy/migrate dự án tham khảo.
+
+| Luồng đọc xuyên lớp | File thật | Điều học → áp dụng ReNER |
+|---|---|---|
+| Auth/session/role | FE/src/auth/routeGuard.ts; FE/src/api/adminSession.ts; FE/src/api/adminClient.ts; BE/app/routers/admin_auth.py; BE/app/services/auth_service.py; BE/app/dependencies.py | Chưa xác minh phiên thì chưa render nội dung; phân 401/403; lỗi mạng có câu hành động. ReNER dùng cookie signed sẵn có, server auth/me và role guard, không chép access-token/JWT/refresh architecture. |
+| Danh sách → detail → thao tác → lỗi | FE/src/pages/Projects/Projects.tsx; FE/src/pages/ProjectDetails/ProjectDetails.tsx; FE/src/api/client.ts (listProjects/getProject/updateProject); BE/app/routers/projects.py; BE/app/services/project_service.py | Detail tải lại canonical data; mutation chỉ báo thành công sau await; lỗi giữ context; bulk dùng allSettled chỉ khi hợp scope. ReNER bảng kho theo query thật, review tải version, lỗi ngay cạnh thao tác. Không sao chép project/3D/billing. |
+| Vận hành job | FE/src/api/adminClient.ts (admin ops); BE/app/routers/admin_ops.py (list/get/requeue/cancel); BE/app/services/admin_service.py (list_bake_jobs/requeue_bake_job/cancel_bake_job); BE/app/services/job_service.py | Job có state durable ở BE; FE đọc trạng thái thay vì % dựng. ReNER polling queued/running/terminal có abort/backoff; chỉ reprocess API thật, không vẽ cancel job khi chưa có. |
+
+Đọc thêm docs/DESIGN.md, ADMIN_DESIGN_SYSTEM.md, api-contract.md, integration-runbook.md, FE/ADMIN_FE_BE_INTEGRATION.md: lấy độ gọn của shell, bảng, nhịp spacing, tabular-nums, lỗi có lý do, chart có trục. Không dùng Inter/Roboto/cam của KusShoes: ReNER giữ Be Vietnam Pro, Newsreader, xanh rừng/giấy/vàng. Không sao chép financial KPI, quyền staff/customer, refresh cookie hoặc phần trăm tài chính.
+
+Skill mirror của người dùng: đọc metadata ở `D:\Downloads\claude-howto-research\web\emilkowalski-skills\README.md` và `web\taste-skill\README.md`, chọn `.sources/emilkowalski-skills/skills/emil-design-eng/SKILL.md` cho control/motion và `animation-performance/SKILL.md` cho thuộc tính animate. Lý do: sản phẩm dùng hàng ngày, cần phản hồi sớm và chuyển vùng yên, không cần thêm thư viện. Áp dụng transform/opacity, thời lượng ngắn, hover chỉ pointer fine, focus rõ, reduced motion. Không cài cả kho. Skill local design-web/build-ui/review-frontend bổ sung render/xem PNG/đo contrast; hai file conventions trong ~/.claude/rules không có trên máy, brief và AGENTS.md là quy tắc áp dụng.

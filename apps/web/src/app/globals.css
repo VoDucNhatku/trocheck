@@ -6,6 +6,9 @@
 @import '@fontsource/be-vietnam-pro/latin-500.css';
 @import '@fontsource/be-vietnam-pro/latin-600.css';
 @import '@fontsource/be-vietnam-pro/latin-700.css';
+@import '@fontsource-variable/jetbrains-mono/index.css';
+@import '@fontsource-variable/newsreader/opsz.css';
+@import '@fontsource-variable/newsreader/opsz-italic.css';
 @import '../styles/tokens.css';
 
 *,
@@ -17,7 +20,6 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  scroll-padding-top: calc(var(--header-h) + var(--s-4));
 }
 
 body {
@@ -88,69 +90,6 @@ svg {
   font-variant-numeric: tabular-nums;
 }
 
-main {
-  min-height: 60vh;
-}
-button,
-a,
-input,
-select {
-  -webkit-tap-highlight-color: transparent;
-}
-button:disabled {
-  cursor: default;
-}
-input,
-select {
-  accent-color: var(--accent);
-}
-input::placeholder,
-textarea::placeholder {
-  color: var(--ink-3);
-  opacity: 1;
-}
-svg {
-  flex-shrink: 0;
-}
-section[id] {
-  scroll-margin-top: calc(var(--header-h) + var(--s-4));
-}
-.button,
-.button-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--s-2);
-  min-height: 44px;
-  padding: var(--s-3) var(--s-5);
-  border: 1px solid var(--accent);
-  border-radius: var(--r-md);
-  background: var(--accent);
-  color: var(--accent-ink);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  line-height: 1.5;
-  transition:
-    background var(--dur-fast) var(--ease),
-    border-color var(--dur-fast) var(--ease);
-}
-.button:hover {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
-}
-.button:active {
-  background: var(--accent-active);
-}
-.button-secondary {
-  background: var(--surface);
-  border-color: var(--border-strong);
-  color: var(--accent);
-}
-.button-secondary:hover {
-  background: var(--accent-subtle);
-  border-color: var(--accent);
-}
-
 .visually-hidden {
   position: absolute !important;
   width: 1px;
@@ -167,7 +106,7 @@ section[id] {
   position: absolute;
   left: var(--s-4);
   top: -100px;
-  z-index: var(--z-skip);
+  z-index: 100;
   padding: var(--s-2) var(--s-3);
   background: var(--accent);
   color: var(--accent-ink);

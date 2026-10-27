@@ -1,176 +1,98 @@
 .page {
-  padding-top: var(--s-8);
+  padding-top: var(--s-10);
 }
+
 .head {
   display: flex;
   flex-wrap: wrap;
+  align-items: baseline;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--s-4);
+  gap: var(--s-2) var(--s-6);
   margin-bottom: var(--s-6);
 }
+
 .title {
-  font-size: var(--heading-md);
-  line-height: 1.4;
-  font-weight: 700;
+  font-family: var(--font-serif);
+  font-size: 44px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
+
 .meta {
-  margin-top: var(--s-2);
+  font-size: 13px;
   color: var(--ink-3);
-  font-size: var(--text-xs);
-  line-height: 1.8;
-  max-width: 65ch;
 }
-.dataset {
-  display: grid;
-  gap: var(--s-2);
-  justify-items: start;
-}
-.dataset a {
-  min-height: 32px;
-  display: inline-flex;
-  align-items: center;
-  color: var(--accent);
-  font-size: var(--text-xs);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.layout {
-  display: grid;
-  grid-template-columns: 264px minmax(0, 1fr);
-  align-items: flex-start;
-  gap: var(--s-6);
-}
-.sidebar {
-  min-width: 0;
-}
-.tip {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--s-2);
-  margin-top: var(--s-4);
-  padding: var(--s-4);
-  background: var(--subtle);
-  border-radius: var(--r-lg);
-  font-size: var(--text-xs);
-  line-height: 1.8;
-  color: var(--ink-2);
-}
-.tip svg {
-  margin-top: 3px;
-  color: var(--accent);
-}
-.results {
-  min-width: 0;
-}
-.toolbar {
+
+.summary {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--s-3);
-  padding: var(--s-4);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  border-radius: var(--r-lg);
-  margin-bottom: var(--s-5);
+  gap: var(--s-2) var(--s-6);
+  margin: var(--s-6) 0 var(--s-4);
+  font-size: 14px;
 }
-.summary {
-  font-size: var(--text-base);
-}
+
 .summary strong {
-  font-size: 18px;
-  font-weight: 700;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 600;
 }
+
 .hidden {
-  display: flex;
-  align-items: flex-start;
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
-  margin-top: var(--s-2);
-  max-width: 46ch;
-  font-size: var(--text-xs);
-  color: var(--ink-3);
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--subtle);
+  font-size: 12.5px;
+  color: var(--ink-2);
 }
-.hidden svg {
-  margin-top: 3px;
-}
+
 .empty {
   display: grid;
   justify-items: center;
-  gap: var(--s-4);
-  padding: var(--s-12) var(--s-6);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  border-radius: var(--r-lg);
+  gap: var(--s-3);
+  padding: var(--s-16) var(--s-6);
+  border: 1px dashed var(--border-strong);
+  border-radius: 12px;
   text-align: center;
   color: var(--ink-2);
 }
-.empty > svg {
-  color: var(--accent);
-  padding: 12px;
-  box-sizing: content-box;
-  border-radius: var(--r-full);
-  background: var(--accent-subtle);
-}
+
 .empty h2 {
-  font-size: var(--heading-sm);
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 500;
   color: var(--ink);
 }
-.empty > p {
-  max-width: 55ch;
-  color: var(--ink-3);
-}
+
 .remove {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--s-2);
-  margin: 0;
+  gap: 6px;
+  margin: var(--s-2) 0 0;
   padding: 0;
   list-style: none;
 }
+
 .remove a {
   display: inline-flex;
   align-items: center;
-  gap: var(--s-2);
-  min-height: 44px;
-  padding: 8px 12px;
-  border: 1px solid var(--accent);
-  border-radius: var(--r-full);
-  background: var(--accent-subtle);
-  color: var(--accent);
-  font-size: var(--text-sm);
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--mk-price);
+  color: var(--mk-ink);
+  font-size: 13px;
+  font-weight: 500;
 }
+
 .remove a:hover {
-  background: var(--hover);
-}
-@media (max-width: 1023px) {
-  .layout {
-    grid-template-columns: 232px minmax(0, 1fr);
-    gap: var(--s-4);
-  }
-}
-@media (max-width: 767px) {
-  .page {
-    padding-top: var(--s-6);
-  }
-  .layout {
-    grid-template-columns: 1fr;
-  }
-  .tip {
-    display: none;
-  }
-  .title {
-    font-size: 24px;
-  }
-  .head {
-    margin-bottom: var(--s-4);
-  }
-  .toolbar {
-    padding: var(--s-3);
-  }
-  .empty {
-    padding: var(--s-10) var(--s-4);
-  }
+  background: var(--surface);
+  color: var(--ink);
 }

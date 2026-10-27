@@ -1,90 +1,50 @@
 .page {
-  padding-top: var(--s-8);
+  padding-top: var(--s-10);
 }
+
 .title,
 .bar,
-.card span,
-.card > div {
+.card span {
   display: block;
-  border-radius: var(--r-md);
-  background: var(--subtle);
-  animation: pulse 1.4s ease-in-out infinite alternate;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--subtle) 0%, var(--hover) 50%, var(--subtle) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
 }
+
 .title {
   width: 220px;
-  height: 40px;
+  height: 44px;
   margin-bottom: var(--s-6);
 }
-.layout {
-  display: grid;
-  grid-template-columns: 264px minmax(0, 1fr);
-  gap: var(--s-6);
-  align-items: flex-start;
-}
+
 .bar {
-  height: 700px;
-  border-radius: var(--r-lg);
+  height: 150px;
+  border-radius: 12px;
+  margin-bottom: var(--s-10);
 }
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--s-5);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--s-4);
 }
+
 .card {
   display: grid;
-  gap: var(--s-4);
+  gap: var(--s-3);
   padding: var(--s-5);
   border: 1px solid var(--border);
-  border-radius: var(--r-lg);
+  border-radius: 10px;
   background: var(--surface);
 }
-.card > div {
-  height: 140px;
-  margin: -20px -20px 8px;
-}
+
 .card span {
-  height: 16px;
+  height: 12px;
 }
-.card span:last-child {
-  width: 65%;
-}
-@keyframes pulse {
+
+@keyframes shimmer {
   to {
-    opacity: 0.5;
-  }
-}
-@media (max-width: 1199px) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 960px) and (min-width: 768px) {
-  .layout {
-    grid-template-columns: 232px minmax(0, 1fr);
-  }
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-@media (max-width: 767px) {
-  .layout {
-    grid-template-columns: 1fr;
-    gap: var(--s-4);
-  }
-  .bar {
-    height: 68px;
-  }
-}
-@media (max-width: 599px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .title,
-  .bar,
-  .card span,
-  .card > div {
-    animation: none;
+    background-position: -200% 0;
   }
 }

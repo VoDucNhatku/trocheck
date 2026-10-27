@@ -1,30 +1,60 @@
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: var(--s-2);
-  white-space: nowrap;
+  gap: 8px;
 }
+
 .mark {
   display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: var(--r-md);
-  background: var(--accent);
-  color: var(--accent-ink);
+  gap: 2px;
+  width: 20px;
+  padding: 3px;
+  border: 1.5px solid var(--ink);
+  border-radius: 5px;
+  background: var(--surface);
 }
+
+.bar {
+  display: block;
+  height: 3px;
+  border-radius: 1px;
+}
+
+.bar[data-c='price'] {
+  background: var(--mk-price);
+  width: 100%;
+  outline: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
+}
+.bar[data-c='area'] {
+  background: var(--mk-area);
+  width: 70%;
+  outline: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
+}
+.bar[data-c='loc'] {
+  background: var(--mk-loc);
+  width: 85%;
+  outline: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
+}
+
 .word {
-  display: flex;
-  align-items: baseline;
-  gap: 5px;
-  font-size: 23px;
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  color: var(--accent);
-}
-.vn {
-  font-size: 11px;
+  font-family: var(--font-serif);
+  font-size: 19px;
   font-weight: 600;
-  letter-spacing: 0;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.ner {
+  background: linear-gradient(transparent 58%, var(--mk-price) 58%, var(--mk-price) 92%, transparent 92%);
+  padding: 0 1px;
+}
+
+.vn {
+  margin-left: 3px;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   color: var(--ink-3);
+  vertical-align: 2px;
 }

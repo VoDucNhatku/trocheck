@@ -1,3 +1,31 @@
+# ReNER-VN — landing nhà ở, cuộn theo cảnh
+
+Cập nhật landing 26/10/2026: theo yêu cầu mới, trang ngoài dùng cảnh sân nhà Việt Nam do AI tạo, nền kem và điểm nhấn vàng/xanh. Giữ nguyên API, tìm trọ, chi tiết, số liệu kho và demo/kho thật. Ảnh là minh họa không gian, không phải ảnh tin cho thuê. Thiết kế trang bên trong chưa đổi ở bước này.
+
+- `HousingScene`: ảnh ưu tiên tải bằng Next Image, native sticky + transform/opacity, không video hoặc chặn cuộn. Ảnh lùi nhẹ và khung tiền cảnh chuyển động độc lập trong một đoạn ngắn; nội dung HTML cuộn tự nhiên.
+- Đoạn mây theo script tham chiếu: sau khi khối chữ cuối rời khung, ba lớp ảnh mây có alpha tràn từ hai mép và phía trước theo tiến độ cuộn. Đoạn chuyển dài 0,75 lần chiều cao cảnh, kết thúc ở nền kem. Phần đọc tin kéo lên 34svh với gradient để hiện từ trong mây; cuộn ngược đảo lại toàn bộ. Reduced motion bỏ mây và khoảng cuộn bổ sung.
+- `ReadingHero`: bố cục mới cho ví dụ gốc/giá/phí/so sánh, không để thẻ chồng che bằng chứng. Chữ và CTA có sẵn khi chưa chạy JavaScript.
+- Palette giới hạn trong landing: cream `#f6f4ee`, ink `#172b25`, forest `#244b3c`, amber `#f2cd64`, muted `#59655b`, white `#fffdf7`. Be Vietnam Pro cho nội dung, Newsreader cho tiêu đề, JetBrains Mono cho nhãn.
+- Mobile có crop và khoảng cuộn riêng. `prefers-reduced-motion` bỏ ghim, bỏ transform, giữ đầy đủ nội dung. RAF chỉ chạy trong lúc nội suy cuộn, không cập nhật React state mỗi frame; dọn listener/observer khi rời trang.
+- Brief và nguồn tham khảo: `docs/05-delivery/10-landing-scroll-brief.md`. Dùng nguyên lý UI từ scroll-craft và animation-performance trong kho nghiên cứu local, không đưa dịch vụ sinh video/API ngoài vào ứng dụng.
+
+---
+
+## Giai đoạn trước: UI giấy ngà trên backend hiện tại
+
+Cập nhật 26/10/2026 theo yêu cầu người dùng: giữ giao diện prototype giấy ngà/vàng, ghép với FastAPI/SQLite của main. Bản local gốc không bị sửa. Mọi quyết định Stitch bên dưới là lịch sử, không phải hướng áp dụng hiện tại.
+
+- Khôi phục token nền giấy #f6f4ee, Newsreader, Be Vietnam Pro, JetBrains Mono, highlight vàng, logo và bố cục trước Stitch (94e1e2a).
+- Trang chủ giữ minh họa nhiều lớp, bài khó, panel extension và nguyên tắc; các minh họa luôn ghi rõ tự tạo. Không pin cuộn hoặc giấu hero trong lúc chờ animation.
+- Tìm trọ giữ bộ lọc ngang/chip và card cũ, thêm phân trang API; giữ native checkbox, trạng thái pending, đồng bộ URL và demo/kho thật.
+- Chi tiết giữ bố cục cũ, evidence tương tác và comparison API độc lập. Không đổi DTO, backend, luật giá/phí, evidence offset hay thống kê.
+- Điều hướng chỉ tới trang/anchor có thật. Extension là minh họa, chưa cài đặt từ web. Menu có Escape/trả focus, skip link có đích focus.
+- Outline control được tăng tương phản; test layout/contrast và hành vi chạy ở 360/390/768/1440px.
+
+---
+
+## Tài liệu Stitch trước khi khôi phục
+
 # ReNER-VN — hệ giao diện Stitch
 
 Chốt S0 ngày 24/10/2026. Đã áp dụng vào ba trang công khai ở B1-UI. Nguồn token chạy thật là [`tokens.css`](../apps/web/src/styles/tokens.css); tài liệu này ghi quyết định và hợp đồng component. Quy tắc dữ liệu/API vẫn theo `AGENTS.md` và `docs/02-data`, không suy từ mockup.

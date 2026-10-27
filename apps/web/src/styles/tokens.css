@@ -1,50 +1,61 @@
-/* Stitch public UI. Decisions and contrast evidence: docs/DESIGN.md. */
+/*
+ * ReNER-VN design tokens — "bút dạ quang trên giấy".
+ * Giấy ấm làm nền, mực đậm làm chữ, mỗi nhãn NER là một màu bút dạ quang.
+ * Mọi màu trong component lấy từ đây; không hard-code mã màu trong component.
+ */
+
 :root {
   color-scheme: light;
-  --paper: #f9f9ff;
+
+  /* Nền & bề mặt */
+  --paper: #f6f4ee;
   --surface: #ffffff;
-  --subtle: #f0f3ff;
-  --hover: #e8eeff;
-  --border: #e2e6ee;
-  --border-strong: #78867f;
-  --ink: #111c2d;
-  --ink-2: #3f4945;
-  --ink-3: #575f6d;
-  --icon: #575f6d;
-  --accent: #005243;
-  --accent-hover: #146c5a;
-  --accent-active: #003d32;
+  --subtle: #efece4;
+  --hover: #f3f0e9;
+
+  /* Viền */
+  --border: #e3dfd5;
+  --border-strong: #8a857b;
+
+  /* Chữ (contrast trên --surface) */
+  --ink: #17181c; /* 17.6:1 */
+  --ink-2: #57554e; /* 7.4:1 */
+  --ink-3: #6b685f; /* 5.5:1 */
+  --icon: #6b685f; /* chỉ icon */
+
+  /* Một điểm nhấn: mực xanh. Chữ trắng trên nền này 8.9:1 */
+  --accent: #2337c6;
+  --accent-hover: #1b2da8;
+  --accent-active: #15238a;
   --accent-ink: #ffffff;
-  --accent-subtle: #e6f4f1;
-  --accent-soft: #a3f2db;
-  --focus: #146c5a;
-  --mk-price: #fde68a;
-  --mk-area: #bfdbfe;
-  --mk-loc: #bbf7d0;
-  --mk-room: #ddd6fe;
-  --mk-fee: #fed7aa;
-  --mk-ink: #111c2d;
-  --v-higher: #9a3412;
-  --v-higher-bg: #ffedd5;
-  --v-near: #3f4754;
-  --v-near-bg: #e8eeff;
-  --v-lower: #166534;
-  --v-lower-bg: #dcfce7;
-  --v-none: #575f6d;
-  --ok: #166534;
-  --warn: #9a3412;
+  --accent-subtle: rgba(35, 55, 198, 0.08);
+  --focus: #2337c6;
+
+  /* Bút dạ quang cho nhãn — luôn đi kèm chữ nhãn, không dùng màu một mình */
+  --mk-price: #ffe566;
+  --mk-area: #a6ebc9;
+  --mk-loc: #b5dcff;
+  --mk-room: #dccbff;
+  --mk-fee: #ffc9b0;
+  --mk-ink: #17181c;
+
+  /* Nhận định — chỉ dùng cho viền + chữ, kèm câu chữ đầy đủ */
+  --v-higher: #b42318;
+  --v-near: #57554e;
+  --v-lower: #067647;
+  --v-none: #6b685f;
+
+  /* Trạng thái (chấm 6px + chữ) */
+  --ok: #067647;
+  --warn: #b54708;
   --danger: #b42318;
-  --danger-bg: #fff1ef;
+
+  /* Chữ */
   --font-sans: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-serif: var(--font-sans);
-  --font-mono: ui-monospace, 'SFMono-Regular', Consolas, monospace;
-  --text-xs: 0.75rem;
-  --text-sm: 0.8125rem;
-  --text-base: 0.875rem;
-  --text-lg: 1rem;
-  --heading-sm: 1.25rem;
-  --heading-md: 1.75rem;
-  --heading-lg: 2.5rem;
+  --font-serif: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Khoảng cách — lưới 4px */
   --s-1: 4px;
   --s-2: 8px;
   --s-3: 12px;
@@ -56,19 +67,94 @@
   --s-12: 48px;
   --s-16: 64px;
   --s-24: 96px;
+
+  /* Bo góc */
   --r-sm: 4px;
-  --r-md: 8px;
-  --r-lg: 12px;
+  --r-md: 6px;
+  --r-lg: 8px;
   --r-full: 9999px;
-  --shadow-overlay: 0 4px 8px rgb(17 28 45 / 8%);
-  --shadow-paper: 0 2px 4px rgb(17 28 45 / 4%);
-  --dur-fast: 150ms;
-  --dur-base: 200ms;
-  --dur-slow: 250ms;
+
+  /* Lớp nổi duy nhất được có bóng */
+  --shadow-overlay: 0 8px 24px rgba(23, 24, 28, 0.1);
+  --shadow-paper: 0 1px 0 rgba(23, 24, 28, 0.04), 0 24px 48px -24px rgba(23, 24, 28, 0.18);
+
+  /* Chuyển động */
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+  --dur-slow: 420ms;
   --ease: cubic-bezier(0.2, 0, 0, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --container: 1200px;
-  --header-h: 72px;
-  --z-sticky: 20;
-  --z-skip: 40;
+
+  /* Khung */
+  --container: 1152px;
+  --header-h: 56px;
+}
+
+/* Interior app: the landing keeps its established palette and motion. */
+[data-workspace] {
+  color-scheme: light;
+  --paper: #f6f4ee;
+  --surface: #fffdf7;
+  --subtle: #eeece3;
+  --hover: #e7ebe1;
+  --ink: #172b25;
+  --ink-2: #43564a;
+  --ink-3: #59655b;
+  --icon: #59655b;
+  --accent: #244b3c;
+  --accent-hover: #193c2e;
+  --accent-active: #122f23;
+  --accent-ink: #fffdf7;
+  --accent-subtle: #e7ede4;
+  --focus: #244b3c;
+  --border: #d9dcd0;
+  --border-strong: #7d887b;
+  --amber: #f2cd64;
+  --amber-surface: #fff3ce;
+  --warn: #80420d;
+  --danger: #a33124;
+  --danger-surface: #fcece6;
+  --ok: #24613d;
+  --mk-price: #ffe566;
+  --mk-area: #a6ebc9;
+  --mk-loc: #b5dcff;
+  --mk-room: #dccbff;
+  --mk-fee: #ffc9b0;
+  --mk-ink: #172b25;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --paper: #12120f;
+    --surface: #1b1a17;
+    --subtle: #24231f;
+    --hover: #22211d;
+    --border: #2f2e29;
+    --border-strong: #46443d;
+    --ink: #eeece5;
+    --ink-2: #b6b2a7;
+    --ink-3: #9d998e;
+    --icon: #7d7a71;
+    --accent: #9aa6ff;
+    --accent-hover: #b0b9ff;
+    --accent-active: #c3caff;
+    --accent-ink: #0d1033;
+    --accent-subtle: rgba(154, 166, 255, 0.12);
+    --focus: #9aa6ff;
+    --mk-price: #6b5d12;
+    --mk-area: #1f5a3f;
+    --mk-loc: #1d4a72;
+    --mk-room: #4b3a78;
+    --mk-fee: #77402a;
+    --mk-ink: #f6f4ee;
+    --v-higher: #ff8a80;
+    --v-near: #b6b2a7;
+    --v-lower: #6fd8a5;
+    --ok: #6fd8a5;
+    --warn: #f5b971;
+    --danger: #ff8a80;
+    --shadow-overlay: 0 8px 24px rgba(0, 0, 0, 0.45);
+    --shadow-paper: 0 1px 0 rgba(0, 0, 0, 0.3), 0 24px 48px -24px rgba(0, 0, 0, 0.6);
+  }
 }

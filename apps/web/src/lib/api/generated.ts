@@ -430,6 +430,40 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AnalysisCreated */
+        AnalysisCreated: {
+            /** Analysis Id */
+            analysis_id: string;
+            /** Status */
+            status: string;
+        };
+        /** AnalysisResult */
+        AnalysisResult: {
+            /** Analysis Id */
+            analysis_id: string;
+            /** Status */
+            status: string;
+            /** Post Type */
+            post_type: string | null;
+            /** Partial */
+            partial: boolean;
+            /** Llm Status */
+            llm_status: string | null;
+            /** Contributed */
+            contributed: boolean;
+            /** Is Demo */
+            is_demo: boolean;
+            /** Text Complete */
+            text_complete: boolean;
+            /** Text */
+            text: string | null;
+            /** Listings */
+            listings: components["schemas"]["Listing"][];
+            /** Error */
+            error: {
+                [key: string]: string | null;
+            } | null;
+        };
         /** Area */
         Area: {
             /**
@@ -545,6 +579,24 @@ export interface components {
             /** Broad Group */
             broad_group: boolean;
         };
+        /** Contributed */
+        Contributed: {
+            /** Contributed */
+            contributed: boolean;
+        };
+        /** DuplicateCandidate */
+        DuplicateCandidate: {
+            /** Listing Id */
+            listing_id: string;
+            /** Cluster Id */
+            cluster_id: string | null;
+            /** Cosine */
+            cosine: number;
+            /** Rent Vnd */
+            rent_vnd: number | null;
+            /** Area M2 */
+            area_m2: number | null;
+        };
         /** ErrorInfo */
         ErrorInfo: {
             /** Code */
@@ -561,6 +613,54 @@ export interface components {
         /** ErrorResponse */
         ErrorResponse: {
             error: components["schemas"]["ErrorInfo"];
+        };
+        /** EvalErrorCount */
+        EvalErrorCount: {
+            /** Method */
+            method: string | null;
+            /** Error Type */
+            error_type: string | null;
+            /** Count */
+            count: number;
+        };
+        /** EvalManifest */
+        EvalManifest: {
+            /** Run Id */
+            run_id?: string | null;
+            /** Split */
+            split?: string | null;
+            /** Frozen */
+            frozen?: boolean | null;
+            /** Methods */
+            methods?: string[] | null;
+            /** Versions */
+            versions?: {
+                [key: string]: unknown;
+            } | null;
+            /** Started At */
+            started_at?: string | null;
+            /** Finished At */
+            finished_at?: string | null;
+            /** Git Commit */
+            git_commit?: string | null;
+        };
+        /** EvalResult */
+        EvalResult: {
+            /** Manifest */
+            manifest: {
+                [key: string]: unknown;
+            };
+            /** Metrics */
+            metrics: {
+                [key: string]: unknown;
+            } | null;
+            /** Error Counts */
+            error_counts: components["schemas"]["EvalErrorCount"][];
+        };
+        /** EvalRuns */
+        EvalRuns: {
+            /** Items */
+            items: components["schemas"]["EvalManifest"][];
         };
         /** Evidence */
         Evidence: {
@@ -582,6 +682,43 @@ export interface components {
             method: "regex" | "llm" | "human";
             /** Rule Id */
             rule_id?: string | null;
+        };
+        /** ExtensionTokenCreated */
+        ExtensionTokenCreated: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string | null;
+            /** Created At */
+            created_at: string | null;
+            /** Expires At */
+            expires_at: string | null;
+            /** Revoked At */
+            revoked_at: string | null;
+            /** Last Used At */
+            last_used_at: string | null;
+            /** Token */
+            token: string;
+        };
+        /** ExtensionTokenInfo */
+        ExtensionTokenInfo: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string | null;
+            /** Created At */
+            created_at: string | null;
+            /** Expires At */
+            expires_at: string | null;
+            /** Revoked At */
+            revoked_at: string | null;
+            /** Last Used At */
+            last_used_at: string | null;
+        };
+        /** ExtensionTokens */
+        ExtensionTokens: {
+            /** Items */
+            items: components["schemas"]["ExtensionTokenInfo"][];
         };
         /** Fee */
         Fee: {
@@ -611,6 +748,25 @@ export interface components {
             state_rate?: boolean;
             /** Evidence */
             evidence?: components["schemas"]["Evidence"][] | null;
+        };
+        /** GoldResult */
+        GoldResult: {
+            /** Post Id */
+            post_id: string;
+            /** Split */
+            split: string;
+            /** Cluster Key */
+            cluster_key: string;
+            /** Spans */
+            spans: {
+                [key: string]: unknown;
+            }[];
+            /** Expected */
+            expected: {
+                [key: string]: unknown;
+            } | null;
+            /** Adjudicated */
+            adjudicated: boolean;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -667,12 +823,66 @@ export interface components {
              */
             phone_masked: true;
         };
+        /** LabEvidenceRow */
+        LabEvidenceRow: {
+            /** Method */
+            method: string;
+            /** Evidence */
+            evidence: components["schemas"]["Evidence"][];
+            /** Available */
+            available?: boolean | null;
+        };
+        /** LabNormalized */
+        LabNormalized: {
+            /** Field */
+            field: string;
+            /** Regex */
+            regex: string;
+            /** Llm */
+            llm: string;
+            /** Gold */
+            gold: string | null;
+        };
+        /** LabResultDTO */
+        LabResultDTO: {
+            /** Post Id */
+            post_id: string | null;
+            /** Text */
+            text: string;
+            /** Split */
+            split: string | null;
+            /** Post Type */
+            post_type: string;
+            /** Rows */
+            rows: components["schemas"]["LabEvidenceRow"][];
+            /** Tokens */
+            tokens: components["schemas"]["LabTokenDTO"][];
+            /** Normalized */
+            normalized: components["schemas"]["LabNormalized"][];
+            /** Listings */
+            listings: {
+                [key: string]: {
+                    [key: string]: unknown;
+                }[];
+            };
+        };
         /** LabRunRequest */
         LabRunRequest: {
             /** Text */
             text?: string | null;
             /** Post Id */
             post_id?: string | null;
+        };
+        /** LabTokenDTO */
+        LabTokenDTO: {
+            /** Token */
+            token: string;
+            /** Regex */
+            regex: string;
+            /** Llm */
+            llm: string;
+            /** Gold */
+            gold: string | null;
         };
         /** Listing */
         Listing: {
@@ -787,12 +997,78 @@ export interface components {
              */
             resolution: "exact" | "from_street" | "from_landmark" | "unresolved";
         };
+        /** LoggedOut */
+        LoggedOut: {
+            /** Logged Out */
+            logged_out: boolean;
+        };
         /** LoginRequest */
         LoginRequest: {
             /** Username */
             username: string;
             /** Password */
             password: string;
+        };
+        /** MarketCellDTO */
+        MarketCellDTO: {
+            /** Ward Code */
+            ward_code: string | null;
+            /** Ward Name */
+            ward_name: string | null;
+            /**
+             * Property Type
+             * @enum {string}
+             */
+            property_type: "phong_tro" | "ccmn" | "can_ho_dich_vu" | "nha_nguyen_can" | "unknown";
+            /**
+             * Basis
+             * @enum {string}
+             */
+            basis: "per_unit" | "per_person";
+            /** N */
+            n: number;
+            /** Median */
+            median: number | null;
+            /** P25 */
+            p25: number | null;
+            /** P75 */
+            p75: number | null;
+            /** Median Per M2 */
+            median_per_m2: number | null;
+            /** N Per M2 */
+            n_per_m2: number;
+            /** Data From */
+            data_from: string | null;
+            /** Data To */
+            data_to: string | null;
+        };
+        /** MarketSummaryDTO */
+        MarketSummaryDTO: {
+            /** Cells */
+            cells: components["schemas"]["MarketCellDTO"][];
+            /** Excluded Counts */
+            excluded_counts: {
+                [key: string]: number;
+            };
+            /** Min N */
+            min_n: number;
+            /** Window Days */
+            window_days: number;
+            /** Data From */
+            data_from: string | null;
+            /** Data To */
+            data_to: string | null;
+            /** Is Demo */
+            is_demo: boolean;
+        };
+        /** PostJob */
+        PostJob: {
+            /** Status */
+            status: string;
+            /** Attempt */
+            attempt: number;
+            /** Error Code */
+            error_code: string | null;
         };
         /** PriceHistory */
         PriceHistory: {
@@ -869,6 +1145,15 @@ export interface components {
             /** Includes */
             includes: ("deposit" | "electricity" | "water" | "service" | "internet" | "parking" | "other")[];
         };
+        /** Reprocessed */
+        Reprocessed: {
+            /** Post Id */
+            post_id: string;
+            /** Job Id */
+            job_id: string;
+            /** Status */
+            status: string;
+        };
         /** ReviewDecision */
         ReviewDecision: {
             /**
@@ -886,6 +1171,109 @@ export interface components {
             reason?: string | null;
             /** Merge Into Cluster */
             merge_into_cluster?: string | null;
+        };
+        /** ReviewDetail */
+        ReviewDetail: {
+            listing: components["schemas"]["Listing"];
+            /** Version */
+            version: number;
+            /**
+             * Review Status
+             * @enum {string}
+             */
+            review_status: "auto_accepted" | "needs_review" | "approved" | "rejected" | "duplicate";
+            /** Reasons */
+            reasons: string[];
+            /** Cluster Id */
+            cluster_id: string | null;
+            post: components["schemas"]["ReviewPost"];
+            run: components["schemas"]["ReviewRun"];
+            /** Suspected Duplicates */
+            suspected_duplicates: components["schemas"]["DuplicateCandidate"][];
+            /** History */
+            history: components["schemas"]["ReviewHistory"][];
+        };
+        /** ReviewHistory */
+        ReviewHistory: {
+            /** Action */
+            action: string;
+            /** User Id */
+            user_id: string;
+            /** Reason */
+            reason: string | null;
+            /** Created At */
+            created_at: string | null;
+        };
+        /** ReviewPost */
+        ReviewPost: {
+            /** Post Id */
+            post_id: string;
+            /** Text */
+            text: string;
+            /** Permalink */
+            permalink: string | null;
+        };
+        /** ReviewQueue */
+        ReviewQueue: {
+            /** Items */
+            items: components["schemas"]["ReviewQueueItem"][];
+            /** Total */
+            total: number;
+            /** Counts */
+            counts: {
+                [key: string]: number;
+            };
+        };
+        /** ReviewQueueItem */
+        ReviewQueueItem: {
+            /** Listing Id */
+            listing_id: string;
+            /** Reasons */
+            reasons: string[];
+            /** Reason */
+            reason: string;
+            /** Excerpt */
+            excerpt: string;
+            /**
+             * Property Type
+             * @enum {string}
+             */
+            property_type: "phong_tro" | "ccmn" | "can_ho_dich_vu" | "nha_nguyen_can" | "unknown";
+            /** Ward Name */
+            ward_name: string | null;
+            /** Created At */
+            created_at: string | null;
+            /** Version */
+            version: number;
+            /** Is Demo */
+            is_demo: boolean;
+        };
+        /** ReviewRun */
+        ReviewRun: {
+            /** Run Id */
+            run_id: string;
+            /** Llm Status */
+            llm_status: string;
+            /** Model Id */
+            model_id: string | null;
+            /** Regex Spans */
+            regex_spans: components["schemas"]["Evidence"][];
+            /** Llm Spans */
+            llm_spans: components["schemas"]["Evidence"][];
+        };
+        /** ReviewSaved */
+        ReviewSaved: {
+            /** Listing Id */
+            listing_id: string;
+            /**
+             * Review Status
+             * @enum {string}
+             */
+            review_status: "auto_accepted" | "needs_review" | "approved" | "rejected" | "duplicate";
+            /** Version */
+            version: number;
+            /** Cluster Id */
+            cluster_id: string | null;
         };
         /** Room */
         Room: {
@@ -919,6 +1307,15 @@ export interface components {
              */
             furnishing: "full" | "basic" | "none" | "unknown";
         };
+        /** SessionUser */
+        SessionUser: {
+            /** User Id */
+            user_id: string;
+            /** Username */
+            username: string;
+            /** Roles */
+            roles: ("renter" | "collector" | "reviewer" | "researcher" | "admin")[];
+        };
         /** SimilarListing */
         SimilarListing: {
             /** Listing Id */
@@ -942,6 +1339,55 @@ export interface components {
             updated_at: string | null;
             /** Is Demo */
             is_demo: boolean;
+        };
+        /** TeamPost */
+        TeamPost: {
+            /** Post Id */
+            post_id: string;
+            /** Status */
+            status: string;
+            /** Post Type */
+            post_type: string | null;
+            /** Mode */
+            mode: string;
+            /** Source Type */
+            source_type: string;
+            /** Source Group Name */
+            source_group_name: string | null;
+            /** Collector */
+            collector: string;
+            /** Contributed */
+            contributed: boolean;
+            /** Is Demo */
+            is_demo: boolean;
+            /** First Seen At */
+            first_seen_at: string | null;
+            /** Last Seen At */
+            last_seen_at: string | null;
+            /** Posted At */
+            posted_at: string | null;
+            /** Excerpt */
+            excerpt: string;
+            /** Text Complete */
+            text_complete: boolean;
+            job: components["schemas"]["PostJob"] | null;
+            /** Listing Count */
+            listing_count: number;
+        };
+        /** TeamPosts */
+        TeamPosts: {
+            /** Items */
+            items: components["schemas"]["TeamPost"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** By Status */
+            by_status: {
+                [key: string]: number;
+            };
         };
         /** TokenCreate */
         TokenCreate: {
@@ -1009,7 +1455,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["SessionUser"];
                 };
             };
             /** @description Validation Error */
@@ -1038,7 +1484,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["LoggedOut"];
                 };
             };
         };
@@ -1058,7 +1504,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["SessionUser"];
                 };
             };
         };
@@ -1115,7 +1561,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["AnalysisCreated"];
                 };
             };
             /** @description Validation Error */
@@ -1146,7 +1592,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["AnalysisResult"];
                 };
             };
             /** @description Validation Error */
@@ -1177,7 +1623,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["Contributed"];
                 };
             };
             /** @description Validation Error */
@@ -1363,7 +1809,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["MarketSummaryDTO"];
                 };
             };
             /** @description Validation Error */
@@ -1441,7 +1887,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["TeamPosts"];
                 };
             };
             /** @description Validation Error */
@@ -1472,7 +1918,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["Reprocessed"];
                 };
             };
             /** @description Validation Error */
@@ -1537,7 +1983,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["ReviewQueue"];
                 };
             };
             /** @description Validation Error */
@@ -1568,7 +2014,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["ReviewDetail"];
                 };
             };
             /** @description Validation Error */
@@ -1603,7 +2049,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["ReviewSaved"];
                 };
             };
             /** @description Validation Error */
@@ -1632,7 +2078,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["ExtensionTokens"];
                 };
             };
         };
@@ -1656,7 +2102,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["ExtensionTokenCreated"];
                 };
             };
             /** @description Validation Error */
@@ -1718,7 +2164,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["LabResultDTO"];
                 };
             };
             /** @description Validation Error */
@@ -1749,7 +2195,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["GoldResult"];
                 };
             };
             /** @description Validation Error */
@@ -1778,7 +2224,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["EvalRuns"];
                 };
             };
         };
@@ -1800,7 +2246,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["EvalResult"];
                 };
             };
             /** @description Validation Error */
