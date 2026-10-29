@@ -1,0 +1,85 @@
+.page{min-height:100dvh;display:grid;grid-template-columns:1fr 1fr;background:var(--night);color:var(--on-night)}
+.main{padding:32px clamp(32px,5vw,80px);display:flex;flex-direction:column;min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:40px}
+.theme{min-width:48px;min-height:44px;border:1px solid var(--edge2);border-radius:var(--r-lg);background:var(--night2);color:var(--on-night)}
+.content{width:100%;max-width:440px;margin:auto}
+.content h1{font-size:40px;line-height:1.4;margin-bottom:28px}
+.form{display:grid;gap:14px}
+.field{display:grid;gap:6px;min-width:0}
+.field label{font-weight:600}
+.field small,.note{font-size:13px;color:var(--muted)}
+.field input{min-width:0;width:100%;height:48px;border:1px solid var(--edge2);border-radius:var(--r-lg);background:var(--night2);color:var(--on-night);padding:10px 14px;font-size:16px}
+.field input:disabled{background:var(--panel1)}
+.field input[aria-invalid=true]{border-color:var(--danger)}
+.fieldHead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.fieldHead a{font-size:13px}
+.content a,.footer a{color:var(--hl-text);text-decoration:underline;text-underline-offset:3px}
+.password{position:relative}
+.password input{padding-right:70px}
+.password button{position:absolute;right:3px;top:2px;min-width:58px;height:44px;border:0;border-radius:var(--r-md);background:var(--night2);color:var(--on-night);font-size:13px}
+.rules{display:flex;gap:8px 20px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.rules span{white-space:nowrap}
+.rules [data-valid=true]{color:var(--ok)}
+.check{display:grid;grid-template-columns:18px minmax(0,1fr);align-items:start;gap:8px;font-size:14px;line-height:1.6}
+.check input{width:18px;height:18px;margin:3px 0 0;accent-color:var(--accent)}
+.check span{min-width:0;text-wrap:pretty}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.primary{display:flex;justify-content:center;align-items:center;min-height:48px;padding:10px;border:1px solid var(--accent);border-radius:var(--r-lg);background:var(--button-primary-bg);color:var(--button-primary-ink);font-weight:600}
+.content a.primary{color:var(--button-primary-ink);text-decoration:none}
+.primary:hover{background:var(--accent-hover)}
+.primary:disabled{cursor:wait}
+.or{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--muted)}
+.or:before,.or:after{content:'';flex:1;height:1px;background:var(--edge)}
+.google{min-height:48px;padding:10px 16px;border:1px solid var(--edge2);border-radius:var(--r-lg);background:var(--night2);color:var(--on-night);font:inherit;font-weight:600;cursor:pointer}
+.google:hover:not(:disabled){border-color:var(--hl-text);background:var(--panel1)}
+.google:focus-visible{outline:2px solid var(--hl-text);outline-offset:3px}
+.google:disabled{cursor:wait;opacity:.65}
+.note{line-height:1.6}
+.switch{margin-top:20px;text-align:center;color:var(--on-night2)}
+.switch a{display:inline-flex;align-items:center;min-height:44px;font-weight:600}
+.details{margin-top:16px;font-size:13px;color:var(--on-night2)}
+.details summary{cursor:pointer;min-height:44px;padding:10px 0;color:var(--hl-text)}
+.details p{margin-bottom:12px}
+.footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px 20px;width:100%;max-width:440px;margin:32px auto 0;font-size:13px}
+.footer a{display:flex;align-items:center;min-height:44px}
+.notice,.error{padding:12px 14px;border:1px solid var(--edge2);border-radius:var(--r-lg);margin-bottom:20px;font-size:14px;overflow-wrap:anywhere}
+.notice{background:var(--accent-subtle)}
+.error,.fieldError{color:var(--danger)}
+.error{border-color:var(--danger);background:var(--danger-surface)}
+.fieldError{font-size:13px;overflow-wrap:anywhere}
+.aside{background:var(--night);color:var(--on-night);padding:48px;display:flex;flex-direction:column;justify-content:center;gap:24px;min-width:0}
+.aside>p{font-size:14px;color:var(--on-night-2)}
+.aside h2{font-size:40px;line-height:1.4}
+.paper,.receipt{background:var(--night2);color:var(--on-night);border:1px solid var(--edge);border-radius:12px;padding:24px;max-width:440px;box-shadow:var(--shadow-paper)}
+.paper p{font-size:15px;line-height:2.4;margin-top:12px}
+.paper mark{color:var(--mk-ink);white-space:nowrap;border-radius:var(--r-sm);padding:2px}
+.paper mark[data-entity=price]{background:var(--mk-price)}
+.paper mark[data-entity=area]{background:var(--mk-area)}
+.paper mark[data-entity=location]{background:var(--mk-loc)}
+.paper mark[data-entity=room]{background:var(--mk-room)}
+.paper mark[data-entity=fee]{background:var(--mk-fee)}
+.phrase{white-space:nowrap}
+.tag{font-size:12px;font-weight:600;color:var(--on-night2)}
+.receipt{align-self:flex-end;width:100%;max-width:360px}
+.receipt strong{display:block;font-size:28px;margin:16px 0;color:var(--hl-text);white-space:nowrap}
+.receipt strong small{font-size:14px;font-weight:400;color:var(--on-night2)}
+.receipt dl{margin:0}
+.receipt dl div{display:flex;justify-content:space-between;gap:16px;padding:8px 0;border-top:1px solid var(--edge);font-size:14px}
+.receipt dd{margin:0;white-space:nowrap}
+.srOnly{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden;white-space:nowrap}
+.page[data-variant=b]{display:block}
+.page[data-variant=b] .main{max-width:640px;margin:auto;min-height:100dvh}
+.page[data-variant=b] .aside{display:none}
+@media(max-width:1100px){.main{padding:32px}.aside{padding:32px}.content h1{font-size:34px}}
+@media(max-width:760px){.page{grid-template-columns:1fr}.main{padding:24px 20px 32px}.aside{grid-row:1;padding:20px}.aside h2{font-size:26px}.aside>p,.paper,.receipt{display:none}.top{margin-bottom:32px}.content h1{font-size:32px}.rules{gap:8px 16px}}
+@media(max-width:359px){.main{padding-inline:16px}.content h1{font-size:30px}.check{font-size:13px}.actions{gap:8px}}
+
+/* Design-v4 action colors and pointer feedback. */
+.primary { background:var(--hl); color:var(--ink); border:1.5px solid var(--ink); box-shadow:4px 4px 0 var(--btn-shadow); border-radius:8px; min-height:48px; font-weight:700; }
+.primary { transition:transform var(--t-press) var(--ease-enter),background-color var(--t-ui) var(--ease-enter); }
+@media(hover:hover) and (pointer:fine) { .primary:hover:not(:disabled) { transform:translate(-2px,-2px); } }
+.primary:active:not(:disabled) { transform:scale(.97); transition-duration:100ms; }
+@media(prefers-reduced-motion:reduce) { .primary, .primary:hover:not(:disabled), .primary:active:not(:disabled) { transform:none; transition:none; } }
+
+/* Fixed paper inserts carry their own ink and annotation colors in both themes. */
+.paper,.receipt { background:var(--card); color:var(--ink); --on-night:var(--ink); --on-night2:var(--ink2); --muted:var(--ink3); --hl-text:var(--ink2); --edge:var(--line); }

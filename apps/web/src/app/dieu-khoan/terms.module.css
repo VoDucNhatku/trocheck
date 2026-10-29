@@ -1,0 +1,21 @@
+.page { padding-block:64px 96px; }
+.heading { max-width:800px; margin-bottom:56px; }
+.eyebrow { font-size:12px; font-weight:600; color:var(--muted); line-height:1.8; margin-bottom:20px; }
+.heading h1 { font-size:clamp(34px,4vw,52px); font-weight:600; line-height:1.35; }
+.heading h1 > span { color:var(--hl-text); }
+.lead { font-size:18px; line-height:1.8; color:var(--on-night2); margin-top:24px; max-width:600px; }
+.layout { display:grid; grid-template-columns:220px minmax(0,680px); justify-content:center; align-items:start; gap:64px; }
+.toc { position:sticky; top:88px; display:grid; gap:8px; border-left:2px solid var(--edge); padding-left:20px; min-width:0; }
+.toc a { display:grid; grid-template-columns:auto minmax(0,1fr); align-items:baseline; gap:8px; min-height:44px; padding-block:8px; font-size:13px; line-height:1.8; color:var(--on-night2); }
+.toc a:hover { color:var(--hl-text); text-decoration:underline; text-underline-offset:4px; }
+.number { white-space:nowrap; color:var(--muted); font-variant-numeric:tabular-nums; }
+.copy { min-width:0; }
+.copy section { padding-bottom:32px; margin-bottom:32px; border-bottom:1px solid var(--edge); scroll-margin-top:96px; }
+.copy h2 { font-size:clamp(22px,2.2vw,28px); font-weight:600; line-height:1.5; margin-bottom:18px; }
+.copy p { font-size:16px; line-height:1.95; color:var(--on-night2); }
+.copy strong { color:var(--on-night); font-weight:600; }
+.copy mark { color:var(--on-night); background:var(--accent-subtle); padding:1px 3px; border-radius:3px; }
+.end { display:flex; flex-wrap:wrap; gap:16px 28px; }
+.end a { display:inline-flex; align-items:center; min-height:44px; color:var(--hl-text); text-decoration:underline; text-underline-offset:4px; font-size:14px; }
+@media(max-width:800px) { .page { padding-block:40px 64px; } .heading { margin-bottom:36px; } .lead { font-size:16px; } .layout { grid-template-columns:minmax(0,1fr); gap:36px; } .toc { position:static; grid-template-columns:repeat(2,minmax(0,1fr)); border-left:0; border-block:1px solid var(--edge); padding:12px 0; gap:8px 20px; } }
+@media(max-width:360px) { .toc { grid-template-columns:minmax(0,1fr); } }
