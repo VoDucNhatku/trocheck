@@ -1,0 +1,33 @@
+/* Design-v4 yellow tokens. Dark mode is the default; data-theme="light" overrides it. */
+:root, [data-theme="dark"] {
+  color-scheme: dark;
+  --paper:#F4F1EA; --card:#FFFDF8; --ink:#15161A; --ink2:#55524A; --ink3:#6B675E; --ink-2:var(--on-night2); --ink-3:var(--muted); --line:#DDD8CC; --line-soft:#ECE7DB; --night:#111214; --night2:#1A1B1E; --night3:#2C2C29; --on-night:#F4F1EA; --on-night2:#BDB9AE; --body:#D2CEC3; --muted:#B0ACA2; --edge:#555650; --edge2:#88857B; --panel1:#1E1F22; --panel2:#17181A;
+  --hl:#FFE14D; --hl-text:#FFE14D; --amber:#F2CD64; --link:#B4C3FF; --higher:#B42318; --lower:#1E6B45; --danger-text:#FFB4AA; --success-text:#8FE8BF; --btn-shadow:#F4F1EA; --price:#FFE14D; --area:#8FE8BF; --location:#9FD3FF; --room:#D4C2FF; --fee:#FFB89A; --control-edge:#88857B;
+  --accent:var(--hl); --accent-hover:#FFF083; --accent-active:#E6C83F; --accent-ink:#15161A; --accent-subtle:var(--panel1); --surface:var(--night2); --subtle:var(--panel1); --hover:var(--night3); --border:var(--edge); --border-strong:var(--edge2); --focus:var(--hl-text); --button-primary-bg:var(--hl); --button-primary-ink:var(--ink); --button-secondary-bg:transparent; --button-secondary-ink:var(--on-night); --rent-text:var(--hl-text); --danger:var(--danger-text); --danger-surface:#3A1C1A; --warn:var(--amber); --warning-surface:#392A14; --ok:var(--success-text); --success-surface:#183A23; --amber-surface:var(--warning-surface); --v-higher:var(--danger-text); --v-higher-bg:var(--warning-surface); --v-near:var(--on-night2); --v-lower:var(--success-text); --v-none:var(--muted);
+  --mk-price:var(--price); --mk-area:var(--area); --mk-loc:var(--location); --mk-room:var(--room); --mk-fee:var(--fee); --mk-ink:#15161A; --shell-paper:var(--night); --night-2:var(--night2); --night-3:var(--night3); --night-line:var(--edge2); --on-night-2:var(--on-night2); --on-hl:#15161A; --chart-axis:var(--edge2); --chart-range:var(--panel1); --avatar-bg:var(--panel1); --avatar-ink:var(--hl-text);
+  --hero-bg:var(--night); --hero-text:var(--on-night); --hero-accent:var(--hl); --hero-button-bg:var(--hl); --hero-button-hover:#FFF083; --hero-button-ink:var(--ink); --hero-panel:var(--panel2); --hero-contrast-bg:var(--night3); --hero-line:var(--edge2); --hero-overlay:linear-gradient(90deg,rgba(17,18,20,.94),rgba(17,18,20,.78)); --scrim:rgba(0,0,0,.65); --shadow-color:rgba(0,0,0,.45); --shadow-paper-color:rgba(0,0,0,.6); --shadow-overlay:0 8px 24px var(--shadow-color); --shadow-paper:0 1px 0 var(--shadow-color),0 24px 48px -24px var(--shadow-paper-color); --shadow-post:0 6px 24px var(--shadow-color);
+}
+[data-theme="light"] { color-scheme:light; --warning-surface:#FFF3CF; --danger-surface:#FCE8E4; --success-surface:#E4F3E8; --ink:#15161A; --ink2:#55524A; --ink3:#6B675E; --body:#3A3833; --muted:#6B675E; --accent-ink:#15161A; --mk-ink:#15161A; --on-hl:#15161A; --night:#EEECE6; --night2:#FFFDF8; --night3:#D6D2C7; --on-night:#15161A; --on-night2:#4A473F; --body:#3A3833; --muted:#6B675E; --edge:#CFC9BB; --edge2:#7A766D; --panel1:#FFFDF8; --panel2:#F6F3EC; --hl-text:#8A6400; --amber:#7A5800; --link:#2337C6; --danger-text:#B42318; --success-text:#1E6B45; --btn-shadow:#15161A; --control-edge:#7A766D; --surface:var(--night2); --subtle:var(--panel2); --hover:#F0EDE5; --accent-hover:#FFE97A; --accent-active:#E6C83F; --accent-subtle:var(--panel2); --hero-bg:#111214; --hero-text:#F4F1EA; --hero-accent:#FFE14D; --hero-button-hover:#FFE97A; --hero-panel:#17181A; --hero-contrast-bg:#2C2C29; --hero-line:#88857B; --shadow-color:rgba(21,22,26,.12); --shadow-paper-color:rgba(21,22,26,.18); --scrim:rgba(17,18,45,.4); }
+:root { --font-display:'Newsreader',serif; --font-serif:'Newsreader',serif; --font-body:'Be Vietnam Pro',sans-serif; --font-sans:'Be Vietnam Pro',sans-serif; --font-mono:'JetBrains Mono Variable',ui-monospace,monospace; --radius-button:8px; --radius-card:12px; --radius-panel:14px; --r-sm:4px; --r-md:8px; --r-lg:14px; --r-full:9999px; --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-6:24px; --space-8:32px; --space-12:48px; --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:20px; --s-6:24px; --s-8:32px; --s-12:48px; --ease:cubic-bezier(.23,1,.32,1); --ease-enter:cubic-bezier(.16,1,.3,1); --ease-out:cubic-bezier(.16,1,.3,1); --ease-drawer:cubic-bezier(.32,.72,0,1); --duration:200ms; --dur-fast:120ms; --dur-base:180ms; --dur-slow:420ms; --t-press:160ms; --t-ui:240ms; --text-xs:12px; --text-label:13px; --text-note:15px; --text-read:15px; --text-control:16px; --text-verdict:15px; --container:1152px; --header-h:56px; }/* @contrast yellow-button --accent-ink --hl 4.5 */
+/* @contrast body --on-night --night 4.5 */
+/* @contrast header-link --on-night2 --night 4.5 */
+/* @contrast panel-body --on-night --night2 4.5 */
+/* @contrast panel-secondary --on-night2 --night2 4.5 */
+/* @contrast panel-muted --muted --panel1 4.5 */
+/* @contrast emphasis-page --hl-text --night 4.5 */
+/* @contrast emphasis-panel --hl-text --night2 4.5 */
+/* @contrast paper-body --ink --paper 4.5 */
+/* @contrast paper-secondary --ink2 --card 4.5 */
+/* @contrast paper-muted --ink3 --card 4.5 */
+/* @contrast danger --danger-text --danger-surface 4.5 */
+/* @contrast warning --amber --warning-surface 4.5 */
+/* @contrast success --success-text --success-surface 4.5 */
+/* @contrast control-edge-page --control-edge --night 3 */
+/* @contrast control-edge-panel --control-edge --night2 3 */
+/* @contrast entity-price --mk-ink --mk-price 4.5 */
+/* @contrast entity-area --mk-ink --mk-area 4.5 */
+/* @contrast entity-location --mk-ink --mk-loc 4.5 */
+/* @contrast entity-room --mk-ink --mk-room 4.5 */
+/* @contrast entity-fee --mk-ink --mk-fee 4.5 */
+
+:root { --s-10:40px; --s-16:64px; --s-24:96px; --bg:var(--night); --text:var(--on-night); --text-secondary:var(--on-night2); }

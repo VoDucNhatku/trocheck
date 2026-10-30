@@ -1,0 +1,71 @@
+.story { position: relative; background: var(--paper); }
+.stage { position: relative; }
+.scene { position: absolute; inset: 0 0 auto; height: max(730px, calc(100svh - var(--header-h))); background: var(--hero-bg); overflow: hidden; }
+.photo { object-fit: cover; object-position: 60% 50%; }
+.shade { position: absolute; inset: 0; background: var(--hero-overlay); }
+.frame { position: absolute; inset: 24px; border: 1px solid var(--hero-line); }
+.content { position: relative; }
+.intro { min-height: max(730px, calc(100svh - var(--header-h))); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding-block: 70px; color: var(--hero-text); }
+.eyebrow { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+.intro h1 { margin-top: 24px; font-size: clamp(40px, 6vw, 82px); font-weight: 500; line-height: 1.4; letter-spacing: -.045em; }
+.intro em { color: var(--hero-accent); font-weight: 400; }
+.lead { max-width: 445px; margin-top: 28px; font-size: 16px; line-height: 1.8; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 26px; margin-top: 32px; }
+.primary, .secondary { display: inline-flex; gap: 14px; align-items: center; min-height: 48px; font-size: 14px; }
+.primary { background: var(--hero-button-bg); color: var(--hero-button-ink); padding: 12px 20px; border-radius: var(--r-md); font-weight: 600; }
+.primary:hover { background: var(--hero-button-hover); }
+.secondary { text-decoration: underline; text-underline-offset: 5px; }
+.intro a:focus-visible { outline-color: var(--hero-text); }
+.credit { margin-top: 40px; font-size: 12px; }
+.walkthrough { position: relative; padding-block: 80px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 72px; align-items: start; scroll-margin-top: 90px; }
+.chapters { min-width: 0; }
+.chapter { padding-block: 28px; max-width: 500px; }
+.chapter + .chapter { border-top: 1px solid var(--border); }
+.stepNumber { font-family: var(--font-mono); color: var(--accent); font-size: 32px; margin-bottom: 16px; }
+.chapter h2 { font-size: clamp(28px, 3vw, 42px); line-height: 1.4; font-weight: 500; }
+.chapter > p:last-child { margin-top: 20px; font-size: 16px; line-height: 1.8; color: var(--ink-2); }
+.objects { display: grid; gap: 48px; min-width: 0; padding-top: 24px; }
+.placeholder { display: grid; place-items: center; min-height: 180px; background: repeating-linear-gradient(135deg, var(--subtle) 0 12px, var(--surface) 12px 24px); border: 1px solid var(--border); border-radius: 0 0 12px 12px; font-size: 14px; color: var(--ink-2); }
+.receipt { width: min(100%, 390px); justify-self: center; }
+.cloudway { display: none; }
+@supports (animation-timeline: view()) {
+  @media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
+    .walkthrough { view-timeline: --reading block; }
+    .chapter { min-height: 65vh; display: flex; flex-direction: column; justify-content: center; border: 0; }
+    .chapter + .chapter { border-top: 0; }
+    .objects { position: sticky; top: calc(var(--header-h) + 48px); height: 650px; display: block; perspective: 1400px; }
+    .post, .receipt, .comparison { position: absolute; width: 100%; }
+    .post { animation: post-read linear both; animation-timeline: --reading; animation-range: contain 0% contain 100%; }
+    .placeholder { animation: photo-away linear both; animation-timeline: --reading; animation-range: contain 0% contain 25%; }
+    .receipt { left: 8%; width: 84%; animation: print linear both; animation-timeline: --reading; animation-range: contain 0% contain 100%; }
+    .comparison { bottom: 0; animation: compare linear both; animation-timeline: --reading; animation-range: contain 0% contain 100%; }
+    .cloudway { display: block; position: relative; height: 125vh; margin-top: -12vh; margin-bottom: -35vh; pointer-events: none; view-timeline: --cloud block; }
+    .sky { position: sticky; top: var(--header-h); height: 80vh; overflow: clip; animation: sky linear both; animation-timeline: --cloud; animation-range: contain 0% contain 100%; }
+    .cloud { position: absolute; width: 160%; height: 130%; left: -45%; bottom: -30%; background: url('/images/rener-cloud-bank.png') center / cover; animation: cloud-left linear both; animation-timeline: --cloud; animation-range: contain 0% contain 100%; }
+    .cloud:nth-child(2) { left: -15%; animation-name: cloud-right; }
+    .veil { position: absolute; inset: 0; background: var(--paper); animation: veil linear both; animation-timeline: --cloud; animation-range: contain 0% contain 100%; }
+  }
+}
+@keyframes post-read { 0%,35% { opacity: 1; transform: rotate(-2deg); visibility: visible; } 40%,100% { opacity: 0; transform: translateY(-80px) rotate(-5deg); visibility: hidden; } }
+@keyframes photo-away { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(90px); visibility: hidden; } }
+@keyframes print { 0%,42% { opacity: 0; transform: translateY(80px); visibility: hidden; } 50%,65% { opacity: 1; transform: none; visibility: visible; } 70%,100% { opacity: 0; transform: translateY(-40px); visibility: hidden; } }
+@keyframes compare { 0%,72% { opacity: 0; transform: translateY(40px); visibility: hidden; } 80%,100% { opacity: 1; transform: none; visibility: visible; } }
+@keyframes sky { 0%,100% { opacity: 0; } 20%,78% { opacity: 1; } }
+@keyframes cloud-left { from { transform: translate(-50%, 40%) rotate(16deg); } to { transform: translate(10%, -30%) rotate(16deg); } }
+@keyframes cloud-right { from { transform: translate(50%, 50%) scaleX(-1); } to { transform: translate(-10%, -30%) scaleX(-1); } }
+@keyframes veil { 0%,40% { opacity: 0; } 75%,100% { opacity: 1; } }
+@media (max-width: 999px) {
+  .walkthrough { display: flex; flex-direction: column; gap: 24px; padding-block: 48px; }
+  .chapters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  .chapter { border-top: 1px solid var(--border); }
+  .objects { width: min(100%, 560px); align-self: center; }
+}
+@media (max-width: 600px) {
+  .frame { inset: 12px; }
+  .intro { padding-inline: 12px; }
+  .intro h1 { font-size: clamp(36px, 8.5vw, 50px); }
+  .lead { font-size: 14px; }
+  .chapters { grid-template-columns: 1fr; gap: 0; }
+  .chapter h2 { font-size: 30px; }
+  .chapter > p:last-child { font-size: 14px; }
+}
