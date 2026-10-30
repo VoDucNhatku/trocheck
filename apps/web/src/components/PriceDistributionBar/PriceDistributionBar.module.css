@@ -27,7 +27,7 @@
   top: 0;
   bottom: 0;
   background: var(--chart-range);
-  border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-night) 30%, transparent);
   border-radius: 3px;
   transform-origin: center;
   transform: scaleX(1);
@@ -40,7 +40,7 @@
   bottom: -4px;
   width: 2px;
   margin-left: -1px;
-  background: var(--ink);
+  background: var(--on-night);
   opacity: 1;
   transition: opacity 300ms var(--ease) 500ms;
 }
@@ -52,7 +52,7 @@
   height: 6px;
   margin: -3px 0 0 -3px;
   border-radius: 50%;
-  background: var(--ink-3);
+  background: var(--muted);
   opacity: 1;
   transition: opacity 300ms var(--ease) 600ms;
 }
@@ -79,7 +79,7 @@
   margin: -7px 0 0 -7px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 0 3px var(--surface);
+  box-shadow: 0 0 0 3px var(--night2);
 }
 
 .targetLabel {
@@ -126,13 +126,13 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--ink-3);
+  color: var(--muted);
 }
 
 .legend dd {
   margin: 0;
   font-weight: 600;
-  color: var(--ink);
+  color: var(--on-night);
 }
 
 .swIqr,
@@ -146,20 +146,20 @@
   height: 10px;
   border-radius: 2px;
   background: var(--chart-range);
-  border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-night) 30%, transparent);
 }
 
 .swMedian {
   width: 2px;
   height: 12px;
-  background: var(--ink);
+  background: var(--on-night);
 }
 
 .swPeer {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--ink-3);
+  background: var(--muted);
 }
 
 /* Không đủ dữ liệu: giữ chỗ, không vẽ số */
@@ -167,31 +167,31 @@
   display: grid;
   gap: var(--s-2);
   padding: var(--s-4);
-  border: 1px dashed var(--border-strong);
+  border: 1px dashed var(--edge2);
   border-radius: var(--r-lg);
   background: repeating-linear-gradient(
     -45deg,
     transparent 0 8px,
-    color-mix(in srgb, var(--ink) 3%, transparent) 8px 9px
+    color-mix(in srgb, var(--on-night) 3%, transparent) 8px 9px
   );
 }
 
 .emptyTrack {
   height: 8px;
   border-radius: 4px;
-  background: var(--subtle);
+  background: var(--panel1);
 }
 
 .reasons {
   margin: 0;
   padding: 0 0 0 18px;
-  color: var(--ink-2);
+  color: var(--on-night2);
   font-size: 13px;
 }
 
 .emptyN {
   font-size: 12px;
-  color: var(--ink-3);
+  color: var(--muted);
 }
 
 @media (prefers-reduced-motion: reduce) {

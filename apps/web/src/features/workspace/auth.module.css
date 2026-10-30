@@ -7,18 +7,18 @@
 .body button[type=submit] { min-height:52px; font-size:14px; border-radius:14px; width:100%; }
 .body input + button, .body div:has(> input[type=password]) > button { top:4px; right:4px; min-height:44px; width:44px; }
 .switch { margin:24px 0 18px; font-size:14px; }
-.art { margin:0; display:flex; flex-direction:column; min-width:0; background:var(--subtle); border-radius:20px; overflow:hidden; }
+.art { margin:0; display:flex; flex-direction:column; min-width:0; background:var(--panel1); border-radius:20px; overflow:hidden; }
 .image { flex:1; min-height:430px; position:relative; overflow:hidden; }
 .image img { width:100%; height:100%; object-fit:cover; position:absolute; object-position:50% 55%; }
 .art figcaption { display:grid; gap:6px; padding:28px 32px; }
 .art strong { font-family:var(--font-serif); font-size:30px; font-weight:500; }
-.art span { font-size:12px; color:var(--ink-3); }
+.art span { font-size:12px; color:var(--muted); }
 .fieldError { font-size:13px; color:var(--danger); }
 .strength { display:grid; gap:6px; margin-top:3px; }
 .strength > div { display:flex; gap:4px; }
-.strength span { height:3px; background:var(--border); flex:1; }
+.strength span { height:3px; background:var(--edge); flex:1; }
 .strength span[data-met=true] { background:var(--accent); }
-.terms { margin-top:8px; font-size:13px; color:var(--ink-2); scroll-margin:20px; }
+.terms { margin-top:8px; font-size:13px; color:var(--on-night2); scroll-margin:20px; }
 .terms summary { cursor:pointer; padding:6px 0; }
 .terms p { padding:8px 0; }
 .register { justify-content:flex-start; gap:24px; }

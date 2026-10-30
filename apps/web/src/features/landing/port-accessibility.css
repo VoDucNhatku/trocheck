@@ -1,0 +1,62 @@
+/* Readable paper colors remain stable while the surrounding night theme changes. */
+.landing-prototype .phrase { display: inline-block; white-space: nowrap; }
+.landing-prototype { color: var(--on-night); margin-top: calc(-1 * var(--header-h) - 1px); }
+.landing-prototype .shot-placeholder { padding: 6px; aspect-ratio: 630 / 260; background: var(--card); color: var(--mk-ink); font: 12px/1.6 var(--font-body); }
+.landing-prototype .shot-placeholder b { font-size: 12px; }
+.landing-prototype .room-placeholder { width: 100%; aspect-ratio: 4 / 3; border-radius: 4px; background: repeating-linear-gradient(135deg, var(--night3) 0 10px, var(--night2) 10px 20px); }
+.landing-prototype .photo figcaption { position: absolute; left: 24px; bottom: 24px; font-size: 12px; }
+.landing-prototype .hl, .landing-prototype .hl i, .landing-prototype .entity, .landing-prototype .tagrow span,
+.landing-prototype .btn-primary, .landing-prototype .btn-hl, .landing-prototype .pin span { color: var(--mk-ink); }
+.landing-prototype .btn-primary, .landing-prototype .btn-hl { border-color: var(--mk-ink); }
+.landing-prototype .tabs .chip { position: static; opacity: 1; animation: none; color: var(--on-night); background: transparent; border: 1px solid var(--edge2); min-height: 44px; box-shadow: none; }
+.landing-prototype .tabs .chip[aria-pressed="true"] { background: var(--hl); color: var(--mk-ink); border-color: var(--mk-ink); }
+.landing-prototype .analysis-status { margin-block: 18px; font-size: 14px; color: var(--on-night2); }
+.landing-prototype .analysis-status:empty { display: none; }
+.landing-prototype .analysis-actions { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
+.landing-prototype .browser-post .evidence { margin-top: 20px; }
+.landing-prototype .clip p { margin-top: 24px; }
+.landing-prototype .hard-case .hl,
+.landing-prototype .evidence .hl { display: inline-grid; vertical-align: bottom; line-height: 1.5; }
+.landing-prototype .hard-case .hl > i,
+.landing-prototype .evidence .hl > i { position: static; font-size: 12px; }
+.landing-prototype .hl i, .landing-prototype small, .landing-prototype .chip b,
+.landing-prototype .lt, .landing-prototype .ch-tag, .landing-prototype .ticks,
+.landing-prototype .medline span, .landing-prototype .pin span, .landing-prototype .rc-note,
+.landing-prototype .stamp, .landing-prototype .scene .cap { font-size: max(12px, 1em); }
+.landing-prototype .hl i { font-size: 12px; }
+.landing-prototype .who small, .landing-prototype .clip .src small,
+.landing-prototype .tape b { font-size: 12px; }
+@media (min-width: 1000px) {
+  .landing-prototype .c0 .h1 { line-height: 1.13; }
+}
+.landing-prototype .rc-row { min-height: 36px; height: auto; flex-wrap: wrap; row-gap: 2px; }
+.landing-prototype .rc-row .k { flex-shrink: 0; white-space: nowrap; }
+.landing-prototype .rc-row .v { margin-inline-start: auto; }
+.landing-prototype .market-preview-row { flex-wrap: wrap; }
+
+/* Mobile/reduced motion presents one complete annotated document, without overlapping copies. */
+@media (max-width: 999px), (prefers-reduced-motion: reduce) {
+  .landing-prototype .l1 { display: none; }
+  .landing-prototype .l2 { position: relative; background: var(--card); color: var(--mk-ink); box-shadow: var(--shadow-paper); }
+  .landing-prototype .l2 .lt { visibility: visible !important; }
+  .landing-prototype .l2 .plain { color: var(--mk-ink); }
+  .landing-prototype .l2 .hl { display: inline-grid; vertical-align: bottom; line-height: 1.5; }
+  .landing-prototype .l2 .hl i { position: static; }
+  .landing-prototype .l2 .seg:not(.hl) { color: var(--mk-ink); }
+  .landing-prototype .copy, .landing-prototype .obj, .landing-prototype .chart, .landing-prototype .rcpt { min-width: 0; max-width: 100%; }
+  .landing-prototype .scene { width: 100%; }
+  .landing-prototype .post { white-space: pre-line; overflow-wrap: normal; }
+  .landing-prototype .copy .ch { line-height: 1.15; }
+  .landing-prototype .go { white-space: nowrap; }
+}
+@media (max-width: 560px) {
+  .landing-prototype .rcpt { padding-inline: 16px; }
+  .landing-prototype .zig { margin-inline: -16px; }
+  .landing-prototype .check-layer { padding: 18px; }
+  .landing-prototype .browser-post { padding: 14px; }
+  .landing-prototype .receipt-row { flex-wrap: wrap; gap: 4px 12px; }
+  .landing-prototype .receipt-row dd { margin-inline-start: auto; }
+  .landing-prototype .scene .cap { right: 20px; }
+  .landing-prototype .ch-head { flex-wrap: wrap; }
+  .landing-prototype .pin span { font-size: 12px; }
+}

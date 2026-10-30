@@ -1,170 +1,33 @@
-/* TroCheck role tokens. Brand source: the approved logo DESIGN.md.
- * light-dark() follows the OS; data-theme explicitly overrides color-scheme.
- * Entity hues retain the established PRICE/AREA/LOC/ROOM/FEE meanings.
- */
-:root {
-  color-scheme: light dark;
-  --paper: light-dark(#f9f9ff, #101916);
-  --surface: light-dark(#ffffff, #18241f);
-  --subtle: light-dark(#f0f3ff, #202f28);
-  --hover: light-dark(#e8eeff, #283b32);
-  --ink: light-dark(#111c2d, #e4eee8);
-  --ink-2: light-dark(#3f4945, #c5d1cb);
-  --ink-3: light-dark(#59655f, #a9b9b0);
-  --icon: var(--ink-3);
-  --border: light-dark(#bec9c4, #43594d);
-  --border-strong: light-dark(#6f7975, #879d90);
-
-  --accent: light-dark(#005243, #87d5bf);
-  --accent-hover: light-dark(#004335, #a3f2db);
-  --accent-active: light-dark(#00362c, #b7ffe8);
-  --accent-ink: light-dark(#ffffff, #002019);
-  --accent-subtle: light-dark(#dcefe8, #123c30);
-  --primary-container: light-dark(#146c5a, #005243);
-  --on-primary-container: light-dark(#9bead3, #9bead3);
-  --inverse-primary: light-dark(#87d5bf, #87d5bf);
-  --focus: var(--accent);
-  --button-primary-bg: var(--accent);
-  --button-primary-ink: var(--accent-ink);
-  --button-secondary-bg: var(--surface);
-  --button-secondary-ink: var(--ink);
-  --rent-text: var(--accent);
-
-  --danger: light-dark(#ba1a1a, #ffb4ab);
-  --danger-surface: light-dark(#ffdad6, #4b1918);
-  --warn: light-dark(#7b4400, #ffc57c);
-  --warning-surface: light-dark(#fff0d0, #392a14);
-  --ok: light-dark(#24633b, #91d8a4);
-  --success-surface: light-dark(#e3f3e5, #183a23);
-  --amber: var(--warn);
-  --amber-surface: var(--warning-surface);
-  --v-higher: var(--danger);
-  --v-higher-bg: var(--warning-surface);
-  --v-near: var(--ink-2);
-  --v-lower: var(--ok);
-  --v-none: var(--ink-3);
-
-  --mk-price: light-dark(#ffe566, #665714);
-  --mk-area: light-dark(#a6ebc9, #235632);
-  --mk-loc: light-dark(#b5dcff, #1d4a72);
-  --mk-room: light-dark(#dccbff, #4b3a78);
-  --mk-fee: light-dark(#ffc9b0, #773f2b);
-  --mk-ink: var(--ink);
-
-  --shell-paper: var(--paper);
-  --night: light-dark(#1c3028, #0b1410);
-  --night-2: light-dark(#294638, #1c3028);
-  --night-line: light-dark(#668272, #668272);
-  --on-night: light-dark(#f9f9ff, #e4eee8);
-  --on-night-2: light-dark(#c5d1cb, #c5d1cb);
-  --hl: var(--inverse-primary);
-  --on-hl: light-dark(#002019, #002019);
-  --chart-axis: var(--border-strong);
-  --chart-range: var(--accent-subtle);
-  --avatar-bg: var(--accent-subtle);
-  --avatar-ink: var(--accent);
-  --logo-icon-surface: light-dark(#ffffff, #ffffff);
-
-  /* Photo-backed panels remain dark in both modes. The scrim bounds contrast
-   * even over white image pixels; hero-contrast-bg is a conservative bound. */
-  --hero-bg: light-dark(#101f1a, #101f1a);
-  --hero-text: light-dark(#f9f9ff, #f9f9ff);
-  --hero-accent: light-dark(#9bead3, #9bead3);
-  --hero-button-bg: var(--inverse-primary);
-  --hero-button-hover: light-dark(#a3f2db, #a3f2db);
-  --hero-button-ink: var(--on-hl);
-  --hero-panel: light-dark(#142d23, #142d23);
-  --hero-contrast-bg: light-dark(#53605a, #53605a);
-  --hero-line: light-dark(#92b3a3, #92b3a3);
-  --hero-overlay: linear-gradient(90deg, rgb(9 24 18 / .9), rgb(9 24 18 / .8) 70%, rgb(9 24 18 / .72)), linear-gradient(0deg, rgb(9 24 18 / .8), transparent 35%);
-  --scrim: light-dark(rgb(17 28 45 / .4), rgb(0 0 0 / .65));
-  --shadow-color: light-dark(rgb(17 28 45 / .12), rgb(0 0 0 / .45));
-  --shadow-paper-color: light-dark(rgb(17 28 45 / .18), rgb(0 0 0 / .6));
-  --shadow-overlay: 0 8px 24px var(--shadow-color);
-  --shadow-paper: 0 1px 0 var(--shadow-color), 0 24px 48px -24px var(--shadow-paper-color);
-  --shadow-post: 0 6px 24px var(--shadow-color);
-
-  --font-sans: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-serif: var(--font-sans);
-  --font-body: var(--font-sans);
-  --font-display: var(--font-sans);
-  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
-  --text-xs: 12px;
-  --s-1: 4px;
-  --s-2: 8px;
-  --s-3: 12px;
-  --s-4: 16px;
-  --s-5: 20px;
-  --s-6: 24px;
-  --s-8: 32px;
-  --s-10: 40px;
-  --s-12: 48px;
-  --s-16: 64px;
-  --s-24: 96px;
-  --r-sm: 4px;
-  --r-md: 6px;
-  --r-lg: 8px;
-  --r-full: 9999px;
-  --dur-fast: 120ms;
-  --dur-base: 180ms;
-  --dur-slow: 420ms;
-  --ease: cubic-bezier(0.2, 0, 0, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --container: 1152px;
-  --header-h: 56px;
+/* Design-v4 yellow tokens. Dark mode is the default; data-theme="light" overrides it. */
+:root, [data-theme="dark"] {
+  color-scheme: dark;
+  --paper:#F4F1EA; --card:#FFFDF8; --ink:#15161A; --ink2:#55524A; --ink3:#6B675E; --ink-2:var(--on-night2); --ink-3:var(--muted); --line:#DDD8CC; --line-soft:#ECE7DB; --night:#111214; --night2:#1A1B1E; --night3:#2C2C29; --on-night:#F4F1EA; --on-night2:#BDB9AE; --body:#D2CEC3; --muted:#B0ACA2; --edge:#555650; --edge2:#88857B; --panel1:#1E1F22; --panel2:#17181A;
+  --hl:#FFE14D; --hl-text:#FFE14D; --amber:#F2CD64; --link:#B4C3FF; --higher:#B42318; --lower:#1E6B45; --danger-text:#FFB4AA; --success-text:#8FE8BF; --btn-shadow:#F4F1EA; --price:#FFE14D; --area:#8FE8BF; --location:#9FD3FF; --room:#D4C2FF; --fee:#FFB89A; --control-edge:#88857B;
+  --accent:var(--hl); --accent-hover:#FFF083; --accent-active:#E6C83F; --accent-ink:#15161A; --accent-subtle:var(--panel1); --surface:var(--night2); --subtle:var(--panel1); --hover:var(--night3); --border:var(--edge); --border-strong:var(--edge2); --focus:var(--hl-text); --button-primary-bg:var(--hl); --button-primary-ink:var(--ink); --button-secondary-bg:transparent; --button-secondary-ink:var(--on-night); --rent-text:var(--hl-text); --danger:var(--danger-text); --danger-surface:#3A1C1A; --warn:var(--amber); --warning-surface:#392A14; --ok:var(--success-text); --success-surface:#183A23; --amber-surface:var(--warning-surface); --v-higher:var(--danger-text); --v-higher-bg:var(--warning-surface); --v-near:var(--on-night2); --v-lower:var(--success-text); --v-none:var(--muted);
+  --mk-price:var(--price); --mk-area:var(--area); --mk-loc:var(--location); --mk-room:var(--room); --mk-fee:var(--fee); --mk-ink:#15161A; --shell-paper:var(--night); --night-2:var(--night2); --night-3:var(--night3); --night-line:var(--edge2); --on-night-2:var(--on-night2); --on-hl:#15161A; --chart-axis:var(--edge2); --chart-range:var(--panel1); --avatar-bg:var(--panel1); --avatar-ink:var(--hl-text);
+  --hero-bg:var(--night); --hero-text:var(--on-night); --hero-accent:var(--hl); --hero-button-bg:var(--hl); --hero-button-hover:#FFF083; --hero-button-ink:var(--ink); --hero-panel:var(--panel2); --hero-contrast-bg:var(--night3); --hero-line:var(--edge2); --hero-overlay:linear-gradient(90deg,rgba(17,18,20,.94),rgba(17,18,20,.78)); --scrim:rgba(0,0,0,.65); --shadow-color:rgba(0,0,0,.45); --shadow-paper-color:rgba(0,0,0,.6); --shadow-overlay:0 8px 24px var(--shadow-color); --shadow-paper:0 1px 0 var(--shadow-color),0 24px 48px -24px var(--shadow-paper-color); --shadow-post:0 6px 24px var(--shadow-color);
 }
-:root[data-theme='light'] { color-scheme: light; }
-:root[data-theme='dark'] { color-scheme: dark; }
-[data-workspace] { --r-md: 8px; --r-lg: 16px; }
-[data-workspace-chrome] { --ease: cubic-bezier(.23, 1, .32, 1); }
-
-/* Declared foreground/background contracts, consumed by check-contrast.mjs.
- * Ordinary text: 4.5; non-text controls/focus boundaries: 3. */
-/* @contrast body-paper --ink --paper 4.5 */
-/* @contrast body-card --ink --surface 4.5 */
-/* @contrast body-subtle --ink --subtle 4.5 */
-/* @contrast body-hover --ink --hover 4.5 */
-/* @contrast secondary-paper --ink-2 --paper 4.5 */
-/* @contrast secondary-card --ink-2 --surface 4.5 */
-/* @contrast secondary-subtle --ink-2 --subtle 4.5 */
-/* @contrast muted-paper --ink-3 --paper 4.5 */
-/* @contrast muted-card --ink-3 --surface 4.5 */
-/* @contrast muted-subtle --ink-3 --subtle 4.5 */
-/* @contrast muted-hover --ink-3 --hover 4.5 */
-/* @contrast link-paper --accent --paper 4.5 */
-/* @contrast link-card --accent --surface 4.5 */
-/* @contrast link-selected --accent --accent-subtle 4.5 */
-/* @contrast selected-text --ink --accent-subtle 4.5 */
-/* @contrast primary-button --button-primary-ink --button-primary-bg 4.5 */
-/* @contrast primary-hover --accent-ink --accent-hover 4.5 */
-/* @contrast primary-active --accent-ink --accent-active 4.5 */
-/* @contrast secondary-button --button-secondary-ink --button-secondary-bg 4.5 */
-/* @contrast primary-container --on-primary-container --primary-container 4.5 */
-/* @contrast error-paper --danger --paper 4.5 */
-/* @contrast error-card --danger --surface 4.5 */
-/* @contrast error-panel --danger --danger-surface 4.5 */
-/* @contrast warning-paper --warn --paper 4.5 */
-/* @contrast warning-panel --warn --warning-surface 4.5 */
-/* @contrast success-paper --ok --paper 4.5 */
-/* @contrast success-panel --ok --success-surface 4.5 */
+[data-theme="light"] { color-scheme:light; --warning-surface:#FFF3CF; --danger-surface:#FCE8E4; --success-surface:#E4F3E8; --ink:#15161A; --ink2:#55524A; --ink3:#6B675E; --body:#3A3833; --muted:#6B675E; --accent-ink:#15161A; --mk-ink:#15161A; --on-hl:#15161A; --night:#EEECE6; --night2:#FFFDF8; --night3:#D6D2C7; --on-night:#15161A; --on-night2:#4A473F; --body:#3A3833; --muted:#6B675E; --edge:#CFC9BB; --edge2:#7A766D; --panel1:#FFFDF8; --panel2:#F6F3EC; --hl-text:#8A6400; --amber:#7A5800; --link:#2337C6; --danger-text:#B42318; --success-text:#1E6B45; --btn-shadow:#15161A; --control-edge:#7A766D; --surface:var(--night2); --subtle:var(--panel2); --hover:#F0EDE5; --accent-hover:#FFE97A; --accent-active:#E6C83F; --accent-subtle:var(--panel2); --hero-bg:#111214; --hero-text:#F4F1EA; --hero-accent:#FFE14D; --hero-button-hover:#FFE97A; --hero-panel:#17181A; --hero-contrast-bg:#2C2C29; --hero-line:#88857B; --shadow-color:rgba(21,22,26,.12); --shadow-paper-color:rgba(21,22,26,.18); --scrim:rgba(17,18,45,.4); }
+:root { --font-display:'Newsreader',serif; --font-serif:'Newsreader',serif; --font-body:'Be Vietnam Pro',sans-serif; --font-sans:'Be Vietnam Pro',sans-serif; --font-mono:'JetBrains Mono Variable',ui-monospace,monospace; --radius-button:8px; --radius-card:12px; --radius-panel:14px; --r-sm:4px; --r-md:8px; --r-lg:14px; --r-full:9999px; --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-6:24px; --space-8:32px; --space-12:48px; --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:20px; --s-6:24px; --s-8:32px; --s-12:48px; --ease:cubic-bezier(.23,1,.32,1); --ease-enter:cubic-bezier(.16,1,.3,1); --ease-out:cubic-bezier(.16,1,.3,1); --ease-drawer:cubic-bezier(.32,.72,0,1); --duration:200ms; --dur-fast:120ms; --dur-base:180ms; --dur-slow:420ms; --t-press:160ms; --t-ui:240ms; --text-xs:12px; --text-label:13px; --text-note:15px; --text-read:15px; --text-control:16px; --text-verdict:15px; --container:1152px; --header-h:56px; }/* @contrast yellow-button --accent-ink --hl 4.5 */
+/* @contrast body --on-night --night 4.5 */
+/* @contrast header-link --on-night2 --night 4.5 */
+/* @contrast panel-body --on-night --night2 4.5 */
+/* @contrast panel-secondary --on-night2 --night2 4.5 */
+/* @contrast panel-muted --muted --panel1 4.5 */
+/* @contrast emphasis-page --hl-text --night 4.5 */
+/* @contrast emphasis-panel --hl-text --night2 4.5 */
+/* @contrast paper-body --ink --paper 4.5 */
+/* @contrast paper-secondary --ink2 --card 4.5 */
+/* @contrast paper-muted --ink3 --card 4.5 */
+/* @contrast danger --danger-text --danger-surface 4.5 */
+/* @contrast warning --amber --warning-surface 4.5 */
+/* @contrast success --success-text --success-surface 4.5 */
+/* @contrast control-edge-page --control-edge --night 3 */
+/* @contrast control-edge-panel --control-edge --night2 3 */
 /* @contrast entity-price --mk-ink --mk-price 4.5 */
 /* @contrast entity-area --mk-ink --mk-area 4.5 */
 /* @contrast entity-location --mk-ink --mk-loc 4.5 */
 /* @contrast entity-room --mk-ink --mk-room 4.5 */
 /* @contrast entity-fee --mk-ink --mk-fee 4.5 */
-/* @contrast sidebar-body --on-night --night 4.5 */
-/* @contrast sidebar-muted --on-night-2 --night 4.5 */
-/* @contrast sidebar-selected --on-night --night-2 4.5 */
-/* @contrast sidebar-muted-selected --on-night-2 --night-2 4.5 */
-/* @contrast avatar --avatar-ink --avatar-bg 4.5 */
-/* @contrast highlight --on-hl --hl 4.5 */
-/* @contrast hero-body --hero-text --hero-contrast-bg 4.5 */
-/* @contrast hero-emphasis --hero-accent --hero-contrast-bg 4.5 */
-/* @contrast hero-panel --hero-text --hero-panel 4.5 */
-/* @contrast hero-button --hero-button-ink --hero-button-bg 4.5 */
-/* @contrast hero-button-hover --hero-button-ink --hero-button-hover 4.5 */
-/* @contrast control-paper --border-strong --paper 3 */
-/* @contrast control-card --border-strong --surface 3 */
-/* @contrast control-subtle --border-strong --subtle 3 */
-/* @contrast focus-paper --focus --paper 3 */
-/* @contrast focus-card --focus --surface 3 */
+
+:root { --s-10:40px; --s-16:64px; --s-24:96px; --bg:var(--night); --text:var(--on-night); --text-secondary:var(--on-night2); }

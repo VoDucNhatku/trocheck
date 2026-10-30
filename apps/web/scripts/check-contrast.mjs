@@ -24,22 +24,26 @@ function splitArguments(value) {
 }
 
 export function checkContrast(css) {
-  const root = css.match(/:root\s*\{([\s\S]*?)\}/);
-  if (!root) throw new Error('Missing :root token block');
-  const declarations = [...root[1].matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)];
-  const tokens = new Map();
-  for (const [, name, value] of declarations) {
-    if (tokens.has(name) && tokens.get(name) !== value.trim()) {
-      throw new Error(`Ambiguous overridden token: ${name}`);
+  const dark = css.match(/:root\s*,\s*\[data-theme=["']dark["']\]\s*\{([\s\S]*?)\}/) ?? css.match(/:root\s*\{([\s\S]*?)\}/);
+  const light = css.match(/\[data-theme=["']light["']\]\s*\{([\s\S]*?)\}/);
+  if (!dark) throw new Error('Missing root token block');
+  const readTokens = (block) => {
+    const tokens = new Map();
+    for (const [, name, value] of block.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
+      if (tokens.has(name) && tokens.get(name) !== value.trim()) throw new Error(`Ambiguous overridden token: ${name}`);
+      tokens.set(name, value.trim());
     }
-    tokens.set(name, value.trim());
-  }
+    return tokens;
+  };
+  const darkTokens = readTokens(dark[1]);
+  const lightTokens = new Map(darkTokens); if (light) for (const [name, value] of readTokens(light[1])) lightTokens.set(name, value);
   const pairs = [...css.matchAll(/@contrast\s+([\w-]+)\s+(--[\w-]+)\s+(--[\w-]+)\s+(4\.5|3)\s*\*\//g)];
   if (!pairs.length) throw new Error('No @contrast pairs declared in tokens.css');
   if (pairs.length !== (css.match(/@contrast\b/g) ?? []).length) throw new Error('Malformed @contrast declaration');
   if (new Set(pairs.map((pair) => pair[1])).size !== pairs.length) throw new Error('Duplicate @contrast pair name');
   const resolve = (name, mode, seen = new Set()) => {
     if (seen.has(name)) throw new Error(`Cyclic token: ${name}`);
+    const tokens = mode === 'light' ? lightTokens : darkTokens;
     if (!tokens.has(name)) throw new Error(`Missing token: ${name}`);
     seen.add(name);
     let value = tokens.get(name);

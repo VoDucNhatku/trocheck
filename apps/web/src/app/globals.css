@@ -7,6 +7,7 @@
 @import '@fontsource/be-vietnam-pro/latin-600.css';
 @import '@fontsource/be-vietnam-pro/latin-700.css';
 @import '@fontsource-variable/jetbrains-mono/index.css';
+@import '@fontsource-variable/newsreader/index.css';
 @import '../styles/tokens.css';
 
 *,
@@ -22,8 +23,8 @@ html {
 
 body {
   margin: 0;
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--night);
+  color: var(--on-night);
   font-family: var(--font-sans);
   font-size: 14px;
   line-height: 1.55;
@@ -138,3 +139,18 @@ svg {
     scroll-behavior: auto !important;
   }
 }
+
+h1, h2, h3, h4, [class*="title"], [class*="heading"] { font-family: var(--font-display); }
+
+/* Shared examples are also embedded outside the landing page: their paper stays light. */
+:is([class*="examples_post__"], [class*="examples_receipt__"]) {
+  --surface: var(--card);
+  --ink-2: var(--ink2);
+  --ink-3: var(--ink3);
+  --border: var(--line);
+  --border-strong: var(--ink3);
+  --accent: var(--ink2);
+  --avatar-bg: var(--hl);
+  --avatar-ink: var(--ink);
+}
+[class*="examples_comparison__"] { --ink: var(--on-night); }

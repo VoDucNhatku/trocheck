@@ -1,9 +1,9 @@
 ﻿.page { padding-top:48px; padding-bottom:64px; }
-.label { font-size:14px; color:var(--ink-2); margin-bottom:20px; }
-.title,.media,.card span { display:block; border-radius:6px; background:linear-gradient(90deg,var(--subtle),var(--hover),var(--subtle)); background-size:200% 100%; animation:shimmer 1.4s linear infinite; }
+.label { font-size:14px; color:var(--on-night2); margin-bottom:20px; }
+.title,.media,.card span { display:block; border-radius:6px; background:linear-gradient(90deg,var(--panel1),var(--night3),var(--panel1)); background-size:200% 100%; animation:shimmer 1.4s linear infinite; }
 .title { width:min(100%,400px); height:60px; margin-bottom:40px; }
 .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px; }
-.card { display:grid; gap:18px; padding:20px; border:1px solid var(--border); border-radius:12px; background:var(--surface); }
+.card { display:grid; gap:18px; padding:20px; border:1px solid var(--edge); border-radius:12px; background:var(--night2); }
 .media { aspect-ratio:4/3; }
 .card span { height:18px; }
 @media(min-width:1280px) { .grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }

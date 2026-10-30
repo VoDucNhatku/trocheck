@@ -1,5 +1,5 @@
 .text {
-  color: var(--ink);
+  color: var(--on-night);
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -43,7 +43,7 @@ button.mark {
 }
 
 button.mark:hover {
-  box-shadow: inset 0 -2px 0 var(--ink);
+  box-shadow: inset 0 -2px 0 var(--on-night);
 }
 
 .PRICE {
@@ -72,7 +72,7 @@ button.mark:hover {
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.06em;
-  color: var(--ink-2);
+  color: var(--on-night2);
   white-space: nowrap;
   pointer-events: none;
 }
@@ -86,7 +86,7 @@ button.mark:hover {
   font-family: var(--font-mono);
   font-weight: 500;
   letter-spacing: 0;
-  color: var(--ink-3);
+  color: var(--muted);
 }
 
 .dimmed .mark:not(.active) {
@@ -94,7 +94,7 @@ button.mark:hover {
 }
 
 .active {
-  box-shadow: 0 0 0 2px var(--ink);
+  box-shadow: 0 0 0 2px var(--on-night);
 }
 
 .mismatch {

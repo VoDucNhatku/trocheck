@@ -13,7 +13,7 @@ export const RULES = {
   R04: 'Chữ dưới 12px', R06: 'Số tách khỏi đơn vị', R07: 'Tràn ngang',
   R08: 'Chữ đè nhau', R10: 'Tương phản', R11: 'Ảnh và logo',
   R13: 'Lỗi JavaScript/console', R18: 'Cụm ngắn bị bẻ dòng',
-  R19: 'Dấu chấm thập phân', R30: 'Màu vàng thương hiệu cũ',
+  R19: 'Dấu chấm thập phân', R30: 'Còn màu xanh ngọc',
 };
 
 export function parseOptions(args) {
@@ -232,11 +232,10 @@ export function auditPage({ expectTheme } = {}) {
     if (innerWidth < 768 && drawerLogo && trigger) add('R11', 'WARN', 'Logo chỉ nằm trong menu đóng; cần mở menu kiểm trực quan');
     else add('R11', 'FAIL', 'Không thấy logo TrọCheck đã tải và đang hiện');
   }
-  const legacy = new Set(['255,225,77', '242,205,100', '138,100,0', '122,88,0']);
+  const legacy = new Set(['0,82,67', '20,108,90', '135,213,191', '155,234,211', '163,242,219', '183,255,232', '0,67,53', '0,54,44', '220,239,232', '18,60,48', '16,31,26', '28,48,40', '41,70,56', '11,20,16', '20,45,35', '146,179,163', '16,25,22', '24,36,31', '32,47,40', '40,59,50', '9,24,18', '17,28,45']);
   const paintProperties = ['color', 'backgroundColor', 'borderTopColor', 'borderRightColor', 'borderBottomColor', 'borderLeftColor', 'outlineColor', 'textDecorationColor', 'fill', 'stroke'];
   for (const el of elements) {
-    // Entity PRICE is functional yellow; the old brand yellow on a CTA is still a failure.
-    const entity = el.closest('[data-label="PRICE"], [data-entity="PRICE"], [data-entity="Giá"], [data-mark="price"]');
+    // Detect retired teal paint, including entity highlights.
     for (const pseudo of [null, '::before', '::after']) {
       const s = pseudo ? getComputedStyle(el, pseudo) : style(el);
       if (pseudo && (s.content === 'none' || s.content === 'normal' || s.display === 'none')) continue;
@@ -252,7 +251,7 @@ export function auditPage({ expectTheme } = {}) {
       for (const value of [s.backgroundImage, s.boxShadow, s.textShadow]) for (const match of value.matchAll(/rgba?\([^)]+\)/g)) {
         const color = parseColor(match[0]); if (color && color[3] > 0 && legacy.has(color.slice(0, 3).join(','))) found.push('gradient/shadow');
       }
-      if (found.length && !entity) add('R30', 'FAIL', 'Màu vàng thương hiệu cũ còn hiện: ' + [...new Set(found)].join(', ') + (pseudo || ''), el.textContent, el);
+      if (found.length) add('R30', 'FAIL', 'Còn màu xanh ngọc: ' + [...new Set(found)].join(', ') + (pseudo || ''), el.textContent, el);
     }
   }
   const actualTheme = document.documentElement.dataset.theme;

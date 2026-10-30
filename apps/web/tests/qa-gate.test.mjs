@@ -100,12 +100,15 @@ test('R19 catches dot decimals but accepts Vietnamese thousands, comma decimals,
   assert.ok(!has(await audit('<p>4.400.000 đ · 1,5 tháng · 1.234,5 m² · 29.10.2026</p>'), 'R19'));
 });
 
-test('R30 catches old yellow in backgrounds, gradients and pseudo-elements, without banning entity yellow', async () => {
-  for (const content of ['<button style="background:#ffe14d">Tiếp tục</button>', '<div style="background:linear-gradient(#f2cd64,white)">Dải cũ</div>', '<style>.old:before{content:"";display:block;width:30px;height:8px;background:#ffe14d}</style><p class="old">Gạch cũ</p>']) {
+test('R30 catches retired teal in backgrounds, gradients and pseudo-elements, without banning yellow', async () => {
+  for (const content of ['<p style="color:#005243">Retired text</p>', '<p style="border:2px solid #146c5a">Retired border</p>', '<mark data-entity="PRICE" style="background:#87d5bf">Retired entity</mark>']) {
     assert.ok(has(await audit(content), 'R30'));
   }
-  assert.ok(!has(await audit('<mark data-entity="Giá" style="background:#ffe14d">Giá thuê</mark><button style="background:#005243;color:white">Tiếp tục</button>'), 'R30'));
-  assert.ok(!has(await audit('<style>.hidden:before{content:"";background:#ffe14d;opacity:0;display:block;width:10px;height:10px}</style><p class="hidden">Chữ thường</p>'), 'R30'));
+  for (const content of ['<button style="background:#005243">Tiếp tục</button>', '<div style="background:linear-gradient(#146c5a,white)">Dải cũ</div>', '<style>.old:before{content:"";display:block;width:30px;height:8px;background:#87d5bf}</style><p class="old">Gạch cũ</p>']) {
+    assert.ok(has(await audit(content), 'R30'));
+  }
+  assert.ok(!has(await audit('<mark data-entity="Giá" style="background:#ffe14d">Giá thuê</mark><button style="background:#ffe14d;color:#15161a">Tiếp tục</button>'), 'R30'));
+  assert.ok(!has(await audit('<style>.hidden:before{content:"";background:#005243;opacity:0;display:block;width:10px;height:10px}</style><p class="hidden">Chữ thường</p>'), 'R30'));
 });
 
 test('clean control passes all twelve rules', async () => {

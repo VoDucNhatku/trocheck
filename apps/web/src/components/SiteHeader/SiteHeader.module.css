@@ -2,7 +2,7 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  background: var(--paper);
+  background: var(--night);
   backdrop-filter: saturate(1.4) blur(10px);
   -webkit-backdrop-filter: saturate(1.4) blur(10px);
   border-bottom: 1px solid transparent;
@@ -10,11 +10,11 @@
 }
 
 .scrolled {
-  border-bottom-color: var(--border);
+  border-bottom-color: var(--edge);
 }
 
-.home { background: var(--paper); }
-.home .brand { color: var(--accent); }
+.home { background: var(--night); }
+.home .brand { color: var(--hl-text); }
 .home .nav { margin-left: auto; }
 .home .actions { margin-left: auto; }
 .home .cta { background: var(--button-primary-bg); color: var(--button-primary-ink); border-radius: 5px; }
@@ -44,19 +44,19 @@
   border-radius: var(--r-md);
   font-size: 13.5px;
   font-weight: 500;
-  color: var(--ink-2);
+  color: var(--on-night2);
   transition:
     color var(--dur-fast) var(--ease),
     background-color var(--dur-fast) var(--ease);
 }
 
 .link:hover {
-  color: var(--ink);
-  background: var(--hover);
+  color: var(--on-night);
+  background: var(--night3);
 }
 
 .active {
-  color: var(--ink);
+  color: var(--on-night);
 }
 
 /* Gạch chân kiểu bút dạ quang cho trang hiện tại */
@@ -83,13 +83,13 @@
   padding: 6px 10px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--ink-2);
+  color: var(--on-night2);
   border-radius: var(--r-md);
   transition: color var(--dur-fast) var(--ease);
 }
 
 .ghost:hover {
-  color: var(--ink);
+  color: var(--on-night);
 }
 
 .cta {
@@ -118,9 +118,9 @@
   height: 36px;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--edge2);
   border-radius: var(--r-md);
-  background: var(--surface);
+  background: var(--night2);
 }
 
 .tools { display: flex; flex: none; align-items: center; gap: var(--s-2); }
@@ -146,16 +146,16 @@
     display: grid;
     gap: var(--s-1);
     padding: var(--s-2) var(--s-4) var(--s-4);
-    border-bottom: 1px solid var(--border);
-    background: var(--paper);
-    border-left: 1px solid var(--border);
+    border-bottom: 1px solid var(--edge);
+    background: var(--night);
+    border-left: 1px solid var(--edge);
     box-shadow: var(--shadow-overlay);
   }
   .sheetLink {
     padding: 10px 4px;
     font-size: 15px;
     font-weight: 500;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--edge);
   }
   .sheet .cta {
     justify-content: center;
@@ -167,3 +167,10 @@
   }
 }
 
+
+/* Design-v4 action colors and pointer feedback. */
+.cta { background:var(--hl); color:var(--ink); border:1.5px solid var(--ink); box-shadow:4px 4px 0 var(--btn-shadow); border-radius:8px; min-height:48px; font-weight:700; }
+.cta, .burger { transition:transform var(--t-press) var(--ease-enter),background-color var(--t-ui) var(--ease-enter); }
+@media(hover:hover) and (pointer:fine) { .cta:hover:not(:disabled), .burger:hover:not(:disabled) { transform:translate(-2px,-2px); } }
+.cta:active:not(:disabled), .burger:active:not(:disabled) { transform:scale(.97); transition-duration:100ms; }
+@media(prefers-reduced-motion:reduce) { .cta, .burger, .cta:hover:not(:disabled), .burger:hover:not(:disabled), .cta:active:not(:disabled), .burger:active:not(:disabled) { transform:none; transition:none; } }

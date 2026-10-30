@@ -1,17 +1,17 @@
 ﻿.page { padding-top:32px; padding-bottom:64px; }
-.back { display:inline-flex; align-items:center; gap:8px; min-height:44px; font-size:14px; color:var(--accent); text-decoration:underline; text-underline-offset:4px; }
-.crumb { color:var(--ink-3); font-size:13px; }
+.back { display:inline-flex; align-items:center; gap:8px; min-height:44px; font-size:14px; color:var(--hl-text); text-decoration:underline; text-underline-offset:4px; }
+.crumb { color:var(--muted); font-size:13px; }
 .head { margin:28px 0 36px; }
 .badges { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; }
-.badges span { padding:5px 9px; border:1px solid var(--border-strong); border-radius:4px; font-size:12px; color:var(--ink-2); }
+.badges span { padding:5px 9px; border:1px solid var(--edge2); border-radius:4px; font-size:12px; color:var(--on-night2); }
 .badges .partial { border-style:dashed; }
 .title { font-size:clamp(30px,4vw,48px); font-weight:500; line-height:1.7; letter-spacing:-.025em; overflow-wrap:anywhere; }
 .place { font-size:18px; line-height:1.9; max-width:850px; margin-top:14px; overflow-wrap:anywhere; }
-.meta,.note { font-size:12px; color:var(--ink-3); line-height:1.9; margin-top:14px; }
-.notice { display:flex; align-items:flex-start; gap:12px; padding:18px; margin-bottom:28px; border:1px dashed var(--border-strong); border-radius:8px; background:var(--surface); font-size:14px; line-height:1.9; }
+.meta,.note { font-size:12px; color:var(--muted); line-height:1.9; margin-top:14px; }
+.notice { display:flex; align-items:flex-start; gap:12px; padding:18px; margin-bottom:28px; border:1px dashed var(--edge2); border-radius:8px; background:var(--night2); font-size:14px; line-height:1.9; }
 .notice svg { flex:none; margin-top:3px; }
-.note { border-top:1px solid var(--border); padding-top:24px; margin-top:40px; }
+.note { border-top:1px solid var(--edge); padding-top:24px; margin-top:40px; }
 .notFound { display:grid; justify-items:start; gap:20px; min-height:50vh; align-content:center; }
 .notFound h1 { font-size:clamp(30px,4vw,44px); line-height:1.6; }
-.notFound p { line-height:1.9; color:var(--ink-2); }
+.notFound p { line-height:1.9; color:var(--on-night2); }
 @media(max-width:600px) { .head { margin-top:20px; } .place { font-size:16px; } }

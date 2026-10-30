@@ -29,7 +29,15 @@ test('resolves aliases and evaluates both light and dark branches', () => {
   assert.equal(brokenDark[1].pass, false);
 });
 
+test('resolves explicit dark defaults and light overrides through aliases', () => {
+  const result = checkContrast(`:root,[data-theme="dark"] { --night:#000000; --on-night:#ffffff; --text:var(--on-night); }
+    [data-theme="light"] { --night:#ffffff; --on-night:#000000; }
+    /* @contrast body --text --night 4.5 */`);
+  assert.deepEqual(result.map(row => [row.mode, row.ratio, row.pass]), [['light', 21, true], ['dark', 21, true]]);
+});
+
 test('rejects missing, cyclic, or malformed contracts instead of silently passing', () => {
+  assert.throws(() => checkContrast(fixture.replace('--text: var(--ink);', '--text: var(--ink); --text: #ffffff;')), /Ambiguous/);
   assert.throws(() => checkContrast(fixture.replace('var(--ink)', 'var(--missing)')), /Missing token/);
   assert.throws(() => checkContrast(fixture.replace('var(--ink)', 'var(--text)')), /Cyclic token/);
   assert.throws(() => checkContrast(fixture + '\n/* @contrast typo --text --paper 4.4 */'), /Malformed/);

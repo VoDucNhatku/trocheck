@@ -1,4 +1,4 @@
-.state { display: grid; justify-items: start; gap: var(--s-3); padding: var(--s-6); margin-block: var(--s-4); border: 1px solid var(--border-strong); border-radius: var(--r-lg); color: var(--ink-2); }
-.state h2 { font-size: 20px; color: var(--ink); }
+.state { display: grid; justify-items: start; gap: var(--s-3); padding: var(--s-6); margin-block: var(--s-4); border: 1px solid var(--edge2); border-radius: var(--r-lg); color: var(--on-night2); }
+.state h2 { font-size: 20px; color: var(--on-night); }
 .retry { padding: 10px 16px; border: 1px solid var(--accent); border-radius: var(--r-md); background: var(--accent); color: var(--accent-ink); font-weight: 600; }
 .retry:disabled { cursor: wait; opacity: .7; }
