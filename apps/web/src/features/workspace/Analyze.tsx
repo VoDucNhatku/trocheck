@@ -1,28 +1,49 @@
 'use client';
 import { useRef, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, ShieldCheck } from 'lucide-react';
-import { maskPhones } from '@/lib/privacy';
+import { ArrowRight, Image as ImageIcon, ShieldCheck } from 'lucide-react';
 import { api, messageOf } from '@/lib/workspace/client';
 import type { AnalysisCreated, IngestPost } from '@/lib/workspace/types';
 import { Button, ErrorNotice, Intro, s } from './ui';
+import { ANALYSIS_SAMPLES, MAX_TEXT, analysisSample, imageError, maskAnalysisText } from './analysis-input';
+import a from './analyze.module.css';
+import { preservePhrases } from './AnalysisEvidence';
 
-export const SAMPLE_TEXT = '🏠 Cho thuê phòng trọ khép kín tại phường Cầu Giấy, 28m2. Giá 4tr8/tháng/phòng. Điện 3k5/số, nước 100k/người/tháng. Cọc 1 tháng tiền thuê. Internet đã gồm trong phí dịch vụ 150k/phòng/tháng.';
-const MAX_TEXT = 20000; // IngestPost.text max_length from the API schema.
-export function Analyze() {
+export const SAMPLE_TEXT = ANALYSIS_SAMPLES['post-001'].text;
+export function Analyze({ initialMode = 'paste', sampleCase = '' }: { initialMode?: 'paste' | 'image'; sampleCase?: string }) {
   const router = useRouter();
+  const imageSample = analysisSample(sampleCase);
+  const [mode, setMode] = useState(initialMode);
   const [text, setText] = useState('');
   const [complete, setComplete] = useState(false);
   const [sample, setSample] = useState(false);
+  const [image, setImage] = useState<'example' | 'chosen' | null>(initialMode === 'image' && sampleCase ? 'example' : null);
   const [preview, setPreview] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const input = useRef<HTMLTextAreaElement>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
   const request = useRef<{ signature: string; key: string } | null>(null);
   const lock = useRef(false);
-  const masked = maskPhones(text.trim());
+  const masked = maskAnalysisText(text.trim());
   const length = Array.from(text).length;
+  const valid = Boolean(masked) && length <= MAX_TEXT;
+  function choose(file?: File) {
+    if (!file || lock.current) return;
+    const problem = imageError(file);
+    if (problem) { setError(problem); return; }
+    // Only metadata is used. Private image bytes are never read, displayed or uploaded.
+    setImage('chosen'); setText(''); setSample(false); setPreview(false); setComplete(false); setError('');
+  }
+  function useSample(id: string) {
+    const value = analysisSample(id);
+    setText(value.text); setComplete(value.complete); setSample(true); setPreview(false); setError('');
+  }
   async function submit(event: FormEvent) {
-    event.preventDefault(); if (lock.current || !preview || !masked || length > MAX_TEXT) return;
+    event.preventDefault();
+    if (lock.current) return;
+    if (!valid) { setError(length > MAX_TEXT ? 'Bài dài hơn giới hạn 20.000 ký tự. Hãy rút nội dung trước khi gửi.' : 'Dán nội dung bài đăng trước khi tiếp tục.'); input.current?.focus(); return; }
+    if (!preview) { setPreview(true); setError(''); return; }
     lock.current = true; setBusy(true); setError('');
     const signature = JSON.stringify({ masked, complete, sample });
     if (request.current?.signature !== signature) request.current = { signature, key: 'web:' + crypto.randomUUID() };
@@ -35,25 +56,35 @@ export function Analyze() {
       router.push('/phan-tich/' + encodeURIComponent(result.analysis_id));
     } catch (caught) { setError(messageOf(caught)); lock.current = false; setBusy(false); }
   }
-  return <><Intro title="Đọc kỹ một bài đăng" description="Dán nội dung, xem lại phần đã che liên hệ rồi để ReNER tách giá, phí và bằng chứng. Bài của bạn chưa được đưa vào kho chung." />
-    <div className={s.split}><form method="post" onSubmit={submit} className={s.panel}>
-      <div className={s.panelHead}><h2 className={s.panelTitle}>Nội dung bài đăng</h2><span className={s.muted}>{length.toLocaleString('vi-VN')} / 20.000</span></div>
-      <label className={s.field}><span className="visually-hidden">Dán văn bản bài đăng</span><textarea className={s.textarea} value={text} disabled={busy} aria-invalid={length > MAX_TEXT}
-        placeholder="Cho thuê phòng… Giá… Điện… Nước…" onChange={event => { setText(event.target.value); setPreview(false); setSample(false); }} aria-describedby="privacy-hint" /></label>
-      <p id="privacy-hint" className={s.hint} style={{ marginTop: 10 }}>Chỉ xử lý chữ. Không suy diện tích, tình trạng phòng hay tiện ích từ ảnh.</p>
-      <div className={s.actions}><Button type="button" variant="secondary" disabled={busy} onClick={() => { setText(SAMPLE_TEXT); setComplete(true); setSample(true); setPreview(false); setError(''); }}>Dùng bài mẫu tự tạo</Button>
-        {text && <Button type="button" variant="ghost" disabled={busy} onClick={() => { setText(''); setPreview(false); setSample(false); setError(''); }}>Xóa nội dung</Button>}</div>
-      <hr className={s.divider} /><label className={s.check}><input type="checkbox" checked={complete} disabled={busy} onChange={event => { setComplete(event.target.checked); setPreview(false); }} /><span>Tôi đã dán đầy đủ nội dung bài, bao gồm phần “Xem thêm”.</span></label>
-      {!complete && <p className={s.hint} style={{ marginTop: 8 }}>Nếu chưa đầy đủ, ReNER sẽ giữ dấu hiệu thiếu nội dung.</p>}
-      {sample && <p className={[s.notice, s.section].join(' ')}>Đây là bài minh họa tự tạo. Kết quả được đánh dấu demo và tách khỏi thống kê kho thật.</p>}
-      {error && <div className={s.section}><ErrorNotice message={error} /></div>}
-      <div className={s.actions}>{!preview ? <Button type="button" disabled={!masked || length > MAX_TEXT} onClick={() => setPreview(true)}>Xem nội dung sẽ gửi<ArrowRight size={15} /></Button>
-        : <Button type="submit" busy={busy}>{busy ? 'Đang gửi bài…' : 'Phân tích bài này'}<ArrowRight size={15} /></Button>}</div>
-      {length > MAX_TEXT && <p className={s.error}>Bài dài hơn giới hạn 20.000 ký tự của máy chủ. Hãy rút nội dung trước khi gửi.</p>}
-    </form><div className={s.stack}>
-      <section className={s.panel}><div className={s.panelHead}><h2 className={s.panelTitle}>{preview ? 'Nội dung sẽ gửi' : 'Một bản đọc tin có gì?'}</h2>{preview && <ShieldCheck size={18} />}</div>
-        {preview ? <><p className={s.hint}>Số điện thoại đã được che trên trình duyệt. Hãy xóa thêm tên, email hoặc thông tin riêng tư khác trước khi gửi.</p><hr className={s.divider} /><p className={s.source}>{masked}</p></> :
-          <><p className={s.description}>Bài gốc đi cùng các giá trị đã đọc được, để bạn luôn biết con số đến từ đâu.</p><ol className={s.loginSteps} style={{ marginTop: 24 }}><li><b>01</b>Giá thuê và cơ sở tính</li><li><b>02</b>Từng khoản phí, giữ đúng đơn vị</li><li><b>03</b>Điều còn thiếu cần hỏi người đăng</li><li><b>04</b>Nhóm so sánh nếu đủ dữ liệu</li></ol></>}
-      </section><p className={s.muted}>ReNER đọc giá chào thuê từ bài đăng. Kết quả không xác nhận phòng còn trống hoặc thông tin do người đăng mô tả.</p>
-    </div></div></>;
+  return <><Intro title="Phân tích bài đăng" description="Dán bài hoặc tải ảnh chụp. Kiểm tra chữ đã che liên hệ, rồi đọc giá cùng bằng chứng." />
+    <ol className={a.progress} aria-label="Các bước xử lý"><li>Che thông tin</li><li>Gán nhãn</li><li>So sánh</li></ol>
+    <div className={a.layout}><form method="post" onSubmit={submit} className={a.document} aria-busy={busy}>
+      <div className={a.tabs} aria-label="Cách nhập">{(['paste', 'image'] as const).map(value => <Button key={value} type="button" variant="secondary" aria-pressed={mode === value} disabled={busy} onClick={() => { setMode(value); setPreview(false); setError(''); }}>{value === 'paste' ? 'Dán chữ' : 'Tải ảnh chụp'}</Button>)}</div>
+      {mode === 'image' && <>
+        <div className={a.drop} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); choose(event.dataTransfer.files[0]); }}>
+          <ImageIcon size={28} aria-hidden="true" /><p>Kéo ảnh chụp bài đăng vào đây<br />hoặc chọn file</p><small>{preservePhrases('JPG, PNG, WebP · tối đa 5 MB')}</small>
+          <input ref={fileInput} className="visually-hidden" type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} aria-label="Chọn ảnh chụp bài đăng" onChange={event => { choose(event.target.files?.[0]); event.target.value = ''; }} />
+          <div className={a.actions}><Button type="button" variant="secondary" disabled={busy} onClick={() => fileInput.current?.click()}>Chọn ảnh</Button><Button type="button" variant="ghost" disabled={busy} onClick={() => { setImage('example'); setText(''); setComplete(false); setPreview(false); setSample(false); setError(''); }}>Dùng ảnh chụp ví dụ</Button></div>
+        </div>
+        {image && <section className={a.shot} aria-label="Khối giữ chỗ ảnh chụp"><b>{image === 'example' ? 'Người đăng đã ẩn' : 'Đã chọn ảnh trên máy'}</b><p className={a.caption}>{image === 'example' ? 'Ảnh chụp (ví dụ tự tạo)' : 'Ảnh không được hiển thị hoặc gửi lên máy chủ.'}</p>{image === 'example' && <p className={a.source}>{preservePhrases(imageSample.text)}</p>}<div className={a.placeholder}>Ảnh phòng (ví dụ)</div></section>}
+        {image === 'example' && <div className={a.actions}><Button type="button" disabled={busy} onClick={() => useSample(sampleCase)}>Đọc chữ từ ảnh ví dụ</Button></div>}
+        <p className={a.hint}>OCR thật chưa kết nối. Ảnh ví dụ dùng chữ mẫu; với ảnh riêng, hãy nhập lại chữ bên dưới. Chỉ chữ đã kiểm tra được gửi đi.</p>
+      </>}
+      <label className={a.field} htmlFor="post-text">{mode === 'image' ? 'Chữ trong ảnh — bạn có thể nhập và sửa' : 'Nội dung bài đăng'}</label>
+      <textarea ref={input} id="post-text" className={a.textarea} value={text} disabled={busy} aria-invalid={length > MAX_TEXT} placeholder="Mình còn phòng… Giá… Điện… Nước…" aria-describedby="text-count privacy-hint" onChange={event => { setText(event.target.value); setPreview(false); setSample(false); setError(''); }} />
+      <p id="text-count" className={a.hint}>{length.toLocaleString('vi-VN')} / {preservePhrases('20.000 ký tự')}</p>
+      <label className={a.check}><input type="checkbox" checked={complete} disabled={busy} onChange={event => { setComplete(event.target.checked); setPreview(false); }} /><span>Tôi đã dán đủ nội dung, gồm phần “Xem thêm”.</span></label>
+      <p id="privacy-hint" className={a.hint}>Không gửi tên người đăng. Hãy xóa tên và thông tin riêng tư trước khi tiếp tục. Số điện thoại và email sẽ được che.</p>
+      {!complete && <p className={a.hint}>Nếu chưa đầy đủ, kết quả sẽ giữ cảnh báo thiếu nội dung.</p>}
+      {sample && <p className={a.hint}>Bài mẫu tự tạo được đánh dấu demo, tách khỏi thống kê kho thật.</p>}
+      {error && <ErrorNotice message={error} />}
+      <div className={a.actions}><Button type="submit" busy={busy}>{busy ? 'Đang gửi bài…' : preview ? 'Phân tích ngay' : 'Xem nội dung sẽ gửi'}<ArrowRight size={15} aria-hidden="true" /></Button><Button type="button" variant="secondary" disabled={busy} onClick={() => { setText(''); setPreview(false); setSample(false); setComplete(false); setError(''); input.current?.focus(); }}>Xóa</Button></div>
+      {busy && <p className={a.hint} role="status">Đang tạo bản đọc tin. Máy chủ sẽ đọc bài sau khi tiếp nhận.</p>}
+      <section className={a.examples}><p>Ba bài mẫu · ví dụ tự tạo</p><div className={a.actions}>{[['post-001', 'Giá và phí rõ ràng'], ['post-034', 'Bài giấu giá'], ['seeking', 'Bài tìm phòng']].map(([id, label]) => <Button key={id} type="button" variant="secondary" disabled={busy} onClick={() => { setMode('paste'); useSample(id); }}>{label}</Button>)}</div></section>
+    </form><aside className={a.side}>
+      <section className={a.preview} aria-label="Xem trước bản đọc"><div>{preview ? <><div className={a.previewHead}><h2>Nội dung sẽ gửi</h2><span className={a.badge}><ShieldCheck size={15} aria-hidden="true" />Đã che liên hệ</span></div><p className={a.source}>{preservePhrases(masked)}</p></> : <><p className={a.caption}>TỪ BÀI ĐĂNG ĐẾN BẢN ĐỌC</p><h2 className={a.previewTitle}>Tiền nhà có căn cứ.<br />Phí có chỗ riêng.</h2><ol className={s.readingSteps}><li><b>01</b><span>{preservePhrases('Giá thuê giữ đúng cách tính')}</span></li><li><b>02</b><span>Phí và đặt cọc tách riêng</span></li><li><b>03</b><span>Chỉ so khi đủ mười phòng tương tự</span></li></ol></>}</div>
+        {preview ? <p className={a.hint}>Kiểm tra lại nội dung trên trước khi bấm “Phân tích ngay”. Bài của bạn chỉ mình bạn thấy, trừ khi bạn chọn đóng góp.</p> : <blockquote className={a.quote}>“Giá <span className={a.phrase}>4,7 tr/tháng.</span> Điện <span className={a.phrase}>3,5k/số.</span>”<small>Ví dụ tự tạo · bấm bài mẫu để đọc thử</small></blockquote>}
+      </section><p className={a.note}>{preservePhrases('Bài tìm phòng không tạo giá thuê. “Ib giá” nghĩa là bài không công khai giá.')}</p>
+      <ul className={a.legend} aria-label="Nhãn bằng chứng">{[['PRICE', 'Giá thuê'], ['AREA', 'Diện tích'], ['LOC', 'Vị trí'], ['ROOM', 'Phòng'], ['FEE', 'Phí']].map(([label, name]) => <li key={label} data-entity={label}>{preservePhrases(name)}</li>)}</ul>
+    </aside></div></>;
 }

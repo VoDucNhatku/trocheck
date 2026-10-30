@@ -19,14 +19,14 @@
   right: 0;
   top: 50%;
   height: 1px;
-  background: var(--border-strong);
+  background: var(--chart-axis);
 }
 
 .iqr {
   position: absolute;
   top: 0;
   bottom: 0;
-  background: var(--mk-area);
+  background: var(--chart-range);
   border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
   border-radius: 3px;
   transform-origin: center;
@@ -91,7 +91,7 @@
   border-radius: var(--r-sm);
   background: var(--accent);
   color: var(--accent-ink);
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -145,7 +145,7 @@
   width: 14px;
   height: 10px;
   border-radius: 2px;
-  background: var(--mk-area);
+  background: var(--chart-range);
   border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
 }
 

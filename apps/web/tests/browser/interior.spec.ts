@@ -167,9 +167,9 @@ test('reviewer opens a real queue ID; interior pages fit desktop, tablet and pho
   await expect(page.getByRole('heading', { name: 'Đối chiếu & giá trị chọn' })).toBeVisible();
   await capture(page, 'review');
   await page.setViewportSize({ width: 1440, height: 1000 });
-  // Sidebar remains ivory below the sticky navigation on long pages.
-  const background = await page.locator('[data-workspace]').first().evaluate(element => getComputedStyle(element).backgroundImage);
-  expect(background).toContain('linear-gradient');
+  // The shell uses landing paper; page interiors keep their current tokens.
+  const background = await page.locator('[data-workspace]').first().evaluate(element => getComputedStyle(element).backgroundColor);
+  expect(background).toBe('rgb(244, 241, 234)');
   await page.getByRole('button', { name: 'Chấp nhận tin', exact: true }).focus();
   expect(await page.getByRole('button', { name: 'Chấp nhận tin', exact: true }).evaluate(element => getComputedStyle(element).outlineStyle)).toBe('solid');
   await page.screenshot({ path: path.join(shots, 'review-focus-1440.png'), fullPage: true });

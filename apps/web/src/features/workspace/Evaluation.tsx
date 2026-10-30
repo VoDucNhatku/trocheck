@@ -2,164 +2,80 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { LABEL_NAME } from '@/lib/format';
-import type { Label } from '@/lib/api/types';
-import { api, messageOf, WorkspaceError } from '@/lib/workspace/client';
+import { api, WorkspaceError } from '@/lib/workspace/client';
 import type { EvalResult, EvalRuns } from '@/lib/workspace/types';
-import { Button, Empty, ErrorNotice, Forbidden, Intro, Loading, s } from './ui';
-import r from './research.module.css';
+import { TeamHeader, StateBox, displayDate } from './TeamAdmin';
+import s from './team-admin.module.css';
 
-type JsonObject = Record<string, unknown>;
-const METHOD_NAME: Record<string, string> = { regex: 'Regex', llm: 'LLM', hybrid: 'Kết hợp' };
-const FIELD_NAME: Record<string, string> = { rent: 'Giá thuê', area: 'Diện tích', location: 'Vị trí', room: 'Loại / số phòng', fees: 'Phí' };
-const RATE_GROUPS: Record<string, string> = { normalized_correct: 'Chuẩn hóa đúng', correct_abstention: 'Để trống đúng' };
-const SYSTEM_RATES: Record<string, string> = { false_price_rate: 'Sinh giá sai khi chuẩn không có giá', listing_pairing: 'Ghép giá–diện tích đúng', post_type_accuracy: 'Phân loại bài đúng' };
-function object(value: unknown): JsonObject {
-  return value && typeof value === 'object' && !Array.isArray(value) ? value as JsonObject : {};
+type Json = Record<string, unknown>;
+const METHODS = [['regex', 'Regex'], ['llm', 'LLM'], ['hybrid', 'Kết hợp']] as const;
+const LABELS = [['PRICE', 'Giá thuê'], ['AREA', 'Diện tích'], ['LOC', 'Vị trí'], ['ROOM', 'Loại / số phòng'], ['FEE', 'Phí'], ['micro', 'Gộp toàn bộ (micro)']] as const;
+const ERROR_NAMES: Record<string, string> = { missing: 'Thiếu nhãn', spurious: 'Thừa nhãn', boundary: 'Sai ranh giới', label: 'Sai nhãn', normalization: 'Sai chuẩn hóa' };
+const object = (value: unknown): Json => value && typeof value === 'object' && !Array.isArray(value) ? value as Json : {};
+const text = (value: unknown) => typeof value === 'string' && value ? value : 'Chưa có thông tin';
+const score = (value: unknown) => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1 ? value : null;
+const percent = (value: number | null) => value === null ? 'Chưa có' : value.toLocaleString('vi-VN', { style: 'percent', maximumFractionDigits: 1 });
+function ErrorCounts({ rows }: { rows: EvalResult['error_counts'] }) {
+  if (!rows.length) return <p>Chưa có dòng lỗi tổng hợp. API chưa phân biệt tệp lỗi chưa được ghi với tệp lỗi rỗng.</p>;
+  const methods = [...new Set([...METHODS.map(([method]) => method), ...rows.map(row => row.method)])].filter(method => rows.some(row => row.method === method));
+  return <table className={[s.table, s.compare, s.errors].join(' ')}><caption>Số dòng lỗi theo phương pháp từ lượt đang chọn; không phải số bài lỗi</caption><thead><tr><th scope="col">Loại lỗi</th>{methods.map(method => <th key={method ?? 'unknown'} scope="col">{METHODS.find(([key]) => key === method)?.[1] ?? text(method)}</th>)}</tr></thead><tbody>{[...new Set(rows.map(row => row.error_type))].map(type => <tr key={type ?? 'unknown'}><th scope="row">{ERROR_NAMES[type ?? ''] ?? text(type)}</th>{methods.map(method => {
+    const count = rows.find(row => row.method === method && row.error_type === type)?.count;
+    return <td key={method ?? 'unknown'} data-label={METHODS.find(([key]) => key === method)?.[1] ?? text(method)}>{typeof count === 'number' && Number.isFinite(count) ? count.toLocaleString('vi-VN') : 'Chưa có'}</td>;
+  })}</tr>)}</tbody></table>;
 }
-function text(value: unknown, fallback = 'Chưa có') {
-  return typeof value === 'string' && value ? value : fallback;
-}
-function number(value: unknown) {
-  return typeof value === 'number' && Number.isFinite(value) ? value.toLocaleString('vi-VN') : 'Chưa có';
-}
-function percent(value: unknown) {
-  return typeof value === 'number' && Number.isFinite(value) ? value.toLocaleString('vi-VN', { style: 'percent', maximumFractionDigits: 2 }) : 'Chưa có';
-}
-function date(value: unknown) {
-  if (typeof value !== 'string' || Number.isNaN(Date.parse(value))) return 'Chưa rõ thời điểm';
-  return new Date(value).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
-}
-function labelName(value: string) {
-  return value === 'micro' ? 'Gộp toàn bộ (micro)' : LABEL_NAME[value as Label] ?? value;
-}
-function ScoreCells({ score }: { score: JsonObject }) {
-  return <><td>{percent(score.precision)}</td><td>{percent(score.recall)}</td><td>{percent(score.f1)}</td><td>{number(score.support)}</td></>;
-}
-function Metrics({ value }: { value: NonNullable<EvalResult['metrics']> }) {
-  const methods = Object.entries(value).map(([method, data]) => ({ method, data: object(data) }));
-  const rateRows = methods.flatMap(({ method, data }) => [
-    ...Object.entries(RATE_GROUPS).flatMap(([key, title]) => Object.entries(object(data[key])).map(([field, rate]) => ({ method, title: title + ' · ' + (FIELD_NAME[field] ?? field), rate: object(rate) }))),
-    ...Object.entries(SYSTEM_RATES).filter(([key]) => key in data).map(([key, title]) => ({ method, title, rate: object(data[key]) })),
-  ]);
-  const confusion = methods.filter(({ data }) => Object.keys(object(data.price_fee_confusion)).length > 0);
-  const hasScores = methods.some(({ data }) => Object.keys(object(object(data.entities).strict)).length > 0);
-
-  return <>
-    <section className={s.panel} aria-labelledby="eval-scores-title"><div className={r.heading}><h2 id="eval-scores-title"><span className={r.step}>02</span>Precision / Recall / F1</h2><span className={r.hint}>Đơn vị: % · mẫu số theo API</span></div>
-      {hasScores ? <div className={r.scroll} role="region" tabIndex={0} aria-label="Chỉ số tổng hợp"><table className={r.table}>
-        <caption>Khớp biên và nhãn chính xác (strict), gộp toàn bộ thực thể (micro). Giá trị thiếu giữ là “Chưa có”.</caption>
-        <thead><tr><th scope="col">Phương pháp</th><th scope="col">Precision (%)</th><th scope="col">Recall (%)</th><th scope="col">F1 (%)</th><th scope="col">Support (thực thể)</th></tr></thead>
-        <tbody>{methods.map(({ method, data }) => <tr key={method} className={r.micro}><th scope="row">{METHOD_NAME[method] ?? method}</th><ScoreCells score={object(object(object(data.entities).strict).micro)} /></tr>)}</tbody>
-      </table></div> : <p className={r.hint}>Response chưa có chỉ số thực thể strict. Không suy P/R/F1 từ các tỉ lệ khác.</p>}
-      {methods.map(({ method, data }) => {
-        const entities = object(data.entities);
-        return <div key={method} className={r.metricGroup}>
-          {['strict', 'partial'].filter(mode => Object.keys(object(entities[mode])).length > 0).map(mode => <details key={mode} className={r.disclosure}>
-            <summary>{METHOD_NAME[method] ?? method} · {mode === 'strict' ? 'Khớp chính xác' : 'Khớp chồng lấn'} · từng nhãn</summary>
-            <div className={r.scroll} role="region" tabIndex={0} aria-label={method + ' ' + mode}><table className={r.table}>
-              <caption>{mode === 'strict' ? 'strict: cùng biên và nhãn.' : 'partial: có chồng lấn theo bộ đánh giá.'} TP / FP / FN và support là số thực thể, giữ nguyên response.</caption>
-              <thead><tr><th scope="col">Nhãn</th><th scope="col">P (%)</th><th scope="col">R (%)</th><th scope="col">F1 (%)</th><th scope="col">Support</th><th scope="col">TP</th><th scope="col">FP</th><th scope="col">FN</th></tr></thead>
-              <tbody>{Object.entries(object(entities[mode])).map(([label, raw]) => { const score = object(raw); return <tr key={label} className={label === 'micro' ? r.micro : undefined}><th scope="row">{labelName(label)}</th><ScoreCells score={score} /><td>{number(score.tp)}</td><td>{number(score.fp)}</td><td>{number(score.fn)}</td></tr>; })}</tbody>
-            </table></div>
-          </details>)}
-        </div>;
-      })}
-    </section>
-    {rateRows.length > 0 && <section className={s.panel} aria-labelledby="eval-rates-title"><div className={r.heading}><h2 id="eval-rates-title">Chuẩn hóa và để trống</h2></div>
-      <div className={r.scroll} role="region" tabIndex={0} aria-label="Tỉ lệ chuẩn hóa và để trống"><table className={r.table}><caption>Tỉ lệ và mẫu số n được lấy trực tiếp từ metrics; n = 0 không được đổi thành tỉ lệ 0%.</caption>
-        <thead><tr><th scope="col">Phương pháp</th><th scope="col">Chỉ số</th><th scope="col">Tỉ lệ (%)</th><th scope="col">n (mẫu)</th></tr></thead>
-        <tbody>{rateRows.map(row => <tr key={row.method + ':' + row.title}><th scope="row">{METHOD_NAME[row.method] ?? row.method}</th><td>{row.title}</td><td>{percent(row.rate.value)}</td><td>{number(row.rate.n)}</td></tr>)}</tbody>
-      </table></div>
-    </section>}
-    {confusion.length > 0 && <section className={s.panel} aria-labelledby="eval-confusion-title"><div className={r.heading}><h2 id="eval-confusion-title">Nhầm giá thuê và phí</h2></div>
-      <div className={r.scroll} role="region" tabIndex={0} aria-label="Số lần nhầm giá và phí"><table className={r.table}><caption>Số trường hợp do bộ đánh giá đếm; không cộng vào tiền thuê hay suy ra tỉ lệ.</caption>
-        <thead><tr><th scope="col">Phương pháp</th><th scope="col">Giá bị gán thành phí (ca)</th><th scope="col">Phí bị gán thành giá (ca)</th></tr></thead>
-        <tbody>{confusion.map(({ method, data }) => { const counts = object(data.price_fee_confusion); return <tr key={method}><th scope="row">{METHOD_NAME[method] ?? method}</th><td>{number(counts.gold_PRICE_system_FEE)}</td><td>{number(counts.gold_FEE_system_PRICE)}</td></tr>; })}</tbody>
-      </table></div>
-    </section>}
-  </>;
+function Scores({ metrics }: { metrics: Json }) {
+  const strict = (method: string) => object(object(object(metrics[method]).entities).strict);
+  const labels = LABELS.filter(([label]) => METHODS.some(([method]) => label in strict(method)));
+  if (!labels.length) return <StateBox title="Chưa có chỉ số thực thể strict"><p>Không suy Precision, Recall hay F1 từ những tỉ lệ khác.</p></StateBox>;
+  return <section className={s.panel}><h2>P / R / F1 theo nhãn</h2><p className={s.muted}>P: đúng trong số đã gán · R: tìm được trong số nhãn chuẩn · F1: kết hợp P và R. Giá trị cao nhất trong số có dữ liệu được in đậm và gạch chân.</p><table className={[s.table, s.compare].join(' ')}><caption>Khớp chính xác biên và nhãn (strict) · đơn vị % · ô thiếu giữ “Chưa có”</caption><thead><tr><th scope="col" rowSpan={2}>Nhãn</th>{METHODS.map(([method, title]) => <th key={method} colSpan={3} scope="colgroup">{title}</th>)}</tr><tr>{METHODS.flatMap(([method]) => ['P', 'R', 'F1'].map(key => <th key={method + key} scope="col">{key}</th>))}</tr></thead><tbody>{labels.map(([label, name]) => <tr key={label}><th scope="row">{name}</th>{METHODS.flatMap(([method, title]) => ['precision', 'recall', 'f1'].map((key, i) => {
+    const value = score(object(strict(method)[label])[key]);
+    const values = METHODS.map(([other]) => score(object(strict(other)[label])[key])).filter((item): item is number => item !== null);
+    return <td key={method + key} data-label={title + ' · ' + ['P', 'R', 'F1'][i]} className={value !== null && value === Math.max(...values) ? s.best : undefined}>{percent(value)}</td>;
+  }))}</tr>)}</tbody></table></section>;
 }
 
 export function Evaluation() {
-  const [runs, setRuns] = useState<EvalRuns | null>(null);
-  const [selected, setSelected] = useState('');
+  const [runs, setRuns] = useState<EvalRuns | null>(null), [selected, setSelected] = useState('');
   const [detail, setDetail] = useState<{ id: string; value: EvalResult } | null>(null);
-  const [listError, setListError] = useState('');
-  const [detailError, setDetailError] = useState('');
-  const [reload, setReload] = useState(0);
-  const [detailReload, setDetailReload] = useState(0);
-  const [forbidden, setForbidden] = useState(false);
+  const [listError, setListError] = useState(''), [detailError, setDetailError] = useState('');
+  const [reload, setReload] = useState(0), [detailReload, setDetailReload] = useState(0);
   useEffect(() => {
-    const controller = new AbortController();
-    setRuns(null); setListError(''); setDetail(null);
-    api<EvalRuns>('eval/runs', { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(20000)]) }).then(value => {
+    const controller = new AbortController(); setRuns(null); setListError(''); setDetail(null);
+    api<EvalRuns>('eval/runs', { signal: controller.signal }).then(value => {
       if (controller.signal.aborted) return;
       setRuns(value);
-      setSelected(current => value.items.some(run => run.run_id === current) ? current : '');
-    }).catch(caught => {
-      if (controller.signal.aborted) return;
-      if (caught instanceof WorkspaceError && caught.status === 403) setForbidden(true);
-      else setListError(messageOf(caught));
-    });
+      setSelected(current => value.items.some(run => run.run_id === current) ? current : value.items.find(run => run.run_id)?.run_id ?? '');
+    }).catch(caught => { if (!controller.signal.aborted) setListError(caught instanceof WorkspaceError && caught.status === 403 ? 'Bạn chưa có quyền xem đánh giá.' : 'Không tải được danh sách lượt chạy.'); });
     return () => controller.abort();
   }, [reload]);
-
   useEffect(() => {
     setDetail(null); setDetailError('');
     if (!selected || !runs) return;
     const controller = new AbortController();
-    api<EvalResult>('eval/runs/' + encodeURIComponent(selected), { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(20000)]) }).then(value => {
+    api<EvalResult>('eval/runs/' + encodeURIComponent(selected), { signal: controller.signal }).then(value => {
       if (!controller.signal.aborted) setDetail({ id: selected, value });
-    }).catch(caught => {
-      if (controller.signal.aborted) return;
-      if (caught instanceof WorkspaceError && caught.status === 403) setForbidden(true);
-      else setDetailError(messageOf(caught));
-    });
+    }).catch(caught => { if (!controller.signal.aborted) setDetailError(caught instanceof WorkspaceError && caught.status === 404 ? 'Lượt chạy này không còn trong danh sách đã lưu. Tải lại danh sách để chọn lượt khác.' : 'Không tải được chi tiết lượt chạy.'); });
     return () => controller.abort();
   }, [selected, runs, detailReload]);
-
-  if (forbidden) return <Forbidden />;
-  const choices = runs?.items.filter(run => typeof run.run_id === 'string' && run.run_id.length > 0) ?? [];
+  const choices = runs?.items.filter(run => run.run_id) ?? [];
   const result = detail?.id === selected ? detail.value : null;
   const manifest = result?.manifest;
-  return <><Intro eyebrow="Không gian nghiên cứu" title="Đánh giá" description="Đọc kết quả của từng lần chạy đã lưu. Chỉ số, tập dữ liệu và phiên bản luôn đi cùng nhau." />
-    <div className={r.stack}>
-      <section className={s.panel} aria-labelledby="eval-run-title"><div className={r.heading}><h2 id="eval-run-title"><span className={r.step}>01</span>Lần chạy đánh giá</h2><span className={r.hint}>Chỉ đọc kết quả đã có</span></div>
-        <div className={r.runPicker}><div className={s.field}><label className={s.label} htmlFor="eval-run">Chọn run</label>
-          <select id="eval-run" className={s.select} value={selected} disabled={!runs || choices.length === 0} onChange={event => setSelected(event.target.value)} aria-describedby="eval-run-hint">
-            <option value="">{!runs ? 'Đang đọc danh sách…' : choices.length ? 'Chọn một lần chạy' : 'Chưa có run để chọn'}</option>
-            {choices.map(run => <option key={run.run_id} value={run.run_id!}>{run.run_id}{run.split ? ' · ' + run.split : ''}{run.frozen === true ? ' · Đã đóng băng' : ''}</option>)}
-          </select>
-        </div><Button variant="secondary" disabled={!runs && !listError} onClick={() => setReload(value => value + 1)}>Tải lại danh sách</Button></div>
-        <p id="eval-run-hint" className={r.hint}>Trang này không khởi chạy đánh giá hoặc gọi LLM. Chọn run từ danh sách API trả về.</p>
-        {runs && choices.length < runs.items.length && <p className={s.notice}>Một số manifest chưa có run_id nên chưa thể mở chi tiết; cần kiểm tra dữ liệu lần chạy.</p>}
-      </section>
-      {listError && <ErrorNotice message={listError} retry={() => setReload(value => value + 1)} />}
-      {!runs && !listError && <Loading label="Đang đọc các lần chạy đánh giá…" />}
-      {runs && runs.items.length === 0 && <Empty title="Chưa có lần chạy đánh giá"><div className={r.emptyGuide}><p>API chưa có run nào. Chưa có cơ sở để hiển thị Precision, Recall hoặc F1.</p><p>Nhóm nghiên cứu có thể chạy bộ đánh giá trên tập dev rồi tải lại danh sách. Trong lúc đó, dùng <Link href="/team/lab">Lab đối chiếu</Link> để kiểm tra bằng chứng từng bài.</p><p>Tập test giữ khóa theo quy trình đóng băng; không dùng nhãn test để chỉnh rule hoặc prompt.</p></div></Empty>}
-      {runs && choices.length > 0 && !selected && <Empty title="Chọn một lần chạy để đọc kết quả"><p className={r.hint}>Giữ cùng run_id khi đối chiếu phiên bản, chỉ số và bảng lỗi.</p></Empty>}
-      {selected && runs && detailError && <ErrorNotice message={detailError} retry={() => setDetailReload(value => value + 1)} />}
-      {selected && runs && !result && !detailError && <Loading label="Đang đọc chỉ số và bảng lỗi của run đã chọn…" />}
-      {result && manifest && <>
-        <section className={s.panel} aria-labelledby="eval-manifest-title"><div className={r.heading}><h2 id="eval-manifest-title">Thông tin lần chạy</h2><span className={manifest.frozen === true ? r.frozen : s.badge}>{manifest.frozen === true ? 'Đã đóng băng' : manifest.frozen === false ? 'Chưa đóng băng' : 'Chưa có thông tin đóng băng'}</span></div>
-          <p className={r.mono}>run_id: {text(manifest.run_id, selected)}</p>
-          <dl className={r.metadata}><div><dt>Tập dữ liệu</dt><dd>{text(manifest.split)}</dd></div><div><dt>Bắt đầu (giờ Việt Nam)</dt><dd>{date(manifest.started_at)}</dd></div><div><dt>Kết thúc (giờ Việt Nam)</dt><dd>{date(manifest.finished_at)}</dd></div>
-            <div><dt>Phương pháp</dt><dd>{Array.isArray(manifest.methods) ? manifest.methods.filter(item => typeof item === 'string').map(method => METHOD_NAME[method] ?? method).join(' · ') || 'Chưa có' : 'Chưa có'}</dd></div><div><dt>Commit</dt><dd className={r.mono}>{text(manifest.git_commit)}</dd></div><div><dt>Số bài chuẩn</dt><dd>{number(object(manifest.gold).n_posts)}</dd></div></dl>
-          {manifest.split === 'test' && <p className={[s.notice, s.section].join(' ')}>Đây là kết quả trên tập test. Không dùng nhãn test để chỉnh quy tắc hoặc prompt.</p>}
-        </section>
-        {result.metrics === null ? <Empty title="Run chưa có chỉ số"><p className={r.hint}>API trả metrics = null. Manifest và bảng lỗi hiện có vẫn đọc được; thử tải lại khi bộ đánh giá ghi xong.</p><Button variant="secondary" onClick={() => setDetailReload(value => value + 1)}>Tải lại run</Button></Empty>
-          : Object.keys(result.metrics).length === 0 ? <Empty title="Metrics đang rỗng"><p className={r.hint}>API đã trả một đối tượng metrics rỗng, không có số liệu để hiển thị.</p></Empty> : <Metrics value={result.metrics} />}
-        <section className={s.panel} aria-labelledby="eval-errors-title"><div className={r.heading}><h2 id="eval-errors-title"><span className={r.step}>03</span>Bảng lỗi tổng hợp</h2></div>
-          {result.error_counts.length ? <div className={r.scroll} role="region" tabIndex={0} aria-label="Bảng lỗi tổng hợp"><table className={r.table}><caption>Số dòng lỗi theo phương pháp và loại do API tổng hợp.</caption><thead><tr><th scope="col">Phương pháp</th><th scope="col">Loại lỗi</th><th scope="col">Số dòng lỗi</th></tr></thead>
-            <tbody>{result.error_counts.map((row, index) => <tr key={row.method + ':' + row.error_type + ':' + index}><th scope="row">{row.method ? METHOD_NAME[row.method] ?? row.method : 'Chưa rõ phương pháp'}</th><td className={r.mono}>{row.error_type ?? 'Chưa rõ loại lỗi'}</td><td>{number(row.count)}</td></tr>)}</tbody>
-          </table></div> : <p className={r.hint}>API trả bảng lỗi rỗng. Điều này chưa khẳng định không có lỗi: API không cho biết tệp lỗi chưa có hay đã được ghi mà không có dòng lỗi.</p>}
-          <p className={[r.hint, s.section].join(' ')}>Hiện API chỉ cung cấp số lỗi tổng hợp, chưa có endpoint xem từng bài lỗi hoặc tải báo cáo. Trang không tạo liên kết chi tiết khi chưa có dữ liệu.</p>
-        </section>
-        <section className={s.panel} aria-label="Thông tin kỹ thuật đánh giá"><details className={r.disclosure}><summary>Manifest và phiên bản đầy đủ</summary><pre className={r.pre}>{JSON.stringify(result.manifest, null, 2)}</pre></details>
-          <details className={r.disclosure}><summary>Metrics gốc từ API (gồm chi phí nếu có)</summary><pre className={r.pre}>{JSON.stringify(result.metrics, null, 2)}</pre></details>
-        </section>
-      </>}
-    </div>
-  </>;
+  const versions = object(manifest?.versions);
+  const example = manifest?.is_demo === true || object(result).is_demo === true;
+  return <div className={s.page}>
+    <TeamHeader current="evaluation" title="Đánh giá" description="So sánh Regex, LLM và Kết hợp trên cùng một lượt đã lưu." />
+    <p className={s.note}>Chỉ đọc kết quả đã lưu. Mỗi lượt giữ tập dữ liệu, phiên bản và commit; trang không khởi chạy đánh giá hoặc gọi mô hình.</p>
+    <div className={s.runPicker}><label className={s.field}>Lượt chạy<select value={selected} disabled={!runs || !choices.length} onChange={event => setSelected(event.target.value)}><option value="">{runs ? 'Chọn một lượt chạy' : 'Đang tải danh sách…'}</option>{choices.map(run => <option key={run.run_id} value={run.run_id!}>{run.run_id} · {run.split ?? 'Chưa rõ tập'}{run.frozen ? ' · Đã đóng băng' : ''}</option>)}</select></label><button type="button" disabled={!runs && !listError} onClick={() => setReload(value => value + 1)}>Tải lại danh sách</button></div>
+    <Link className={s.link} href="/team/kiem-tra">Kiểm tra một bài</Link>
+    {listError ? <StateBox error title={listError}><button type="button" onClick={() => setReload(value => value + 1)}>Thử lại danh sách</button></StateBox> : !runs ? <StateBox title="Đang tải các lượt đánh giá…" /> : !choices.length ? <StateBox title={runs.items.length ? 'Lượt chạy chưa có mã hợp lệ' : 'Chưa có lượt đánh giá nào'}><div className={s.emptyGuide}><p>Chưa có cơ sở để hiển thị Precision, Recall hoặc F1. Nhóm nghiên cứu có thể chạy bộ đánh giá trên tập dev rồi tải lại.</p><p>Lệnh trên máy nhóm: <code>make eval</code></p><p>Không dùng nhãn test để chỉnh quy tắc hoặc prompt.</p></div></StateBox> : null}
+    {choices.length > 0 && !selected && <StateBox title="Chọn một lượt chạy để đọc kết quả" />}
+    {selected && runs && (detailError ? <StateBox error title={detailError}><button type="button" onClick={() => setDetailReload(value => value + 1)}>Thử lại chi tiết</button></StateBox> : !result ? <StateBox title="Đang tải chỉ số của lượt đã chọn…" /> : null)}
+    {result && manifest && <>
+      {example && <p className={s.note}><strong>Ví dụ — số mô phỏng để xem bố cục.</strong> Đây không phải kết quả đánh giá của hệ thống.</p>}
+      {manifest.split === 'test' && <p className={s.note}>Kết quả trên tập test đã khóa. Không dùng nhãn test để chỉnh quy tắc hoặc prompt.</p>}
+      {result.metrics === null ? <StateBox title="Lượt chạy chưa có chỉ số"><p>Chỉ số chưa được ghi. Không thay giá trị thiếu bằng 0.</p><button type="button" onClick={() => setDetailReload(value => value + 1)}>Tải lại chỉ số</button></StateBox> : !Object.keys(result.metrics).length ? <StateBox title="Chỉ số đang rỗng" /> : <Scores metrics={result.metrics} />}
+      <div className={s.two}><section className={s.panel}><h2>Loại lỗi</h2><ErrorCounts rows={result.error_counts} /><p className={s.muted}>Chưa có dữ liệu để mở từng bài lỗi hay tải báo cáo.</p></section>
+      <section className={s.panel}><h2>Thông tin lượt chạy</h2><dl className={s.meta}>{[['Mã lượt', text(manifest.run_id)], ['Tập dữ liệu', text(manifest.split)], ['Đóng băng', manifest.frozen === true ? 'Đã đóng băng' : manifest.frozen === false ? 'Chưa đóng băng' : 'Chưa có thông tin'], ['Lexicon', text(versions.lexicon)], ['Prompt', text(versions.prompt)], ['Mô hình', text(versions.model)], ['Bắt đầu (giờ Việt Nam)', displayDate(typeof manifest.started_at === 'string' ? manifest.started_at : null)], ['Kết thúc (giờ Việt Nam)', displayDate(typeof manifest.finished_at === 'string' ? manifest.finished_at : null)], ['Commit', text(manifest.git_commit)]].map(([key, value]) => <div key={key}><dt>{key}</dt><dd>{value}</dd></div>)}</dl><p className={s.muted}>Chỉ đối chiếu số liệu với đúng tập và phiên bản của lượt đó. Không nhập tay chỉ số trên trang.</p></section></div>
+    </>}
+  </div>;
 }

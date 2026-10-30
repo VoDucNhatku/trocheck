@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from fastapi import APIRouter, Depends, Query, Response
+from fastapi import APIRouter, Depends, Query, Response, Request
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -16,7 +16,7 @@ from app.core.config import Settings
 from app.core.db import get_session
 from app.core.errors import ApiError
 from app.models import User
-from app.schemas import IngestBatch, IngestPost, LabRunRequest, LoginRequest, ReviewDecision, TokenCreate
+from app.schemas import IngestBatch, IngestPost, LabRunRequest, LoginRequest, RegisterRequest, ReviewDecision, TokenCreate
 from app.schemas.public import Comparison, ErrorResponse, ListingDetail, ListingsResponse, StatsOverview
 from app.schemas import workspace as dto
 from app.services import analyses, evaluation, ingest, lab, listings, market, reviews, team, users
@@ -42,7 +42,7 @@ def login(body: LoginRequest, response: Response, session: Session = Depends(get
     if user is None:
         raise ApiError(401, message="Sai tên đăng nhập hoặc mật khẩu")
     response.set_cookie(settings.session_cookie_name,
-                        security.sign_session(user.id, settings.secret_key, settings.session_max_age_seconds),
+                        security.sign_session(user.id, settings.secret_key, settings.session_max_age_seconds, user.auth_version),
                         max_age=settings.session_max_age_seconds, httponly=True, samesite="lax",
                         secure=settings.cookie_secure)
     return users.me(user)
@@ -52,6 +52,25 @@ def login(body: LoginRequest, response: Response, session: Session = Depends(get
 def logout(response: Response, settings: Settings = Depends(settings_dep)):
     response.delete_cookie(settings.session_cookie_name)
     return {"logged_out": True}
+
+
+def registration_limit(request: Request, settings: Settings = Depends(settings_dep)):
+    # Use the transport peer only; arbitrary forwarding headers are not an identity.
+    request.app.state.registration_limit.check(request.client.host if request.client else "unknown",
+                                               settings.register_rate_limit, settings.register_window_seconds)
+
+
+@router.post("/auth/register", status_code=201, tags=["auth"], response_model=dto.SessionUser,
+             dependencies=[Depends(registration_limit)],
+             responses={409: {"model": ErrorResponse}, 422: {"model": ErrorResponse}, 429: {"model": ErrorResponse}})
+def register(body: RegisterRequest, response: Response, session: Session = Depends(get_session),
+             settings: Settings = Depends(settings_dep)):
+    user = users.register(session, body.username, body.password, body.email)
+    response.set_cookie(settings.session_cookie_name,
+                        security.sign_session(user.id, settings.secret_key, settings.session_max_age_seconds, user.auth_version),
+                        max_age=settings.session_max_age_seconds, httponly=True, samesite="lax",
+                        secure=settings.cookie_secure)
+    return users.me(user)
 
 
 @router.get("/auth/me", tags=["auth"], response_model=dto.SessionUser)

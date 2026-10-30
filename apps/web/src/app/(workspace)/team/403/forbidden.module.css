@@ -1,0 +1,15 @@
+.layout { display:grid; grid-template-columns:minmax(240px,.85fr) minmax(0,1.15fr); align-items:center; gap:48px; min-height:65vh; }
+.illustration { padding:24px 0; }
+.sheet { width:100%; max-width:320px; margin-inline:auto; box-shadow:var(--shadow-paper); border-color:var(--border-strong); }
+.sheetHeading { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; padding-bottom:20px; border-bottom:1px dashed var(--border-strong); }
+.rent { display:grid; gap:8px; padding:24px 0 16px; color:var(--ink-2); }
+.rent strong { font-size:28px; color:var(--ink); }
+.lock { display:flex; align-items:center; gap:10px; width:fit-content; max-width:100%; padding:12px; border:2px solid var(--accent); color:var(--accent); background:var(--accent-subtle); font-size:14px; }
+.lock svg { flex:none; }
+.fields { display:grid; gap:10px; margin-top:20px; padding-top:20px; border-top:1px dashed var(--border-strong); color:var(--ink-3); }
+.copy { min-width:0; }
+.copy > a { display:inline-flex; margin-top:24px; }
+@media(max-width:767px) {
+  .layout { grid-template-columns:minmax(0,1fr); gap:24px; min-height:0; }
+  .illustration { padding:16px 0; }
+}

@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import timedelta
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core import security
@@ -13,6 +14,34 @@ from app.core.ids import iso, utcnow
 from app.models import ExtensionToken, User
 
 ROLES = ("renter", "collector", "reviewer", "researcher", "admin")
+
+
+def register(session: Session, username: str, password: str, email: str | None = None) -> User:
+    def taken():
+        return ApiError(409, code="username_taken", message="Tên tài khoản đã được sử dụng",
+                        field_errors={"username": "Hãy chọn tên tài khoản khác"})
+    if session.scalar(select(User).where(User.username == username)) is not None:
+        raise taken()
+    def email_taken():
+        return ApiError(409, code="email_taken", message="Email này đã có tài khoản. Bạn có thể đăng nhập.",
+                        field_errors={"email": "Email này đã có tài khoản"})
+    if email is not None:
+        email = security.normalize_email(email)
+        if session.scalar(select(User).where(User.email == email)) is not None:
+            raise email_taken()
+    user = User(username=username, email=email, password_hash=security.hash_password(password), roles=["renter"])
+    session.add(user)
+    try:
+        session.commit()
+    except IntegrityError:
+        session.rollback()
+        # The unique constraint also protects concurrent registrations of the same name.
+        if session.scalar(select(User).where(User.username == username)) is not None:
+            raise taken() from None
+        if email is not None and session.scalar(select(User).where(User.email == email)) is not None:
+            raise email_taken() from None
+        raise
+    return user
 
 
 def create_user(session: Session, username: str, password: str, roles: list[str]) -> User:

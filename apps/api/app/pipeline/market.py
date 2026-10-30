@@ -2,13 +2,15 @@
 
 Only exact monthly rents with a known basis, a ward and a property type, inside the window,
 one (latest) listing per cluster. The target's whole cluster is excluded. N < min_n -> no
-median, `insufficient_data`. P25-P75 describe spread; they are not a confidence interval.
+mean or median, `insufficient_data`. P25-P75 describe spread; they are not a confidence interval.
 """
 from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
+
+from app.core.formatting import format_number_vi
 
 AREA_BANDS = [(None, 20, "<20"), (20, 30, "[20,30)"), (30, 40, "[30,40)"), (40, 60, "[40,60)"), (60, None, ">=60")]
 
@@ -113,10 +115,12 @@ def percentile(values: list[float], q: float) -> float:
 @dataclass
 class GroupStats:
     n: int
+    mean: int | None
     median: int | None
     p25: int | None
     p75: int | None
     n_per_m2: int
+    mean_per_m2: int | None
     median_per_m2: int | None
     data_from: str | None
     data_to: str | None
@@ -131,10 +135,12 @@ def group_stats(rows: list[MarketRow], cfg: MarketConfig) -> GroupStats:
     enough = n >= cfg.min_n
     return GroupStats(
         n=n,
+        mean=round(sum(prices) / n) if enough else None,
         median=round(percentile(prices, 0.5)) if enough else None,
         p25=round(percentile(prices, 0.25)) if enough else None,
         p75=round(percentile(prices, 0.75)) if enough else None,
         n_per_m2=len(per_m2),
+        mean_per_m2=round(sum(per_m2) / len(per_m2)) if len(per_m2) >= cfg.min_n else None,
         median_per_m2=round(percentile(per_m2, 0.5)) if len(per_m2) >= cfg.min_n else None,
         data_from=dates[0].date().isoformat() if dates else None,
         data_to=dates[-1].date().isoformat() if dates else None,
@@ -168,7 +174,7 @@ def compare(target: MarketRow, pool: list[MarketRow], cfg: MarketConfig) -> Comp
         "property_type": target.property_type, "basis": target.rent_basis,
         "area_band": band, "window_days": cfg.window_days, "broad_group": broad,
     }
-    empty = GroupStats(0, None, None, None, 0, None, None, None)
+    empty = group_stats([], cfg)
     if reasons or not target.property_type or target.property_type == "unknown":
         return Comparison("not_comparable", reasons, criteria, empty, None, None)
     if broad:
@@ -184,8 +190,8 @@ def compare(target: MarketRow, pool: list[MarketRow], cfg: MarketConfig) -> Comp
         return Comparison("insufficient_data", reasons + ["too_few_samples"], criteria, stats, None, None, group)
     delta = None
     verdict = None
-    if stats.median and stats.median > 0:
-        delta = round((target.rent_vnd - stats.median) / stats.median * 100, 1)
+    if stats.mean and stats.mean > 0:
+        delta = round((target.rent_vnd - stats.mean) / stats.mean * 100, 1)
         if delta < -cfg.near_percent:
             verdict = "lower"
         elif delta > cfg.near_percent:
@@ -211,12 +217,9 @@ def verdict_sentence(c: Comparison, rent_form: str | None = None, *, min_n: int 
         return "Chưa so sánh được."
     kind = PROPERTY_LABELS.get(c.criteria["property_type"], "")
     band = "" if c.criteria["broad_group"] else f" {c.criteria['area_band']} m²"
-    x = abs(c.delta_percent)
-    if c.verdict == "lower":
-        return f"Thấp hơn {x:.1f}% so với trung vị của {c.stats.n} tin {kind}{band} cùng phường."
-    if c.verdict == "higher":
-        return f"Cao hơn {x:.1f}% so với trung vị của {c.stats.n} tin {kind}{band} cùng phường."
-    return f"Gần trung vị ({c.delta_percent:+.1f}%) của {c.stats.n} tin {kind}{band} cùng phường."
+    delta = format_number_vi(c.delta_percent, decimals=1, signed=True)
+    relation = {"lower": "Thấp hơn", "higher": "Cao hơn"}.get(c.verdict, "Gần")
+    return f"{relation} mức trung bình ({delta}%) của {c.stats.n} tin {kind}{band} cùng phường."
 
 
 def disclaimer(c: Comparison) -> str:

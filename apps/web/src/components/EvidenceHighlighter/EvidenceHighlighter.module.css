@@ -68,7 +68,7 @@ button.mark:hover {
   left: 2px;
   bottom: calc(100% - 1px);
   font-family: var(--font-sans);
-  font-size: 9.5px;
+  font-size: 12px;
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.06em;
@@ -78,7 +78,7 @@ button.mark:hover {
 }
 
 .lg .tag {
-  font-size: 10.5px;
+  font-size: 12px;
   bottom: calc(100% + 1px);
 }
 

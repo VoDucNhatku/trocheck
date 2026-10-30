@@ -8,8 +8,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import router
+from app.api.auth_password import router as password_router
+from app.api.team_admin import router as team_admin_router
 from app.core import errors
 from app.core.config import get_settings
+from app.core.registration_limit import RegistrationLimit
 
 
 def create_app() -> FastAPI:
@@ -23,7 +26,10 @@ def create_app() -> FastAPI:
     app.add_middleware(CORSMiddleware, allow_origins=settings.origins, allow_credentials=True,
                        allow_methods=["GET", "POST", "DELETE"], allow_headers=["Authorization", "Content-Type"])
     errors.install(app)
+    app.state.registration_limit = RegistrationLimit()
     app.include_router(router)
+    app.include_router(password_router)
+    app.include_router(team_admin_router)
     return app
 
 

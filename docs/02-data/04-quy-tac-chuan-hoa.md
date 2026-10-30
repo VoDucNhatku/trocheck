@@ -36,6 +36,7 @@ Ký hiệu: `—` là để trống. Tiền tính bằng đồng (số nguyên).
 | `điện 4k` | electricity | 4.000 | unknown | Không tự thêm /kWh khi bài không ghi |
 | `điện giá nhà nước` | electricity | — | unknown | `state_rate = true` |
 | `nước 100k/người` | water | 100.000 | per_person_month | Chu kỳ tháng là mặc định của phí theo người; nếu bài ghi khác thì theo bài |
+| `nước 100k/tháng` | water | 100.000 | per_unit_month | Bài ghi /tháng: theo tháng; có /người thì ưu tiên per_person_month |
 | `nước 20k/khối` | water | 20.000 | per_m3 | |
 | `cọc 1 tháng` | deposit | — | months_of_rent | `months = 1` |
 | `cọc 3tr` | deposit | 3.000.000 | one_time | |

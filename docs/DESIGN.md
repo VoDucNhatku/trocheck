@@ -1,5 +1,84 @@
 # ReNER-VN — landing nhà ở, cuộn theo cảnh
 
+## Khu trong — Codex 3, 27/10/2026
+
+Phần này thay thế các quy định khu trong cũ; lịch sử landing/public phía dưới giữ nguyên.
+Hướng **bản đọc có căn cứ**: trả lời tiền nhà trước, cho xem đoạn nguồn ngay cạnh, dành khoảng rõ cho phần chưa biết.
+Nhóm duyệt làm việc trên bảng đối chiếu; khách thuê đọc phiếu tiền nhà. Density 7, variance 4, motion 3.
+
+### Màu, chữ và hình học
+
+Chỉ mở rộng `[data-workspace]` trong tokens.css; không đổi token landing.
+
+| Vai trò | Token / giá trị |
+|---|---|
+| Giấy / bề mặt / vùng phụ | paper #f6f4ee / surface #fffdf7 / subtle #eeece3 |
+| Chữ chính / phụ / chú thích | ink #172b25 / ink-2 #43564a / ink-3 #59655b |
+| Hành động / hover / active | accent #244b3c / #193c2e / #122f23, chữ surface |
+| Chọn / hover nền | accent-subtle #e7ede4 / hover #e7ebe1 |
+| Đường cấu trúc / viền control | border #d9dcd0 / border-strong #7d887b (đo ≥3:1 trước bàn giao) |
+| Cần chú ý | amber #f2cd64, nền #fff3ce, chữ #80420d |
+| Lỗi | danger #a33124 / danger-surface #fcece6 |
+
+Be Vietnam Pro: body14/1.65, đọc nguồn16/1.8, label14/1.5, caption12/1.6, section16/600, H1 28/1.4.
+Newsreader chỉ auth title và caption ảnh, tối đa32px trong app. Giá36/1.3/600, mobile28;
+giá khoảng dài được wrap ở ranh giới có nghĩa. JetBrains Mono chỉ ID/code/offset; tiền và bảng dùng tabular-nums.
+Không uppercase micro-label lặp. Kiểm “phường Nguyễn Thái Bình”, “12.500.000 đ/tháng/phòng”, “ặ ẩ ỡ”.
+
+Spacing4/8/12/16/24/32/48. Gutter desktop32, tablet24, phone16. Sidebar216px, main fluid tối đa1480px.
+Ở1440: 216 sidebar + 2×32 gutter + 1160 nội dung; Reading chia 1,15:1, gutter32px; cột nguồn đi cùng câu hỏi để giảm khoảng trống. Dưới1100 drawer thay sidebar;
+Dưới700 một cột, kết quả trước nguồn; ở768 kiểm tra cột ngắn và wrap theo nội dung. Không vùng cuộn lồng trong card.
+Radius: surface16, control8, auth input14; chip pill chỉ lọc; status4. Không shadow trên panel đứng yên;
+popover/dialog dùng shadow --shadow-overlay hiện có. Layer: sticky10, menu30, dialog native top-layer.
+
+### Component và trạng thái bắt buộc
+
+Mọi control có focus outline2px accent offset3px. Hover chỉ pointer fine; active tức thì. Disabled vẫn đọc được,
+native disabled và lời giải thích gần control. Pending khóa mutation đồng bộ bằng ref, không đổi chiều cao nút.
+
+| Component | Kích thước / bình thường | Hover / active / focus | Pending / lỗi / disabled |
+|---|---|---|---|
+| Button | min44px, pad12×16,14/600,radius8; một primary/view | hover120ms đổi màu; active accent-active; focus chung | min-width giữ nhãn, aria-busy, disabled; lỗi cạnh thao tác |
+| Input / select | min44px, font16, pad10×12, border-strong1px; auth52px | border accent, outline chung | aria-invalid, error id nối describedby; không xóa nội dung |
+| Checkbox/radio | native20px trong label min44px | accent/focus chung | khóa khi pending |
+| Chip | min44px hit, nội dung32, radius full | aria-pressed + border accent; không scale | disabled có lý do |
+| Tabs / segmented | min44px, label14, track vừa nội dung | chọn bằng underline2px hoặc surface; bàn phím native | không animation chuyển nội dung |
+| Dialog | max480px, padding28; native dialog | Escape và trả focus; tên/mô tả; autoFocus thao tác an toàn | pending chặn đóng; lỗi giữ draft |
+| Popover/menu | width280px tối đa viewport−32; dòng44px | origin trigger; Escape/outside đóng, return focus | logout lỗi tại menu, khóa lặp |
+| Toast/notice | text14, pad12×16, status hoặc alert | không phủ nút | success/error có chữ; không tự biến mất lỗi cần xử lý |
+| Table row | min56px, padding12; header sentence case12 | action rõ, hover nền nhẹ | skeleton giữ pitch; empty một hàng colspan |
+| Status | chữ12/500, pad2×6, radius4 | không tương tác nếu không có action | nhãn demo/quyền/job là các trục riêng |
+| Skeleton | thanh tĩnh theo hình nội dung | không shimmer | aria-busy/status có tên |
+| Empty / no-match | heading16 + một câu + action có thật | không ảnh trang trí | kho rỗng khác lọc không khớp; error có retry |
+
+Motion: hover100–140ms, menu160ms opacity/translate4px, drawer200ms transform, vùng120–180ms nếu giúp hiểu;
+ease-out dùng token --ease-out cubic-bezier(.16,1,.3,1). Không animation vào trang, count-up, scale(0),
+transition:all, state mỗi frame. Reduced motion bỏ chuyển động; thay đổi bằng bàn phím tức thì.
+
+### Page patterns và giới hạn
+
+- Auth: form trái, ảnh minh họa sân nhà phải, caption riêng, không chữ đè ảnh; mobile form trước, ảnh thu nhỏ/ẩn.
+- Analyze: vùng dán là khối chính; “toàn bộ bài” và quyền riêng tư cạnh nút gửi, không % tiến độ giả.
+- Reading: giá lớn và kỳ/basis; phí dạng dải ô có đơn vị; cọc riêng; thước P25/trung vị/P75 từ API;
+  N<10 chỉ giải thích; câu hỏi còn thiếu từ field reasons; chọn field liên kết đúng evidence Unicode.
+- Review: nguyên văn ở trên bảng Regex/LLM/giá trị chọn; editor mở theo nhóm; quyết định sticky trong flow,
+  không che cuối trang. 409 giữ draft, dùng bản mới phải có thao tác rõ; lý do loại bắt buộc.
+- Market: đồ thị thanh ngang theo phường/loại ở trước bảng phân vị, có đơn vị/trục và nguồn; không tính lại median ở client.
+- Account: danh tính tách khu kết nối, token hiện một lần; actions có xác nhận và lỗi riêng.
+- Kho/hàng duyệt: bảng phẳng; đoạn bài và lý do là cột chính; lọc và phân trang server.
+- Lab/evaluation: input/run selector gọn, kết quả có nhịp phân đoạn, chứng cứ/mẫu số liền metric;
+  dữ liệu nghiên cứu chưa có hiện rõ, không ngụy tạo chart.
+
+Cấm: gradient/glass/glow/neon, icon trong ô màu, emoji trang trí, panel lồng lặp, badge nhiều màu, chữ đệm,
+số hoặc nút bịa, hover nhấc card. NER màu chỉ trong evidence cùng nhãn; source thật có emoji vẫn giữ nguyên.
+
+Checklist trước bàn giao: 1440/1024/768/390/360 không overflow; label/focus/Escape/return focus; pending/error/empty;
+null không thành0, phí không cộng, per-person không nhân; role server; ảnh minh họa có caption; contrast text≥4.5,
+control≥3; ảnh trước/sau mở xem; hai critique rounds cho auth/Reading/Review; tests mới và hồi quy có output.
+Các tỉ lệ đo và chênh lệch có lý do ghi tại20-redesign-delivery.md, không coi các giá trị token là bằng chứng đã đo.
+
+---
+
 Cập nhật landing 26/10/2026: theo yêu cầu mới, trang ngoài dùng cảnh sân nhà Việt Nam do AI tạo, nền kem và điểm nhấn vàng/xanh. Giữ nguyên API, tìm trọ, chi tiết, số liệu kho và demo/kho thật. Ảnh là minh họa không gian, không phải ảnh tin cho thuê. Thiết kế trang bên trong chưa đổi ở bước này.
 
 - `HousingScene`: ảnh ưu tiên tải bằng Next Image, native sticky + transform/opacity, không video hoặc chặn cuộn. Ảnh lùi nhẹ và khung tiền cảnh chuyển động độc lập trong một đoạn ngắn; nội dung HTML cuộn tự nhiên.

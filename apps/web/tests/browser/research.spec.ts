@@ -73,7 +73,7 @@ function errorsOn(page: Page) {
 test.beforeAll(async () => { await mkdir(shots, { recursive: true }); });
 
 test('anonymous routes keep the return path and APIs return 401', async ({ page, request }) => {
-  for (const route of ['/team/lab', '/team/danh-gia']) {
+  for (const route of ['/team/kiem-tra', '/team/danh-gia']) {
     await page.goto(route);
     await expect(page).toHaveURL(new RegExp('/dang-nhap\\?next=' + encodeURIComponent(route)));
   }
@@ -83,12 +83,12 @@ test('anonymous routes keep the return path and APIs return 401', async ({ page,
 
 test('researcher signs in through the UI and sees real evaluation data or the real empty state', async ({ page }) => {
   const errors = errorsOn(page);
-  await page.goto('/dang-nhap?next=' + encodeURIComponent('/team/lab'));
+  await page.goto('/dang-nhap?next=' + encodeURIComponent('/team/kiem-tra'));
   await page.getByLabel('Tên tài khoản').fill('researcher');
   await page.getByLabel('Mật khẩu', { exact: true }).fill(await password());
   const submit = page.getByRole('button', { name: 'Vào bàn làm việc' });
   await expect(submit).toBeEnabled(); await submit.click();
-  await expect(page).toHaveURL(/\/team\/lab$/);
+  await expect(page).toHaveURL(/\/team\/kiem-tra$/);
   await expect(page.getByText('Chưa chạy đối chiếu', { exact: true })).toBeVisible();
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.getByRole('link', { name: 'Đánh giá', exact: true }).click();
@@ -112,10 +112,10 @@ test('researcher signs in through the UI and sees real evaluation data or the re
 
 test('renter gets Forbidden on direct URLs and 403 from research APIs', async ({ page }) => {
   await session(page, 'renter');
-  for (const route of ['/team/lab', '/team/danh-gia']) {
+  for (const route of ['/team/kiem-tra', '/team/danh-gia']) {
     await page.goto(route);
     await expect(page.getByRole('heading', { name: 'Bạn chưa có quyền vào khu này' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Lab đối chiếu', exact: true })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: 'Kiểm tra trích xuất', exact: true })).toHaveCount(0);
   }
   expect((await page.request.get('/api/workspace/eval/runs')).status()).toBe(403);
   expect((await page.request.get('/api/workspace/lab/gold/permission-check')).status()).toBe(403);
@@ -125,13 +125,13 @@ test('renter gets Forbidden on direct URLs and 403 from research APIs', async ({
 
 test('admin inherits researcher access on both server routes', async ({ page }) => {
   await session(page, 'admin');
-  await page.goto('/team/lab'); await expect(page.getByRole('heading', { name: 'Lab đối chiếu', exact: true })).toBeVisible();
+  await page.goto('/team/kiem-tra'); await expect(page.getByRole('heading', { name: 'Kiểm tra trích xuất', exact: true })).toBeVisible();
   await page.goto('/team/danh-gia'); await expect(page.getByRole('heading', { name: 'Đánh giá', exact: true })).toBeVisible();
   expect((await page.request.get('/api/workspace/eval/runs')).status()).toBe(200);
 });
 
 test('real Regex Lab: pending, Unicode offsets, evidence selection, BIO and responsive layout', async ({ page }) => {
-  const errors = errorsOn(page); await session(page); await page.goto('/team/lab');
+  const errors = errorsOn(page); await session(page); await page.goto('/team/kiem-tra');
   const input = '🏡 ' + (await fixture()).input.text;
   let release!: () => void;
   const gate = new Promise<void>(resolve => { release = resolve; });
@@ -173,7 +173,7 @@ for (const [name, expected] of [
   ['F06-seeking', 'Không có listing trong kết quả.'],
 ] as const) {
   test('real Lab preserves fixture display: ' + name, async ({ page }) => {
-    await session(page); await page.goto('/team/lab');
+    await session(page); await page.goto('/team/kiem-tra');
     const data = await runText(page, (await fixture(name)).input.text);
     const values = page.getByRole('region', { name: 'Bảng giá trị chuẩn hóa', exact: true });
     await expect(values).toContainText(expected);
@@ -189,7 +189,7 @@ for (const [name, expected] of [
 
 test('real stored post, missing gold, invalid input, and API failure retry keep input', async ({ page, request }) => {
   const id = await storedPost(request);
-  await session(page); await page.goto('/team/lab');
+  await session(page); await page.goto('/team/kiem-tra');
   await page.getByRole('button', { name: 'Chạy đối chiếu', exact: true }).click();
   await expect(page.getByRole('main').getByRole('alert')).toContainText('Nhập văn bản');
   await page.getByLabel('Bài có sẵn (post_id)', { exact: true }).check();
@@ -231,7 +231,7 @@ test('gold dev permission, empty LLM, and test lock cannot leak returned gold fi
     return route.fulfill({ json: { post_id: post, split: 'dev', cluster_key: 'fixture-only', adjudicated: true, expected: sample.expected,
       spans: sample.expected.listings.flatMap((listing: Record<string, any>) => [listing.rent, listing.area, listing.room, listing.location, ...listing.fees].flatMap(field => field.evidence ?? [])) } });
   });
-  await page.goto('/team/lab'); await runText(page, sample.input.text);
+  await page.goto('/team/kiem-tra'); await runText(page, sample.input.text);
   const gold = page.getByRole('region', { name: 'Bằng chứng Nhãn chuẩn', exact: true });
   await expect(gold.locator('button[data-label=PRICE]')).toBeVisible();
   await expect(gold).toContainText('Đã hòa giải nhãn'); expect(goldReads).toBe(1);
@@ -294,4 +294,19 @@ test('evaluation error retry, 403 and expired session are separate states', asyn
   await page.getByRole('button', { name: 'Tải lại danh sách' }).click();
   await expect(page).toHaveURL(/\/dang-nhap\?expired=1&next=/);
   await expect(page.getByRole('heading', { name: 'Đăng nhập ReNER' })).toBeVisible();
+});
+
+
+test('legacy Lab route redirects permanently and preserves repeated query values', async ({ page, request }) => {
+  const oldPath = '/team/lab?post_id=sample&tag=a&tag=b&q=%C4%91%E1%BB%8Dc+tin';
+  const response = await request.get(oldPath, { maxRedirects: 0 });
+  expect(response.status()).toBe(308);
+  const location = new URL(response.headers().location, origin);
+  expect(location.pathname).toBe('/team/kiem-tra');
+  expect(location.searchParams.getAll('tag')).toEqual(['a', 'b']);
+  expect(location.searchParams.get('q')).toBe('đọc tin');
+  await session(page);
+  await page.goto(oldPath);
+  await expect(page).toHaveURL(origin + '/team/kiem-tra' + location.search);
+  await expect(page.getByRole('heading', { name: 'Kiểm tra trích xuất', exact: true })).toBeVisible();
 });

@@ -1,5 +1,17 @@
 # API contract
 
+## Bổ sung đăng ký (ủy quyền trực tiếp, 27/10/2026)
+
+`POST /api/v1/auth/register`: JSON `username` (ASCII chữ/số/gạch dưới,3–30), `password` (8–200,
+có chữ hoa và chữ số), `confirm_password` khớp, `accept_terms` boolean true. Extra fields bị từ chối422.
+201 trả SessionUser và session cookie HttpOnly/SameSite=Lax, Secure theo cấu hình; role cố định renter.
+409 `username_taken` + field_errors.username, không sửa tài khoản đã có. 422 không echo password.
+429 có Retry-After. `REGISTER_RATE_LIMIT=10`, `REGISTER_WINDOW_SECONDS=600`: đủ cho nhóm sinh viên thử/sửa lỗi
+trong demo local, hạn chế tạo hàng loạt và hash mật khẩu; tính cả request sai schema. Sliding window theo IP transport,
+không tin X-Forwarded-For do client gửi; bộ đếm trong RAM từng process, bounded10000 IP. BFF local chung một IP nên
+cùng chia hạn mức; khi triển khai nhiều process/proxy thật cần rate limiter shared và trust-proxy cấu hình ở hạ tầng.
+Không có email/OTP/reset/OAuth. Điều khoản được đọc ngay tại form; không thêm cột PII hoặc migration.
+
 Prefix: `/api/v1`. JSON, `snake_case`, thời gian UTC ISO-8601, tiền là số nguyên đồng. FastAPI tự sinh OpenAPI tại `/docs`; web và extension dùng client sinh từ đó. File này là bản thỏa thuận trước khi code; khi code xong, OpenAPI là nguồn chính xác và file này cập nhật theo.
 
 ## 1. Quy ước chung

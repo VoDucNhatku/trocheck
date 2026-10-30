@@ -4,7 +4,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Literal
 
-from pydantic import AnyUrl, BaseModel, ConfigDict, Field
+from pydantic import AnyUrl, BaseModel, ConfigDict, Field, field_validator, ValidationInfo
+from app.core.security import normalize_email, validate_password
 
 SourceType = Literal["facebook_group", "manual_paste", "import_file", "fixture"]
 
@@ -41,6 +42,39 @@ class IngestBatch(BaseModel):
 class LoginRequest(BaseModel):
     username: str = Field(min_length=1, max_length=80)
     password: str = Field(min_length=1, max_length=200)
+
+
+class RegisterRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    username: str = Field(min_length=3, max_length=30, pattern=r"^[A-Za-z0-9_]+$")
+    email: str | None = Field(default=None, max_length=254)
+    password: str = Field(min_length=8, max_length=200, repr=False)
+    confirm_password: str = Field(min_length=1, max_length=200, repr=False)
+    accept_terms: bool = Field(strict=True)
+
+    @field_validator("password")
+    @classmethod
+    def strong_password(cls, value: str) -> str:
+        return validate_password(value)
+
+    @field_validator("email")
+    @classmethod
+    def valid_email(cls, value: str | None) -> str | None:
+        return normalize_email(value) if value is not None else None
+
+    @field_validator("confirm_password")
+    @classmethod
+    def matching_password(cls, value: str, info: ValidationInfo) -> str:
+        if "password" in info.data and value != info.data["password"]:
+            raise ValueError("Mật khẩu nhập lại chưa khớp")
+        return value
+
+    @field_validator("accept_terms")
+    @classmethod
+    def consent_required(cls, value: bool) -> bool:
+        if not value:
+            raise ValueError("Cần đồng ý điều khoản sử dụng")
+        return value
 
 
 class TokenCreate(BaseModel):

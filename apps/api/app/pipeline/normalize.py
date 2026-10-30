@@ -226,15 +226,16 @@ def fee_types_in(folded: str) -> list[str]:
 
 
 def _fee_unit(folded: str, fee_type: str) -> str:
-    for part in re.findall(r"/\s?([a-z0-9]+)", folded):
-        if part in {"so", "kwh", "kw", "ki", "kg"} and fee_type == "electricity":
-            return "per_kwh"
-        if part in {"khoi", "m3"}:
-            return "per_m3"
-        if part in {"nguoi", "ng"}:
-            return "per_person_month"
-        if part in {"phong", "can", "p"}:
-            return "per_unit_month"
+    parts = set(re.findall(r"/\s?([a-z0-9]+)", folded))
+    # Explicit person/consumption units take priority regardless of suffix order.
+    if parts & {"nguoi", "ng"}:
+        return "per_person_month"
+    if parts & {"khoi", "m3"}:
+        return "per_m3"
+    if fee_type == "electricity" and parts & {"so", "kwh", "kw", "ki", "kg"}:
+        return "per_kwh"
+    if parts & {"phong", "can", "p", "thang", "th"}:
+        return "per_unit_month"
     return "unknown"
 
 

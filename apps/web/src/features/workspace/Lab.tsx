@@ -153,9 +153,9 @@ export function Lab() {
       && (!selection.span || evidenceKey(span) === evidenceKey(selection.span))).map(evidenceKey));
   }
 
-  return <><Intro eyebrow="Không gian nghiên cứu" title="Lab đối chiếu" description="Đặt bằng chứng Regex, LLM và nhãn chuẩn cạnh nhau. Chọn một trường để lần về đúng đoạn chữ làm căn cứ." />
+  return <><Intro eyebrow="Không gian nghiên cứu" title="Kiểm tra trích xuất" description="Đặt bằng chứng Regex, LLM và nhãn chuẩn cạnh nhau. Chọn một trường để lần về đúng đoạn chữ làm căn cứ." />
     <div className={r.stack}>
-      <section className={s.panel} aria-labelledby="lab-input-title">
+      <section className={r.inputSheet} aria-labelledby="lab-input-title">
         <div className={r.heading}><h2 id="lab-input-title"><span className={r.step}>01</span>Chọn nội dung đối chiếu</h2><span className={r.hint}>Không gọi LLM mới</span></div>
         <form onSubmit={run} className={r.inputGrid}>
           <div><fieldset className={r.modes} disabled={busy}><legend>Nguồn đầu vào</legend>
@@ -172,14 +172,14 @@ export function Lab() {
             </div>}
             <div className={r.actions}><Button type="submit" busy={busy}>{busy ? 'Đang đối chiếu…' : 'Chạy đối chiếu'}</Button><span className={r.hint}>Regex chạy trên nội dung đã che số điện thoại.</span></div>
           </div>
-          <aside className={r.guide}><h3>Đọc kết quả có căn cứ</h3><p>LLM chỉ hiển thị kết quả đã lưu hoặc có trong cache. Chưa có kết quả được ghi rõ, không coi là đã chạy.</p><p>Nhãn chuẩn do API kiểm quyền. Tập test luôn được giữ khóa; Lab không sửa nhãn, rule hay prompt.</p></aside>
+          <aside className={r.guide}><h3>Đọc kết quả có căn cứ</h3><p>LLM chỉ hiển thị kết quả đã lưu hoặc có trong cache. Chưa có kết quả được ghi rõ, không coi là đã chạy.</p><p>Nhãn chuẩn do API kiểm quyền. Tập test luôn được giữ khóa; Kiểm tra trích xuất không sửa nhãn, rule hay prompt.</p></aside>
         </form>
       </section>
       {error && <ErrorNotice message={error} retry={invalid ? undefined : () => void run()} />}
       {busy && <Loading label="Đang chạy Regex và đọc kết quả đối chiếu…" />}
       {!busy && !result && !error && <Empty title="Chưa chạy đối chiếu"><p className={r.hint}>Dán một bài hoặc nhập post_id rồi chạy. Chỉ hiện kết quả sau khi API trả về.</p></Empty>}
       {result && <>
-        <section className={s.panel} aria-labelledby="lab-evidence-title">
+        <section className={r.section} aria-labelledby="lab-evidence-title">
           <div className={r.heading}><h2 id="lab-evidence-title"><span className={r.step}>02</span>Bằng chứng trên cùng nguyên văn</h2><span className={s.badge}>Đã nhận kết quả API</span></div>
           <div className={s.row}><span className={r.hint}>Loại bài: {POST_TYPE[result.post_type] ?? result.post_type}</span>
             {result.post_id && <span className={r.mono}>post_id: {result.post_id}</span>}{result.split && <span className={s.badge}>Tập {result.split}</span>}</div>
@@ -200,7 +200,7 @@ export function Lab() {
               <Button variant="ghost" onClick={() => setSelection(null)}>Bỏ chọn bằng chứng</Button></> : 'Chọn một đoạn được tô nhãn hoặc một trường bên dưới để đối chiếu bằng chứng.'}
           </div>
         </section>
-        <section className={s.panel} aria-labelledby="lab-values-title">
+        <section className={r.section} aria-labelledby="lab-values-title">
           <div className={r.heading}><h2 id="lab-values-title"><span className={r.step}>03</span>Giá trị chuẩn hóa</h2></div>
           <div className={r.scroll} role="region" aria-label="Bảng giá trị chuẩn hóa" tabIndex={0}><table className={[r.table, r.values].join(' ')}>
             <caption>Giữ đơn vị từ API; giá thuê và phí tách riêng. Cuộn ngang để đọc đủ ba phương pháp trên màn hình nhỏ.</caption>
@@ -212,7 +212,7 @@ export function Lab() {
             </tr>)}</tbody>
           </table></div>
         </section>
-        <section className={s.panel} aria-label="Chi tiết kỹ thuật Lab">
+        <section className={r.section} aria-label="Chi tiết kỹ thuật trích xuất">
           <details className={r.disclosure}><summary>Bảng token BIO · {result.tokens.length} token</summary>
             {result.tokens.length ? <div className={r.scroll} role="region" tabIndex={0} aria-label="Bảng token BIO"><table className={r.table}><caption>B-: đầu thực thể; I-: tiếp nối; O: ngoài thực thể. Chưa có phương pháp thì không hiển thị O thành kết quả.</caption>
               <thead><tr><th scope="col">Token</th><th scope="col">Regex</th><th scope="col">LLM</th><th scope="col">Nhãn chuẩn</th></tr></thead>

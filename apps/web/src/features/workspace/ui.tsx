@@ -14,8 +14,8 @@ export function Button({ variant, className = '', busy, children, ...props }: Bu
   const hydrated = useHydrated();
   return <button {...props} disabled={!hydrated || props.disabled || busy} aria-busy={busy || undefined} className={[s.button, variant ? s[variant] : '', className].join(' ')}>{children}</button>;
 }
-export function Intro({ eyebrow = 'Bàn làm việc ReNER', title, description, children }: { eyebrow?: string; title: string; description: string; children?: ReactNode }) {
-  return <div className={s.intro}><div><p className={s.eyebrow}>{eyebrow}</p><h1 className={s.title}>{title}</h1><p className={s.description}>{description}</p></div>{children}</div>;
+export function Intro({ title, description, children }: { eyebrow?: string; title: string; description: string; children?: ReactNode }) {
+  return <div className={s.intro}><div><h1 className={s.title}>{title}</h1><p className={s.description}>{description}</p></div>{children}</div>;
 }
 export function ErrorNotice({ message, retry }: { message: string; retry?: () => void }) {
   return <div className={s.error} role="alert"><p>{message}</p>{retry && <Button variant="ghost" onClick={retry}>Thử lại</Button>}</div>;

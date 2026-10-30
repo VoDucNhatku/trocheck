@@ -3,7 +3,7 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: 2px 6px;
-  color: var(--accent);
+  color: var(--rent-text);
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.02em;

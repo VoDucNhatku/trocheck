@@ -57,6 +57,7 @@ def comparison(session: Session, listing: Listing, settings: Settings) -> dict:
         "reason_codes": c.reason_codes,
         "criteria": c.criteria,
         "n": c.stats.n,
+        "mean_vnd": c.stats.mean, "mean_per_m2": c.stats.mean_per_m2,
         "median": c.stats.median, "p25": c.stats.p25, "p75": c.stats.p75,
         "n_per_m2": c.stats.n_per_m2, "median_per_m2": c.stats.median_per_m2,
         "delta_percent": c.delta_percent, "verdict": c.verdict,
@@ -85,6 +86,7 @@ def summary(session: Session, settings: Settings, *, wards: list[str] | None, ty
     for (ward_code, ward_name, ptype), rows in sorted(cells.items(), key=lambda kv: (kv[0][1] or "", kv[0][2])):
         stats = m.group_stats(rows, cfg)
         out.append({"ward_code": ward_code, "ward_name": ward_name, "property_type": ptype, "basis": basis,
+                    "mean_vnd": stats.mean, "mean_per_m2": stats.mean_per_m2,
                     "n": stats.n, "median": stats.median, "p25": stats.p25, "p75": stats.p75,
                     "median_per_m2": stats.median_per_m2, "n_per_m2": stats.n_per_m2,
                     "data_from": stats.data_from, "data_to": stats.data_to})

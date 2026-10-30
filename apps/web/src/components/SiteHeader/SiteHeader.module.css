@@ -13,17 +13,17 @@
   border-bottom-color: var(--border);
 }
 
-.home { background: #f6f4ee; }
-.home .brand { color: #244b3c; }
+.home { background: var(--paper); }
+.home .brand { color: var(--accent); }
 .home .nav { margin-left: auto; }
-.home .actions { margin-left: 36px; }
-.home .cta { background: #244b3c; color: #fffdf7; border-radius: 5px; }
-.home .cta:hover { background: #17382c; }
+.home .actions { margin-left: auto; }
+.home .cta { background: var(--button-primary-bg); color: var(--button-primary-ink); border-radius: 5px; }
+.home .cta:hover { background: var(--accent-hover); }
 
 .inner {
   display: flex;
   align-items: center;
-  gap: var(--s-8);
+  gap: var(--s-4);
   height: var(--header-h);
 }
 
@@ -67,7 +67,7 @@
   right: 10px;
   bottom: 3px;
   height: 6px;
-  background: var(--mk-price);
+  background: var(--accent-subtle);
   border-radius: 2px;
   z-index: -1;
 }
@@ -99,8 +99,8 @@
   height: 32px;
   padding: 0 12px;
   border-radius: var(--r-md);
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--button-primary-bg);
+  color: var(--button-primary-ink);
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
@@ -114,21 +114,24 @@
 
 .burger {
   display: none;
-  margin-left: auto;
   width: 36px;
   height: 36px;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: var(--r-md);
   background: var(--surface);
 }
+
+.tools { display: flex; flex: none; align-items: center; gap: var(--s-2); }
 
 .sheet {
   display: none;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 1100px) {
+  .tools { margin-left: auto; }
+  .inner { gap: var(--s-2); }
   .nav,
   .actions {
     display: none;
@@ -137,11 +140,16 @@
     display: inline-flex;
   }
   .sheet:not([hidden]) {
+    position: absolute;
+    right: 0;
+    width: min(360px, 100%);
     display: grid;
     gap: var(--s-1);
     padding: var(--s-2) var(--s-4) var(--s-4);
     border-bottom: 1px solid var(--border);
     background: var(--paper);
+    border-left: 1px solid var(--border);
+    box-shadow: var(--shadow-overlay);
   }
   .sheetLink {
     padding: 10px 4px;
@@ -151,7 +159,11 @@
   }
   .sheet .cta {
     justify-content: center;
-    height: 40px;
+    height: auto;
+    min-height: 44px;
+    white-space: normal;
+    text-align: center;
     margin-top: var(--s-2);
   }
 }
+

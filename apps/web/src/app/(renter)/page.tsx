@@ -1,162 +1,72 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { Suspense } from 'react';
 import { ApiState, LoadingState } from '@/components/ApiState/ApiState';
 import { errorMessage } from '@/lib/api/http';
 import { parseDemo, type SearchParams } from '@/features/listings/filters';
-import { HERO_EXAMPLE, FEW_EXAMPLE } from '@/features/landing/illustrations';
-import { ArrowRight, Ban, Divide, Eye, Layers, Sigma, Ruler } from 'lucide-react';
-import { EvidenceHighlighter } from '@/components/EvidenceHighlighter/EvidenceHighlighter';
-import { Reveal } from '@/components/Reveal/Reveal';
-import { ExtensionDemo } from '@/features/landing/ExtensionDemo';
-import { HousingScene } from '@/features/landing/HousingScene';
 import { ReadingHero } from '@/features/landing/ReadingHero';
+import { FeedRibbon, ExtensionPreview } from '@/features/landing/LandingDemos';
+import { AtomicText, Mark, Phrase } from '@/features/landing/examples';
+import { getHomeMarket } from '@/features/landing/market';
 import { getStatsOverview } from '@/lib/api/client';
-import { ev } from '@/features/landing/illustrations';
-import { formatDate } from '@/lib/format';
+import { formatDate, formatVnd, PROPERTY_LABEL } from '@/lib/format';
 import styles from './landing.module.css';
 
-const CASES = (() => {
-  const c = (text: string, spans: [string, Parameters<typeof ev>[2]][], result: string, rule: string, Icon: typeof Ban) => ({
-    text,
-    evidence: spans.map(([q, l]) => ev(text, q, l)),
-    result,
-    rule,
-    Icon,
-  });
-  return [
-    c('Phòng khép kín 25m2, có gác. Giá ib nhé.', [['25m2', 'AREA'], ['Phòng khép kín', 'ROOM']], 'Bài không công khai giá', '“ib giá” không phải là giá. Giá để trống, có lý do.', Eye),
-    c('Phòng 30m2 ở 2 người, giá 1tr5/người/tháng.', [['30m2', 'AREA'], ['1tr5/người/tháng', 'PRICE']], '1,5 tr /tháng/người', 'Không nhân lên thành 3 triệu. Chỉ so với tin cũng tính theo người.', Divide),
-    c('Phòng trọ 20m2, từ 3tr/tháng tuỳ tầng.', [['20m2', 'AREA'], ['từ 3tr/tháng', 'PRICE'], ['Phòng trọ', 'ROOM']], 'Từ 3 tr — chưa so sánh', 'Giá “từ…” không phải một con số, nên không đưa vào trung vị.', Ruler),
-    c('Còn 2 phòng: P201 25m2 3tr8, P302 35m2 4tr9.', [['P201', 'ROOM'], ['25m2', 'AREA'], ['3tr8', 'PRICE'], ['P302', 'ROOM'], ['35m2', 'AREA'], ['4tr9', 'PRICE']], '2 tin riêng', 'Một bài, hai phòng, hai giá: tách thành hai thẻ, không trộn.', Layers),
-    c('Giá 3tr5, điện 3k5/số, nước 100k/người.', [['3tr5', 'PRICE'], ['điện 3k5/số', 'FEE'], ['nước 100k/người', 'FEE']], 'Giá 3,5 tr · phí riêng', 'Không cộng giá với phí thành “tổng”, vì chưa biết dùng bao nhiêu điện.', Sigma),
-    c('Cần tìm phòng gần ĐH FPT dưới 3tr.', [['gần ĐH FPT', 'LOC']], 'Không phải bài cho thuê', 'Bài tìm phòng bị phân loại riêng, không trích giá.', Ban),
-  ];
-})();
-
 const PRINCIPLES = [
-  { n: '01', title: 'Thiếu là thiếu', body: 'Giá không có thì ghi “Chưa có giá”, không hiện 0. Phí bài không nói thì ghi “Không đề cập”.' },
-  { n: '02', title: 'Có nguồn mới có số', body: 'Mỗi giá trị trỏ về đúng đoạn chữ trong bài. LLM trích sai nguyên văn thì bị bỏ.' },
-  { n: '03', title: 'Dưới 10 tin, không kết luận', body: 'Nhóm so sánh nhỏ thì nói chưa đủ dữ liệu, kèm số tin hiện có.' },
-  { n: '04', title: 'Từ ngữ trung tính', body: '“Cao hơn trung vị của nhóm tin so sánh”, không phải “bị hét giá” hay “rẻ, nên thuê”.' },
+  ['01 / Thiếu là thiếu', 'Không thấy giá thì để trống. Bài không nói phí thì ghi “Không đề cập”.'],
+  ['02 / Có nguồn mới có số', 'Mỗi giá trị phải tìm lại được trong đúng đoạn chữ của bài đăng.'],
+  ['03 / Đủ 10 tin mới so', 'Cùng loại, cùng cách tính. Không tự nhân giá theo người thành giá cả phòng.'],
+  ['04 / Nhận định trung tính', 'Chỉ nói cao hơn, gần hay thấp hơn mức trung bình. Quyết định thuê là của bạn.'],
 ];
-
+const CASES = [
+  { title: 'Bài không công khai giá', example: <>Phòng <Mark label="Diện tích"><AtomicText text={"25 m²"} /></Mark>, giá ib nhé.</>, body: '“ib giá” là không công khai giá. Không có số 0 thay thế.' },
+  { title: 'Giá theo người', example: <>Phòng <Mark label="Diện tích"><AtomicText text={"30 m²"} /></Mark>, <Mark label="Giá">2tr/người/tháng</Mark>.</>, body: 'Không nhân lên. Chỉ so với các tin cũng tính theo người.' },
+  { title: 'Giá “từ…”', example: <>Phòng <Mark label="Loại phòng"><AtomicText text={"khép kín"} /></Mark>, <Mark label="Giá">từ 3tr/tháng</Mark>.</>, body: 'Giữ đúng chữ “từ”, chưa đưa vào nhóm so sánh.' },
+  { title: 'Hai phòng, hai giá', example: <>P201 <Mark label="Giá">3tr8</Mark>, P302 <Mark label="Giá">4tr9</Mark>.</>, body: 'Tách thành hai tin, không trộn giá giữa hai phòng.' },
+  { title: 'Tiền nhà và phí riêng', example: <>Giá <Mark label="Giá">3tr5</Mark>, <Mark label="Phí">điện 3k5/số</Mark>.</>, body: 'Không cộng phí vào giá thuê khi chưa biết lượng sử dụng.' },
+  { title: 'Không phải bài cho thuê', example: <>Cần tìm phòng gần <Mark label="Vị trí">ĐH FPT</Mark>, dưới <Phrase><AtomicText text={"3 triệu"} /></Phrase>.</>, body: 'Bài tìm phòng được phân loại riêng, không trích giá cho thuê.' },
+];
 export const dynamic = 'force-dynamic';
-
 export default async function HomePage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const demo = parseDemo(await searchParams);
-  const { detail, comparison } = HERO_EXAMPLE;
-  const { detail: few, comparison: fewComparison } = FEW_EXAMPLE;
-
-  return (
-    <div className={styles.landing}>
-      <HousingScene demo={demo} />
-      <ReadingHero detail={detail} comparison={comparison} demo={demo} />
-
-      <Suspense fallback={<LoadingState message="Đang tải số liệu kho…" />}><WarehouseStats demo={demo} /></Suspense>
-
-      <Reveal as="section" className={`container ${styles.section}`} aria-labelledby="cases-title" id="cach-hoat-dong">
-        <header className={styles.head} data-reveal>
-          <p className={styles.kicker}>02 / ĐỌC GIỮA NHỮNG DÒNG TIN</p>
-          <h2 id="cases-title" className={styles.h2}>
-            Tin có thể mơ hồ. Cách đọc thì không.
-          </h2>
-          <p className={styles.sub}>
-            Sáu kiểu bài hay gặp và cách ReNER-VN xử lý. Mọi bài dưới đây là ví dụ tự tạo.
-          </p>
-        </header>
-        <ul className={styles.cases}>
-          {CASES.map(({ text, evidence, result, rule, Icon }) => (
-            <li key={text} className={styles.case} data-reveal>
-              <EvidenceHighlighter text={text} evidence={evidence} className={styles.caseText} />
-              <div className={styles.caseResult}>
-                <Icon size={15} strokeWidth={1.75} aria-hidden="true" />
-                <span>{result}</span>
-              </div>
-              <p className={styles.caseRule}>{rule}</p>
-            </li>
-          ))}
-        </ul>
-      </Reveal>
-
-      <Reveal as="section" className={styles.extSection} aria-labelledby="ext-title" id="extension">
-        <div className={`container ${styles.extGrid}`}>
-          <header className={styles.extCopy} data-reveal>
-            <p className={styles.kicker}>03 / MỘT NGƯỜI BẠN KHI TÌM TRỌ</p>
-            <h2 id="ext-title" className={styles.h2}>
-              Nhận định ngay trên Facebook.
-            </h2>
-            <ol className={styles.steps}>
-              <li>
-                <span>1</span>
-                <p>
-                  Bấm nút <b>ReNER</b> cạnh bài, hoặc bôi đen nội dung.
-                </p>
-              </li>
-              <li>
-                <span>2</span>
-                <p>Xem trước chữ sẽ gửi. Số điện thoại đã che ngay trên máy bạn.</p>
-              </li>
-              <li>
-                <span>3</span>
-                <p>Đọc giá, phí và vị trí của tin so với nhóm tin tương tự.</p>
-              </li>
-            </ol>
-            <p className={styles.extNote}>Extension đang được phát triển. Trong lúc chờ, bạn xem trước các trạng thái panel ở bên cạnh.</p>
-          </header>
-          <div data-reveal>
-            <ExtensionDemo ok={{ detail, comparison }} few={{ detail: few, comparison: fewComparison }} demo={demo} />
-          </div>
-        </div>
-      </Reveal>
-
-      <Reveal as="section" className={`container ${styles.section}`} aria-labelledby="rules-title" id="nguyen-tac">
-        <header className={styles.head} data-reveal>
-          <p className={styles.kicker}>04 / RÕ RÀNG TỪ NGUYÊN TẮC</p>
-          <h2 id="rules-title" className={styles.h2}>
-            Thà nói “chưa biết” còn hơn đoán.
-          </h2>
-        </header>
-        <ol className={styles.principles}>
-          {PRINCIPLES.map((p) => (
-            <li key={p.n} data-reveal>
-              <span className={styles.pNum}>{p.n}</span>
-              <h3>{p.title}</h3>
-              <p>{p.body}</p>
-            </li>
-          ))}
-        </ol>
-      </Reveal>
-
-      <section className={`container ${styles.cta}`} aria-labelledby="cta-title">
-        <h2 id="cta-title" className={styles.ctaTitle}>
-          Tìm phòng theo <em>ngân sách</em> của bạn.
-        </h2>
-        <div className={styles.ctaRow}>
-          <Link href={`/tim-tro${demo === undefined ? '' : `?demo=${demo}`}`} className={styles.ctaPrimary}>
-            Mở Tìm trọ <ArrowRight size={16} aria-hidden="true" />
-          </Link>
-          <Link href="/#nguyen-tac" className={styles.ctaSecondary}>
-            Nguyên tắc dữ liệu
-          </Link>
-        </div>
-      </section>
-    </div>
-  );
+  const searchHref = `/tim-tro${demo === undefined ? '' : `?demo=${demo}`}`;
+  return <div className={styles.landing}>
+    <ReadingHero demo={demo} /><FeedRibbon />
+    <Suspense fallback={<div className="container"><LoadingState message="Đang tải số liệu kho…" /></div>}><WarehouseStats demo={demo} /></Suspense>
+    <section className={`container ${styles.section}`} aria-labelledby="cases-title" id="hard-cases">
+      <header className={styles.heading}><div><p className={styles.eyebrow}>Không phải bài nào cũng thẳng thắn</p><h2 id="cases-title">Bài trọ,<br />đủ kiểu viết.</h2></div><p>Sáu ca khó hay gặp. Cách đọc rõ ràng bắt đầu từ việc biết điều gì chưa thể kết luận.</p></header>
+      <div className={styles.cases}>{CASES.map(({title,example,body}, i) => <article key={title} className={styles.case}><small>0{i+1} / Ví dụ tự tạo</small><p className={styles.example}>{example}</p><h3><AtomicText text={title} /></h3><p><AtomicText text={body} /></p></article>)}</div>
+    </section>
+    <section className={`${styles.section} ${styles.band}`} aria-labelledby="extension-title" id="extension"><div className="container">
+      <header className={styles.heading}><div><p className={styles.eyebrow}>Extension · Đang phát triển</p><h2 id="extension-title">Nhận định ngay<br /><em>trên Facebook.</em></h2></div><p><AtomicText text={"Chọn bài. Xem trước chữ đã che liên hệ. Đọc giá thuê và phí riêng từng khoản. Các trạng thái dưới đây là ví dụ minh họa."} /></p></header>
+      <ExtensionPreview demo={demo} />
+      <Link className={styles.secondary} href="/extension">Về trang giới thiệu extension →</Link>
+    </div></section>
+    <section className={`container ${styles.section} ${styles.market}`} aria-labelledby="market-title"><div><p className={styles.eyebrow}>Một góc thị trường</p><h2 id="market-title">Ít tin,<br />chưa kết luận.</h2><p className={styles.lead}>Đủ dữ liệu mới đưa ra một mức tham khảo. Các ô sọc giữ lại đúng điều chúng ta chưa biết.</p><Link className={styles.secondary} href={`/thi-truong${demo===undefined?'':`?demo=${demo}`}`}>Xem thị trường →</Link></div>
+      <Suspense fallback={<LoadingState message="Đang tải giá trung bình…" />}><MarketPreview demo={demo} /></Suspense>
+    </section>
+    <section className={`${styles.section} ${styles.band}`} aria-labelledby="rules-title" id="nguyen-tac"><div className="container"><p className={styles.eyebrow}>Nguyên tắc đọc tin</p><h2 id="rules-title">Thà nói “chưa biết”<br />còn hơn đoán.</h2><div className={styles.principles}>{PRINCIPLES.map(([title,body]) => <article key={title}><h3><AtomicText text={title} /></h3><p><AtomicText text={body} /></p></article>)}</div></div></section>
+    <section className={`container ${styles.section}`} aria-labelledby="check-title" id="extract-check">
+      <header className={styles.heading}><div><p className={styles.eyebrow}>Kiểm tra trích xuất</p><h2 id="check-title">Ba cách đọc.<br /><em>Một bài để đối chiếu.</em></h2></div><p>Regex, LLM và nhãn chuẩn do người gán đặt cạnh nhau. Chỗ lệch có lời giải thích, không chỉ một màu đánh dấu.</p></header>
+      <p className={styles.eyebrow}>Ví dụ tự tạo</p>
+      <div className={styles.layers}>{['Regex','LLM','Nhãn chuẩn'].map((name,i) => <div className={styles.layer} key={name}><b>{name}</b><p><Mark label="Loại phòng">CCMN</Mark> <Mark label="Diện tích"><AtomicText text={"30 m²"} /></Mark> gần {i===0?<Phrase>ĐH FPT</Phrase>:<Mark label="Vị trí">ĐH FPT</Mark>} · <Mark label="Giá">5tr5/tháng</Mark> · <Mark label={i===1?'Giá':'Phí'}>100k/người</Mark></p>{i===1&&<span className={styles.mismatch}>Gán nhầm Giá; đúng là Phí</span>}</div>)}</div>
+      <p className={styles.note}><AtomicText text={"Ví dụ tự tạo: LLM gán nhầm “100k/người” thành Giá; nhãn chuẩn là Phí. Regex chưa nhận vị trí “ĐH FPT”."} /></p>
+      <p className={styles.note}>Khu kiểm tra dành cho nhóm nghiên cứu; tài khoản cần quyền phù hợp.</p><Link className={styles.secondary} href="/team/kiem-tra">Mở Kiểm tra trích xuất →</Link>
+    </section>
+    <section className={`container ${styles.section} ${styles.cta}`} aria-labelledby="cta-title"><p className={styles.eyebrow}>Tìm một chốn vừa ý</p><h2 id="cta-title">Tìm phòng theo<br /><em>ngân sách của bạn.</em></h2><div className={styles.actions}><Link href={searchHref} className={styles.primary}>Tìm phòng của bạn →</Link><Link href="/phan-tich" className={styles.secondary}>Đọc bài đăng của bạn →</Link></div></section>
+  </div>;
 }
-
 async function WarehouseStats({ demo }: { demo?: boolean }) {
   try {
     const stats = await getStatsOverview(demo);
-    return <section className={styles.stats} aria-label="Số liệu kho"><div className={`container ${styles.statsInner}`}>
-      {stats.total_listings > 0 ? <>
-        <p><strong className="num">{stats.total_listings}</strong> tin trong kho</p>
-        <p><strong className="num">{stats.eligible_listings}</strong> tin đủ điều kiện thống kê</p>
-        <p>{stats.updated_at ? `Cập nhật ${formatDate(stats.updated_at)}` : 'Chưa rõ ngày cập nhật'}</p>
-      </> : <p>Kho chưa có tin. Bạn vẫn có thể xem các ví dụ tự tạo trên trang.</p>}
-      {stats.is_demo && <span className={styles.demoTag}>dữ liệu demo</span>}
-      <Link href={`/tim-tro?demo=${stats.is_demo}`}>Xem kho này →</Link>
-    </div></section>;
-  } catch (error) {
-    return <div className="container"><ApiState title="Chưa tải được số liệu kho" message={errorMessage(error)} /></div>;
-  }
+    return <section className={`container ${styles.stats}`} aria-label="Số liệu kho từ API"><span className={styles.badge}>{stats.is_demo?'Dữ liệu demo · Ví dụ':'Dữ liệu kho'}</span>{stats.total_listings > 0 ? <><div><strong>{stats.total_listings.toLocaleString('vi-VN')}</strong><span>tin trong kho</span></div><div><strong>{stats.eligible_listings.toLocaleString('vi-VN')}</strong><span>tin đủ điều kiện thống kê</span></div><div><strong className={styles.date}>{stats.updated_at?formatDate(stats.updated_at):'Chưa rõ ngày'}</strong><span>cập nhật từ API</span></div></>:<p>Kho chưa có tin. Bạn vẫn có thể xem các ví dụ tự tạo trên trang.</p>}</section>;
+  } catch(error) { return <div className="container"><ApiState title="Chưa tải được số liệu kho" message={errorMessage(error)} /></div>; }
+}
+async function MarketPreview({ demo }: { demo?: boolean }) {
+  try {
+    const data = await getHomeMarket(demo);
+    return <div><span className={styles.badge}>{data.is_demo?'Dữ liệu demo · Ví dụ':'Dữ liệu kho'}<AtomicText text={" · Giá trung bình từ API"} /></span>{data.cells.length===0?<p className={styles.empty}>Chưa có nhóm giá. Chưa đủ dữ liệu để nhận định.</p>:<div className={styles.marketRows}>{data.cells.slice(0,6).map((cell,i) => {
+      const ready = cell.n>=10 && cell.mean_vnd!=null;
+      return <div key={`${cell.ward_code}:${cell.property_type}:${i}`} className={`${styles.marketRow} ${ready?'':styles.striped}`}><div><b><Phrase>{cell.ward_name??'Chưa rõ phường'}</Phrase></b><p>{PROPERTY_LABEL[cell.property_type]} · {cell.n.toLocaleString('vi-VN')} tin</p></div><div>{ready?<><strong><Phrase>{formatVnd(cell.mean_vnd!)}</Phrase></strong><span>/tháng</span></>:<span>Chưa đủ dữ liệu</span>}</div></div>;
+    })}</div>}<p className={styles.note}>{data.data_from&&data.data_to?`Dữ liệu ${formatDate(data.data_from)}–${formatDate(data.data_to)}. `:''}<AtomicText text={"Giá chào thuê trong bài đăng, không phải giá giao dịch. Nhóm cùng phường, cùng loại; chưa lọc diện tích."} /></p></div>;
+  } catch(error) { return <ApiState title="Chưa tải được giá tham khảo" message={errorMessage(error)} />; }
 }

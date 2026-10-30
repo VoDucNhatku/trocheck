@@ -102,5 +102,3 @@ Facebook có thể đổi cấu trúc trang bất cứ lúc nào. Thiết kế �
 - Không tự cuộn, không mở nhiều tab, không dùng nhiều tài khoản, không dùng proxy, không giả lập trình duyệt khác, không vượt CAPTCHA hay bước xác minh.
 - Không gửi khóa API LLM hay bí mật nào trong extension.
 - Quy mô: 50 bài/phiên, tổng mục tiêu 300–500 bài cho cả đồ án.
-
-Lý do và rủi ro pháp lý: [rủi ro và pháp lý](../05-delivery/03-rui-ro-va-phap-ly.md).

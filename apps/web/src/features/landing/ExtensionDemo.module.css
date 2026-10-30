@@ -85,8 +85,8 @@
   height: 26px;
   margin-left: auto;
   border-radius: 6px;
-  background: var(--mk-price);
-  color: var(--mk-ink);
+  background: var(--button-primary-bg);
+  color: var(--button-primary-ink);
 }
 
 .body {
@@ -142,8 +142,8 @@
   margin-left: auto;
   padding: 3px 8px;
   border-radius: 5px;
-  background: var(--mk-price);
-  color: var(--mk-ink);
+  background: var(--button-primary-bg);
+  color: var(--button-primary-ink);
   font-size: 11.5px;
   font-weight: 700;
 }

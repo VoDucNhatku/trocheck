@@ -96,6 +96,40 @@ def test_fee_rows(span, expected):
             assert fee[key] == value
 
 
+@pytest.mark.parametrize("span,ftype,amount,unit", [
+    ("nước 100k/tháng", "water", 100_000, "per_unit_month"),
+    ("wifi 100k/tháng", "internet", 100_000, "per_unit_month"),
+    ("nước 100k/th", "water", 100_000, "per_unit_month"),
+    ("nước 100k/tháng/người", "water", 100_000, "per_person_month"),
+    ("nước 100k/người/tháng", "water", 100_000, "per_person_month"),
+    ("nước 100k/người", "water", 100_000, "per_person_month"),
+    ("gửi xe 100k", "parking", 100_000, "unknown"),
+    ("điện 4k", "electricity", 4_000, "unknown"),
+])
+def test_fee_monthly_units_and_unspecified_periods(span, ftype, amount, unit):
+    fees = n.parse_fees(span)
+    assert len(fees) == 1
+    assert fees[0]["type"] == ftype
+    assert fees[0]["amount_vnd"] == amount
+    assert fees[0]["unit"] == unit
+
+
+@pytest.mark.parametrize("span,ftype,amount,unit", [
+    ("nước 20k/tháng/khối", "water", 20_000, "per_m3"),
+    ("nước 20k/khối/tháng", "water", 20_000, "per_m3"),
+    ("điện 4k/tháng/số", "electricity", 4_000, "per_kwh"),
+    ("điện 4k/số/tháng", "electricity", 4_000, "per_kwh"),
+    ("dịch vụ 150k/phòng/người", "service", 150_000, "per_person_month"),
+    ("nước 100k/khối/người", "water", 100_000, "per_person_month"),
+])
+def test_fee_specific_units_take_priority_over_suffix_order(span, ftype, amount, unit):
+    fees = n.parse_fees(span)
+    assert len(fees) == 1
+    assert fees[0]["type"] == ftype
+    assert fees[0]["amount_vnd"] == amount
+    assert fees[0]["unit"] == unit
+
+
 # §3 area
 AREA_ROWS = [
     ("30m2", "exact", 30, None, False),

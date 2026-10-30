@@ -1,221 +1,48 @@
-'use client';
-
-import { useMemo, useState } from 'react';
-import { Info } from 'lucide-react';
-import { EvidenceHighlighter, evidenceKey } from '@/components/EvidenceHighlighter/EvidenceHighlighter';
-import type { Agreement, Evidence, FeeType, ListingDetail } from '@/lib/api/types';
-import { FEE_LABEL, LABEL_TEXT, PROPERTY_LABEL, feeValue, formatVnd, rentHeadline } from '@/lib/format';
+﻿'use client';
+import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { ImageOff, ArrowUpRight } from 'lucide-react';
+import { EvidenceHighlighter, evidenceKey, segment } from '@/components/EvidenceHighlighter/EvidenceHighlighter';
+import type { Evidence, ListingDetail } from '@/lib/api/types';
+import { formatDate, formatVnd } from '@/lib/format';
+import { AtomicText } from '@/features/landing/examples';
+import { Receipt } from './Receipt';
+import { receiptModel, publicSource } from './receipt-model';
 import styles from './DetailBody.module.css';
 
-const AGREEMENT: Record<Agreement, string> = {
-  both_agree: 'Regex + LLM khớp',
-  regex_only: 'Chỉ Regex',
-  llm_only: 'Chỉ LLM',
-  conflict: 'Regex và LLM lệch',
-  human: 'Người duyệt sửa',
-};
-
-const FEE_ORDER: FeeType[] = ['deposit', 'electricity', 'water', 'service', 'internet', 'parking', 'other'];
-
-interface Row {
-  id: string;
-  label: string;
-  value: string;
-  evidence: Evidence[];
-  agreement?: Agreement | null;
-  missing?: boolean;
-  tag: keyof typeof LABEL_TEXT;
-}
-
-export function DetailBody({ detail }: { detail: ListingDetail }) {
-  const { listing, post } = detail;
-  const [active, setActive] = useState<string | null>(null);
-
-  const rent = rentHeadline(listing.rent);
-  const room = listing.room;
-  const loc = listing.location;
-
-  const rows: Row[] = useMemo(
-    () => [
-      {
-        id: 'area',
-        label: 'Diện tích',
-        value: listing.area.value_m2 != null ? `${listing.area.value_m2} m²` : 'Chưa rõ',
-        evidence: listing.area.evidence ?? [],
-        agreement: listing.area.agreement,
-        missing: listing.area.value_m2 == null,
-        tag: 'AREA',
-      },
-      {
-        id: 'room',
-        label: 'Loại phòng',
-        value: [
-          PROPERTY_LABEL[room.property_type],
-          room.bedrooms != null ? (room.bedrooms === 0 ? 'studio' : `${room.bedrooms} phòng ngủ`) : null,
-          room.private_bathroom ? 'khép kín' : null,
-          room.mezzanine ? 'có gác' : null,
-          room.furnishing === 'full' ? 'full nội thất' : room.furnishing === 'basic' ? 'nội thất cơ bản' : null,
-        ]
-          .filter(Boolean)
-          .join(' · '),
-        evidence: room.evidence ?? [],
-        agreement: room.agreement,
-        tag: 'ROOM',
-      },
-      {
-        id: 'loc',
-        label: 'Vị trí',
-        value: [loc.landmark, loc.street, loc.ward_name ?? 'Chưa xác định phường'].filter(Boolean).join(' · '),
-        evidence: loc.evidence ?? [],
-        agreement: loc.agreement,
-        tag: 'LOC',
-      },
-    ],
-    [listing, room, loc],
-  );
-
-  const activeKeys = useMemo(() => {
-    if (!active) return new Set<string>();
-    const ev =
-      active === 'rent'
-        ? (listing.rent.evidence ?? [])
-        : active.startsWith('fee:')
-          ? (listing.fees.find((f) => f.type === active.slice(4))?.evidence ?? [])
-          : (rows.find((r) => r.id === active)?.evidence ?? []);
-    return new Set(ev.map(evidenceKey));
-  }, [active, listing, rows]);
-
-  const allEvidence = [
-    ...(listing.rent.evidence ?? []),
-    ...rows.flatMap((r) => r.evidence),
-    ...listing.fees.flatMap((f) => f.evidence ?? []),
-  ];
-
-  const pick = (id: string) => setActive((cur) => (cur === id ? null : id));
-  const onSpan = (e: Evidence) => {
-    const k = evidenceKey(e);
-    if (listing.rent.evidence?.some((x) => evidenceKey(x) === k)) return pick('rent');
-    const fee = listing.fees.find((f) => f.evidence?.some((x) => evidenceKey(x) === k));
-    if (fee) return pick(`fee:${fee.type}`);
-    const row = rows.find((r) => r.evidence.some((x) => evidenceKey(x) === k));
-    if (row) pick(row.id);
+export function DetailBody({detail,comparison}:{detail:ListingDetail;comparison:ReactNode}) {
+  const {listing,post}=detail;
+  const model=useMemo(()=>receiptModel(listing,post.text),[listing,post.text]);
+  const [active,setActive]=useState<string|null>(null);
+  const original=useRef<HTMLElement>(null);
+  const selected=active==='rent'?model.rentEvidence:model.rows.find(r=>r.id===active)?.evidence??[];
+  // A room span may sit inside a longer price span. Highlight the rendered owner.
+  const activeKeys=new Set(segment(post.text,model.evidence).flatMap(part=>part.span&&selected.some(e=>e.start<part.span!.end&&e.end>part.span!.start)?[evidenceKey(part.span)]:[]));
+  const select=(id:string)=>{
+    setActive(current=>current===id?null:id);
+    const box=original.current?.getBoundingClientRect();
+    if(box&&(box.top<70||box.top>innerHeight*.6))original.current?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
   };
-
-  return (
-    <div className={styles.grid}>
-      <section className={styles.fields} aria-labelledby="price-title">
-        <h2 id="price-title" className={styles.h2}>
-          Giá và phí
-        </h2>
-
-        <button
-          type="button"
-          className={[styles.rent, active === 'rent' ? styles.on : ''].join(' ')}
-          onClick={() => pick('rent')}
-          aria-pressed={active === 'rent'}
-          disabled={!listing.rent.evidence?.length}
-        >
-          <span className={styles.rentLabel}>
-            <span className={styles.tag} data-label="PRICE">
-              GIÁ
-            </span>
-            Giá thuê
-          </span>
-          <span className={[styles.rentValue, rent.missing ? styles.rentMissing : ''].join(' ')}>
-            {listing.rent.amount_form === 'exact' && listing.rent.amount_vnd != null ? formatVnd(listing.rent.amount_vnd) : rent.main}
-            {!rent.missing && <small>{rent.suffix}</small>}
-          </span>
-          {listing.rent.includes.length > 0 && (
-            <span className={styles.includes}>Đã bao: {listing.rent.includes.map((t) => FEE_LABEL[t].toLowerCase()).join(', ')}</span>
-          )}
-          {listing.rent.basis === 'per_person' && (
-            <span className={styles.note}>
-              <Info size={13} aria-hidden="true" /> Giá tính theo người. Không nhân lên theo số người ở.
-            </span>
-          )}
-          {listing.rent.agreement && <span className={styles.src}>{AGREEMENT[listing.rent.agreement]}</span>}
-        </button>
-
-        <table className={styles.table}>
-          <caption className="visually-hidden">Các khoản phí</caption>
-          <tbody>
-            {FEE_ORDER.map((t) => {
-              const fee = listing.fees.find((f) => f.type === t);
-              const included = listing.rent.includes.includes(t);
-              const id = `fee:${t}`;
-              const clickable = !!fee?.evidence?.length;
-              return (
-                <tr key={t} className={[active === id ? styles.on : '', clickable ? styles.clickable : ''].join(' ')}>
-                  <th scope="row">
-                    {clickable ? (
-                      <button type="button" onClick={() => pick(id)} aria-pressed={active === id}>
-                        <span className={styles.tag} data-label="FEE">
-                          PHÍ
-                        </span>
-                        {FEE_LABEL[t]}
-                      </button>
-                    ) : (
-                      <span className={styles.plain}>{FEE_LABEL[t]}</span>
-                    )}
-                  </th>
-                  <td className={!fee && !included ? styles.muted : ''}>
-                    {included ? 'Đã bao trong giá' : fee ? feeValue(fee) : 'Không đề cập'}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        <p className={styles.fine}>Không cộng giá thuê với phí thành tổng, vì chưa biết mức dùng điện, nước và số người.</p>
-
-        <h2 className={styles.h2}>Thông tin chính</h2>
-        <dl className={styles.facts}>
-          {rows.map((r) => (
-            <div key={r.id} className={active === r.id ? styles.on : ''}>
-              <dt>
-                <button type="button" onClick={() => pick(r.id)} aria-pressed={active === r.id} disabled={!r.evidence.length}>
-                  <span className={styles.tag} data-label={r.tag}>
-                    {LABEL_TEXT[r.tag]}
-                  </span>
-                  {r.label}
-                </button>
-              </dt>
-              <dd className={r.missing ? styles.muted : ''}>
-                {r.value}
-                {r.agreement && <span className={[styles.src, r.agreement === 'conflict' ? styles.conflict : ''].join(' ')}>{AGREEMENT[r.agreement]}</span>}
-              </dd>
-            </div>
-          ))}
-        </dl>
+  const onSpan=(e:Evidence)=>{
+    const key=evidenceKey(e);
+    if(model.rentEvidence.some(item=>evidenceKey(item)===key))setActive(current=>current==='rent'?null:'rent');
+    else {const row=model.rows.find(r=>r.evidence.some(item=>evidenceKey(item)===key));if(row)setActive(current=>current===row.id?null:row.id)}
+  };
+  const history=detail.price_history.filter(h=>h.rent_form==='exact'&&h.rent_vnd!=null);
+  const source=publicSource(post.source_group_name);
+  const permalink=post.permalink&&/^https?:\/\//i.test(post.permalink)?post.permalink:null;
+  return <div className={styles.grid}>
+    <div className={styles.originalColumn}>
+      <figure className={styles.figure}><div className={styles.media}><ImageOff size={36} strokeWidth={1.25} aria-hidden="true" /><span>Ảnh phòng (ví dụ)</span></div><figcaption>Khối giữ chỗ. Không hiển thị ảnh phòng thật.</figcaption></figure>
+      <section ref={original} className={styles.original} aria-labelledby="evidence-title">
+        <header className={styles.originalHead}><h2 id="evidence-title">Bài đăng gốc</h2><span>Người đăng đã ẩn</span></header>
+        <p className={styles.hint}>Bấm vào phiếu giá hoặc đoạn được đánh dấu để đối chiếu.</p>
+        <EvidenceHighlighter className={styles.evidenceText} text={post.text} evidence={model.evidence} active={activeKeys} onSelect={onSpan} size="lg" />
+        <p className={styles.selection} role="status">{active?`Đang đối chiếu: ${active==='rent'?'Giá thuê':model.rows.find(r=>r.id===active)?.label??''}.`:'Chưa chọn trường đối chiếu.'}</p>
+        <p className={styles.hint}>{source?`${source} · `:''}Số điện thoại đã che{detail.is_demo?' · Bài ví dụ tự tạo':''}{!post.text_complete?' · Văn bản nguồn chưa đầy đủ':''}.</p>
+        {permalink?<a className={styles.sourceLink} href={permalink} target="_blank" rel="noreferrer noopener">Mở bài gốc <ArrowUpRight size={15} aria-hidden="true" /></a>:<p className={styles.hint}>{detail.is_demo?'Bài ví dụ tự tạo không có liên kết Facebook.':'Không có liên kết bài gốc.'}</p>}
       </section>
-
-      <section className={styles.evidence} aria-labelledby="evidence-title">
-        <div className={styles.evidenceCard}>
-          <div className={styles.evidenceHead}>
-            <h2 id="evidence-title" className={styles.h2}>
-              Bằng chứng
-            </h2>
-            <span className={styles.hint}>Bấm một trường hoặc một đoạn để đối chiếu</span>
-          </div>
-          <EvidenceHighlighter text={post.text} evidence={allEvidence} active={activeKeys} onSelect={onSpan} size="lg" />
-          <p className={styles.source}>
-            {[post.source_group_name, 'số điện thoại đã che', detail.is_demo ? 'bài ví dụ tự tạo' : null]
-              .filter(Boolean)
-              .join(' · ')}
-            {!post.text_complete && ' · văn bản nguồn chưa đầy đủ'}
-          </p>
-          <ul className={styles.legend} aria-label="Chú thích nhãn">
-            {(['PRICE', 'AREA', 'LOC', 'ROOM', 'FEE'] as const).map((l) => (
-              <li key={l}>
-                <span className={styles.tag} data-label={l}>
-                  {LABEL_TEXT[l]}
-                </span>
-                {{ PRICE: 'giá', AREA: 'diện tích', LOC: 'vị trí', ROOM: 'phòng', FEE: 'phí' }[l]}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      {history.length>0&&<section className={styles.history}><h2>Lịch sử giá</h2><ul>{history.map((item,index)=><li key={index}><span>{formatDate(item.observed_at)} ·</span>{' '}<strong><AtomicText text={formatVnd(item.rent_vnd!)} /></strong></li>)}</ul><p className={styles.hint}>Các mức giá được ghi nhận; không suy ra giá cho những lần thiếu số.</p></section>}
     </div>
-  );
+    <aside className={styles.aside} aria-label="Phiếu giá và so sánh"><Receipt listing={listing} model={model} active={active} onSelect={select} />{comparison}</aside>
+  </div>;
 }

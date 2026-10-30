@@ -6,6 +6,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 
@@ -21,12 +22,17 @@ class Settings(BaseSettings):
     session_max_age_seconds: int = 7 * 24 * 3600
     extension_token_days: int = 30
     cookie_secure: bool = False
+    # Explicit opt-in for local development only; production has no mail delivery yet.
+    password_reset_dev_log: bool = False
+    password_reset_base_url: str = "http://localhost:3000"
 
     # Limits (api-contract §5)
     max_text_length: int = 20_000
     ingest_batch_max: int = 20
     ingest_rate_per_minute: int = 60
     max_running_analyses_per_user: int = 1
+    register_rate_limit: int = Field(default=10, ge=1, le=1000)
+    register_window_seconds: int = Field(default=600, ge=1, le=86400)
     idempotency_retention_days: int = 7
     assess_retention_days: int = 7
 

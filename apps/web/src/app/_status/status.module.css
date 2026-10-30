@@ -1,0 +1,20 @@
+.page { display:grid; grid-template-columns:minmax(0,280px) minmax(0,520px); justify-content:center; align-items:center; gap:80px; min-height:650px; padding-block:80px; }
+.receipt { min-width:0; background:var(--surface); border:1px solid var(--border); border-bottom:2px dashed var(--border-strong); border-radius:12px 12px 0 0; padding:28px 24px 36px; box-shadow:var(--shadow-paper); }
+.receiptHead { display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:14px; }
+.receiptHead > span { border:1px solid var(--border-strong); border-radius:4px; padding:3px 7px; font-size:12px; color:var(--ink-2); }
+.emptyPrice { display:grid; gap:8px; margin-top:24px; padding-top:20px; border-top:1px dashed var(--border-strong); color:var(--ink-2); font-size:13px; }
+.emptyPrice strong { font-size:32px; line-height:1.4; color:var(--ink); }
+.stamp { display:inline-block; max-width:100%; margin-block:20px; padding:8px 12px; border:2px solid var(--danger); color:var(--danger); font-size:14px; font-weight:700; line-height:1.6; }
+.emptyRows { display:grid; gap:8px; padding-top:20px; border-top:1px dashed var(--border-strong); color:var(--ink-3); font-size:13px; }
+.copy { min-width:0; }
+.eyebrow { color:var(--ink-3); font-size:12px; font-weight:600; line-height:1.8; margin-bottom:16px; }
+.copy h1 { font-size:clamp(30px,3.3vw,44px); line-height:1.4; font-weight:600; }
+.description { color:var(--ink-2); font-size:16px; line-height:1.9; margin-top:20px; }
+.actions { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:28px; }
+.actions > * { min-height:44px; font-size:14px; white-space:nowrap; }
+.primary,.secondary { display:inline-flex; justify-content:center; align-items:center; padding:12px 18px; border:1px solid var(--border-strong); border-radius:8px; font-weight:600; }
+.primary { color:var(--accent-ink); background:var(--accent); border-color:var(--accent); }
+.primary:hover { background:var(--accent-hover); border-color:var(--accent-hover); }
+.secondary { color:var(--ink); background:var(--surface); }
+.secondary:hover { background:var(--hover); }
+@media(max-width:800px) { .page { grid-template-columns:minmax(0,1fr); gap:40px; min-height:0; padding-block:48px 64px; } .receipt { width:240px; max-width:100%; justify-self:center; } .copy { max-width:520px; width:100%; justify-self:center; } }

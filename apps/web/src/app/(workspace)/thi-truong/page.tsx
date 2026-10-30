@@ -1,13 +1,17 @@
 import { Market } from '@/features/workspace/Market';
-import { requireUser } from '@/lib/workspace/server';
+import { sessionUser } from '@/lib/workspace/server';
+import { getCatalog } from '@/lib/api/client';
+import { marketFilters, marketQuery } from '@/features/workspace/Market.model';
+import { SiteHeader } from '@/components/SiteHeader/SiteHeader';
+import { SiteFooter } from '@/components/SiteFooter/SiteFooter';
+import { Suspense } from 'react';
+import styles from '@/features/workspace/Market.module.css';
 export const metadata = { title: 'Thị trường' };
 export default async function Page({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  const query = await searchParams;
-  const params = new URLSearchParams();
-  for (const key of ['ward', 'type', 'basis', 'demo']) {
-    const value = query[key]; if (Array.isArray(value)) value.forEach(item => params.append(key, item)); else if (value) params.set(key, value);
-  }
-  await requireUser('/thi-truong?' + params.toString());
-  const first = (key: string, fallback = '') => params.get(key) ?? fallback;
-  return <Market query={params.toString()} filters={{ ward: first('ward'), type: first('type'), basis: first('basis', 'per_unit'), demo: first('demo', 'true') }} />;
+  const filters = marketFilters(await searchParams);
+  const query = marketQuery(filters);
+  const user = await sessionUser();
+  const catalog = await getCatalog(filters.demo === 'true').catch(() => null);
+  const content = <Market query={query} filters={filters} wards={catalog?.wards ?? []} showThemeToggle={!!user} />;
+  return user ? content : <><Suspense><SiteHeader /></Suspense><main id="main" tabIndex={-1} className={`container ${styles.publicPage}`}>{content}</main><Suspense><SiteFooter /></Suspense></>;
 }

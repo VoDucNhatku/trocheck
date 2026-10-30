@@ -1,246 +1,72 @@
-'use client';
-
+﻿'use client';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState, useTransition } from 'react';
-import { Check, ChevronDown, SlidersHorizontal, X } from 'lucide-react';
-import type { PropertyType } from '@/lib/api/types';
+import { useEffect, useRef, useState, useTransition, type FormEvent, type KeyboardEvent } from 'react';
+import { SlidersHorizontal, X } from 'lucide-react';
 import { PROPERTY_LABEL } from '@/lib/format';
+import { AtomicText } from '@/features/landing/examples';
 import { FILTER_TYPES } from './filters';
 import styles from './FilterBar.module.css';
 
-interface Props {
-  wards: string[];
-}
-
-export function FilterBar({ wards }: Props) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const params = useSearchParams();
-  const [pending, startTransition] = useTransition();
-  const [open, setOpen] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
-  const priceParam = params.get('co_gia') === '1';
-  const [hasPrice, setHasPrice] = useState(priceParam);
-  useEffect(() => setHydrated(true), []);
-  useEffect(() => setHasPrice(priceParam), [priceParam]);
-
-  const update = (mutate: (p: URLSearchParams) => void) => {
-    const next = new URLSearchParams(params.toString());
-    mutate(next);
-    next.delete('trang');
-    next.delete('nguon');
-    startTransition(() => router.replace(`${pathname}${next.size ? `?${next}` : ''}`, { scroll: false }));
+export function FilterBar({ wards, demo }: { wards:string[]; demo?:boolean }) {
+  const router=useRouter(); const pathname=usePathname(); const params=useSearchParams();
+  const [pending,startTransition]=useTransition(); const [open,setOpen]=useState(false);
+  const dialog=useRef<HTMLDialogElement>(null); const trigger=useRef<HTMLButtonElement>(null);
+  const activeCount=params.getAll('phuong').length+params.getAll('loai').length+['gia_min','gia_max','dt_min','dt_max','co_gia'].filter(k=>params.get(k)).length;
+  const close=()=>dialog.current?.close();
+  useEffect(()=>{
+    if(!open)return;
+    const previous=document.body.style.overflow;document.body.style.overflow='hidden';
+    const wide=matchMedia('(min-width: 901px)');const resize=()=>{if(wide.matches)dialog.current?.close()};wide.addEventListener('change',resize);
+    return()=>{document.body.style.overflow=previous;wide.removeEventListener('change',resize)};
+  },[open]);
+  const navigate=(next:URLSearchParams)=>{
+    next.delete('trang');next.delete('nguon');
+    if(demo!==undefined)next.set('demo',String(demo));
+    startTransition(()=>router.replace(`${pathname}${next.size?'?'+next:''}`,{scroll:false}));
+    close();
   };
-
-  const toggle = (key: string, value: string) =>
-    update((p) => {
-      const cur = p.getAll(key);
-      p.delete(key);
-      (cur.includes(value) ? cur.filter((v) => v !== value) : [...cur, value]).forEach((v) => p.append(key, v));
-    });
-
-  const wardSel = params.getAll('phuong');
-  const typeSel = params.getAll('loai');
-  const activeCount =
-    wardSel.length +
-    typeSel.length +
-    ['gia_min', 'gia_max', 'dt_min', 'dt_max', 'co_gia'].filter((k) => params.get(k)).length;
-
-  return (
-    <div className={styles.bar} data-pending={pending || undefined} data-hydrated={hydrated} aria-busy={pending}>
-      <button
-        type="button"
-        className={styles.mobileToggle}
-        aria-expanded={open}
-        aria-controls="listing-filters"
-        onClick={() => setOpen((v) => !v)}
-      >
-        <SlidersHorizontal size={15} aria-hidden="true" /> Bộ lọc{activeCount ? ` · ${activeCount}` : ''}
-        <ChevronDown size={16} aria-hidden="true" />
-      </button>
-
-      <div id="listing-filters" className={[styles.groups, open ? styles.groupsOpen : ''].join(' ')}>
-        <fieldset className={styles.group}>
-          <legend>Phường</legend>
-          <div className={styles.chips}>
-            {!wards.length && <p className={styles.help}>Chưa có phường trong kho này.</p>}
-            {wards.map((w) => (
-              <Chip key={w} on={wardSel.includes(w)} onClick={() => toggle('phuong', w)}>
-                {w.replace(/^(Phường|Xã) /, '')}
-              </Chip>
-            ))}
-          </div>
-        </fieldset>
-
-        <fieldset className={styles.group}>
-          <legend>Loại phòng</legend>
-          <div className={styles.chips}>
-            {FILTER_TYPES.map((t) => (
-              <Chip key={t} on={typeSel.includes(t)} onClick={() => toggle('loai', t)}>
-                {PROPERTY_LABEL[t as PropertyType]}
-              </Chip>
-            ))}
-          </div>
-        </fieldset>
-
-        <div className={styles.row}>
-          <RangeField
-            label="Giá (triệu/tháng)"
-            minKey="gia_min"
-            maxKey="gia_max"
-            step="0.5"
-            update={update}
-            params={params}
-          />
-          <RangeField label="Diện tích (m²)" minKey="dt_min" maxKey="dt_max" step="1" update={update} params={params} />
-          <label className={styles.check}>
-            <input
-              type="checkbox"
-              checked={hasPrice}
-              onChange={(e) => {
-                const checked = e.target.checked;
-                setHasPrice(checked);
-                update((p) => (checked ? p.set('co_gia', '1') : p.delete('co_gia')));
-              }}
-            />
-            Chỉ tin có giá
-          </label>
-          <ListingSort />
-          {activeCount > 0 && (
-            <button
-              type="button"
-              className={styles.clear}
-              onClick={() =>
-                update((p) => [...p.keys()].forEach((k) => !['sap_xep', 'demo'].includes(k) && p.delete(k)))
-              }
-            >
-              <X size={13} aria-hidden="true" /> Xóa lọc
-            </button>
-          )}
-        </div>
-        <p className={styles.help}>Bộ lọc tự cập nhật và được lưu trên URL. Giá thuê không bao gồm các khoản phí.</p>
-      </div>
-      <p className={styles.pending} role="status">
-        {pending ? 'Đang cập nhật bộ lọc…' : ''}
-      </p>
+  const submit=(event:FormEvent<HTMLFormElement>)=>{
+    event.preventDefault();const data=new FormData(event.currentTarget);const next=new URLSearchParams();
+    for(const [key,value] of data)if(typeof value==='string'&&value.trim())next.append(key,value.trim());
+    if(params.has('demo'))next.set('demo',params.get('demo')!);
+    navigate(next);
+  };
+  const clear=()=>{const next=new URLSearchParams();if(params.has('demo'))next.set('demo',params.get('demo')!);navigate(next)};
+  const trapFocus=(event:KeyboardEvent<HTMLDialogElement>)=>{
+    if(event.key!=='Tab')return;
+    const controls=[...event.currentTarget.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href]')].filter(el=>el.getClientRects().length);
+    const first=controls[0],last=controls.at(-1);
+    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus()}
+    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus()}
+  };
+  const fields=(mobile:boolean)=><FilterForm key={`${mobile}-${params}`} wards={wards} params={params} pending={pending} mobile={mobile} submit={submit} clear={clear} close={close} />;
+  return <aside className={styles.bar} aria-label="Bộ lọc tin" aria-busy={pending}>
+    <div className={styles.desktop}>{fields(false)}</div>
+    <button ref={trigger} className={styles.mobileToggle} type="button" aria-expanded={open} aria-controls="listing-filter-dialog" onClick={()=>{dialog.current?.showModal();setOpen(true)}}><SlidersHorizontal size={17} aria-hidden="true" />Bộ lọc{activeCount?` · ${activeCount}`:''}</button>
+    <dialog ref={dialog} id="listing-filter-dialog" className={styles.drawer} aria-labelledby="mobile-filter-title" onKeyDown={trapFocus} onClose={()=>{setOpen(false);trigger.current?.focus()}} onClick={e=>{if(e.target===e.currentTarget){const r=e.currentTarget.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)close()}}}>{fields(true)}</dialog>
+    <p className={styles.pending} role="status">{pending?'Đang cập nhật danh sách…':''}</p>
+  </aside>;
+}
+function FilterForm({wards,params,pending,mobile,submit,clear,close}:{wards:string[];params:ReturnType<typeof useSearchParams>;pending:boolean;mobile:boolean;submit:(e:FormEvent<HTMLFormElement>)=>void;clear:()=>void;close:()=>void}) {
+  const prefix=mobile?'mobile':'desktop';
+  return <form onSubmit={submit} className={styles.form}>
+    <header className={styles.head}><h2 id={mobile?'mobile-filter-title':undefined}>Lọc tin</h2>{mobile&&<button type="button" className={styles.close} onClick={close} aria-label="Đóng bộ lọc" autoFocus><X size={20} aria-hidden="true" /></button>}</header>
+    <div className={styles.fields}>
+    <fieldset className={styles.group}><legend>Phường</legend>{wards.length?wards.map(ward=><label className={styles.check} key={ward}><input type="checkbox" name="phuong" value={ward} defaultChecked={params.getAll('phuong').includes(ward)} /><span><AtomicText text={ward} /></span></label>):<p className={styles.help}>Chưa tải được phường hoặc kho chưa có tin.</p>}</fieldset>
+    <fieldset className={styles.group}><legend>Loại phòng</legend>{FILTER_TYPES.map(type=><label className={styles.check} key={type}><input type="checkbox" name="loai" value={type} defaultChecked={params.getAll('loai').includes(type)} /><span>{PROPERTY_LABEL[type]}</span></label>)}</fieldset>
+    <RangeField prefix={prefix} label="Giá thuê · triệu/tháng" minKey="gia_min" maxKey="gia_max" step="0.1" params={params} />
+    <RangeField prefix={prefix} label="Diện tích · m²" minKey="dt_min" maxKey="dt_max" step="1" params={params} />
+    <label className={styles.check}><input type="checkbox" name="co_gia" value="1" defaultChecked={params.get('co_gia')==='1'} /><span>Chỉ tin có giá</span></label>
+    <label className={styles.sort}><span>Sắp xếp</span><select name="sap_xep" defaultValue={params.get('sap_xep')??'newest'}><option value="newest">Mới nhất</option><option value="price_asc">Giá tăng dần</option><option value="price_desc">Giá giảm dần</option></select></label>
+    <p className={styles.help}>Giá thuê không bao gồm phí. Bộ lọc đã áp dụng được lưu trên URL.</p>
     </div>
-  );
+    <div className={styles.actions}><button className={styles.apply} type="submit" disabled={pending}>{pending?'Đang áp dụng…':'Áp dụng'}</button><button className={styles.clear} type="button" onClick={clear} disabled={pending}>Xóa lọc</button></div>
+  </form>;
 }
-
-function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button type="button" className={styles.chip} aria-pressed={on} onClick={onClick}>
-      {on && <Check size={12} strokeWidth={2.5} aria-hidden="true" />}
-      {children}
-    </button>
-  );
-}
-
-export function ListingSort() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const params = useSearchParams();
-  const [pending, startTransition] = useTransition();
-  return (
-    <label className={styles.sort} aria-busy={pending}>
-      <span className="visually-hidden">Sắp xếp</span>
-      <select
-        value={params.get('sap_xep') ?? 'newest'}
-        onChange={(e) => {
-          const next = new URLSearchParams(params.toString());
-          next.delete('trang');
-          next.delete('nguon');
-          if (e.target.value === 'newest') next.delete('sap_xep');
-          else next.set('sap_xep', e.target.value);
-          startTransition(() => router.replace(`${pathname}${next.size ? `?${next}` : ''}`, { scroll: false }));
-        }}
-      >
-        <option value="newest">Mới nhất</option>
-        <option value="price_asc">Giá tăng dần</option>
-        <option value="price_desc">Giá giảm dần</option>
-      </select>
-      <ChevronDown size={14} aria-hidden="true" />
-    </label>
-  );
-}
-
-function RangeField({
-  label,
-  minKey,
-  maxKey,
-  step,
-  update,
-  params,
-}: {
-  label: string;
-  minKey: string;
-  maxKey: string;
-  step: string;
-  update: (m: (p: URLSearchParams) => void) => void;
-  params: URLSearchParams | ReturnType<typeof useSearchParams>;
-}) {
-  const [min, setMin] = useState(params.get(minKey) ?? '');
-  const [max, setMax] = useState(params.get(maxKey) ?? '');
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const draft = useRef({ min, max });
-
-  // Keep inputs in sync when the URL changes elsewhere (e.g. "Xóa lọc").
-  useEffect(() => {
-    setMin(params.get(minKey) ?? '');
-    setMax(params.get(maxKey) ?? '');
-    draft.current = { min: params.get(minKey) ?? '', max: params.get(maxKey) ?? '' };
-  }, [params, minKey, maxKey]);
-
-  useEffect(() => () => clearTimeout(timer.current), []);
-
-  const commit = (key: string, value: string) => {
-    clearTimeout(timer.current);
-    draft.current = { ...draft.current, [key === minKey ? 'min' : 'max']: value };
-    timer.current = setTimeout(
-      () =>
-        update((p) => {
-          for (const [k, v] of [
-            [minKey, draft.current.min],
-            [maxKey, draft.current.max],
-          ]) {
-            if (v) p.set(k, v);
-            else p.delete(k);
-          }
-        }),
-      450,
-    );
-  };
-
-  return (
-    <fieldset className={styles.range}>
-      <legend>{label}</legend>
-      <input
-        inputMode="decimal"
-        type="number"
-        min="0"
-        step={step}
-        placeholder="Từ"
-        aria-label={`${label} từ`}
-        value={min}
-        onChange={(e) => {
-          setMin(e.target.value);
-          commit(minKey, e.target.value);
-        }}
-      />
-      <span aria-hidden="true">–</span>
-      <input
-        inputMode="decimal"
-        type="number"
-        min="0"
-        step={step}
-        placeholder="Đến"
-        aria-label={`${label} đến`}
-        value={max}
-        onChange={(e) => {
-          setMax(e.target.value);
-          commit(maxKey, e.target.value);
-        }}
-      />
-    </fieldset>
-  );
+function RangeField({prefix,label,minKey,maxKey,step,params}:{prefix:string;label:string;minKey:string;maxKey:string;step:string;params:ReturnType<typeof useSearchParams>}) {
+  const clean=(key:string)=>(params.get(key)??'').replace(',','.');
+  return <fieldset className={styles.group}><legend>{label}</legend><div className={styles.range}>
+    <label htmlFor={`${prefix}-${minKey}`}><span>Từ</span><input id={`${prefix}-${minKey}`} name={minKey} aria-label={`${label} từ`} type="number" min="0" step={step} inputMode="decimal" defaultValue={clean(minKey)} /></label>
+    <label htmlFor={`${prefix}-${maxKey}`}><span>Đến</span><input id={`${prefix}-${maxKey}`} name={maxKey} aria-label={`${label} đến`} type="number" min="0" step={step} inputMode="decimal" defaultValue={clean(maxKey)} /></label>
+  </div></fieldset>;
 }

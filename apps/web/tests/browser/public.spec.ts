@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import path from 'node:path';
 
-const api = 'http://127.0.0.1:18000';
+const api = process.env.PUBLIC_API ?? 'http://127.0.0.1:18000';
 const evidence = path.resolve('../../.tmp/b1-ui-evidence');
 async function screenshot(page: Page, name: string) {
   await page.screenshot({ path: path.join(evidence, `${name}.png`), fullPage: true });

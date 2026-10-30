@@ -51,6 +51,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Register */
+        post: operations["register_api_v1_auth_register_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/me": {
         parameters: {
             query?: never;
@@ -426,6 +443,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/password/forgot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Forgot */
+        post: operations["forgot_api_v1_auth_password_forgot_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/password/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reset */
+        post: operations["reset_api_v1_auth_password_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -535,6 +586,10 @@ export interface components {
             criteria: components["schemas"]["ComparisonCriteria"];
             /** N */
             n: number;
+            /** Mean Vnd */
+            mean_vnd?: number | null;
+            /** Mean Per M2 */
+            mean_per_m2?: number | null;
             /** Median */
             median: number | null;
             /** P25 */
@@ -748,6 +803,11 @@ export interface components {
             state_rate?: boolean;
             /** Evidence */
             evidence?: components["schemas"]["Evidence"][] | null;
+        };
+        /** ForgotRequest */
+        ForgotRequest: {
+            /** Email */
+            email: string;
         };
         /** GoldResult */
         GoldResult: {
@@ -1027,6 +1087,10 @@ export interface components {
             basis: "per_unit" | "per_person";
             /** N */
             n: number;
+            /** Mean Vnd */
+            mean_vnd?: number | null;
+            /** Mean Per M2 */
+            mean_per_m2?: number | null;
             /** Median */
             median: number | null;
             /** P25 */
@@ -1103,6 +1167,19 @@ export interface components {
             /** Post Type */
             post_type: ("rental_offer" | "seeking" | "roommate" | "sale" | "spam" | "other") | null;
         };
+        /** RegisterRequest */
+        RegisterRequest: {
+            /** Username */
+            username: string;
+            /** Email */
+            email?: string | null;
+            /** Password */
+            password: string;
+            /** Confirm Password */
+            confirm_password: string;
+            /** Accept Terms */
+            accept_terms: boolean;
+        };
         /** Rent */
         Rent: {
             /**
@@ -1153,6 +1230,15 @@ export interface components {
             job_id: string;
             /** Status */
             status: string;
+        };
+        /** ResetRequest */
+        ResetRequest: {
+            /** Token */
+            token: string;
+            /** Password */
+            password: string;
+            /** Confirm Password */
+            confirm_password: string;
         };
         /** ReviewDecision */
         ReviewDecision: {
@@ -1485,6 +1571,57 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LoggedOut"];
+                };
+            };
+        };
+    };
+    register_api_v1_auth_register_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionUser"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Too Many Requests */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };
@@ -2247,6 +2384,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EvalResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    forgot_api_v1_auth_password_forgot_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ForgotRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_api_v1_auth_password_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResetRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

@@ -1,61 +1,95 @@
-/*
- * ReNER-VN design tokens — "bút dạ quang trên giấy".
- * Giấy ấm làm nền, mực đậm làm chữ, mỗi nhãn NER là một màu bút dạ quang.
- * Mọi màu trong component lấy từ đây; không hard-code mã màu trong component.
+/* TroCheck role tokens. Brand source: the approved logo DESIGN.md.
+ * light-dark() follows the OS; data-theme explicitly overrides color-scheme.
+ * Entity hues retain the established PRICE/AREA/LOC/ROOM/FEE meanings.
  */
-
 :root {
-  color-scheme: light;
+  color-scheme: light dark;
+  --paper: light-dark(#f9f9ff, #101916);
+  --surface: light-dark(#ffffff, #18241f);
+  --subtle: light-dark(#f0f3ff, #202f28);
+  --hover: light-dark(#e8eeff, #283b32);
+  --ink: light-dark(#111c2d, #e4eee8);
+  --ink-2: light-dark(#3f4945, #c5d1cb);
+  --ink-3: light-dark(#59655f, #a9b9b0);
+  --icon: var(--ink-3);
+  --border: light-dark(#bec9c4, #43594d);
+  --border-strong: light-dark(#6f7975, #879d90);
 
-  /* Nền & bề mặt */
-  --paper: #f6f4ee;
-  --surface: #ffffff;
-  --subtle: #efece4;
-  --hover: #f3f0e9;
+  --accent: light-dark(#005243, #87d5bf);
+  --accent-hover: light-dark(#004335, #a3f2db);
+  --accent-active: light-dark(#00362c, #b7ffe8);
+  --accent-ink: light-dark(#ffffff, #002019);
+  --accent-subtle: light-dark(#dcefe8, #123c30);
+  --primary-container: light-dark(#146c5a, #005243);
+  --on-primary-container: light-dark(#9bead3, #9bead3);
+  --inverse-primary: light-dark(#87d5bf, #87d5bf);
+  --focus: var(--accent);
+  --button-primary-bg: var(--accent);
+  --button-primary-ink: var(--accent-ink);
+  --button-secondary-bg: var(--surface);
+  --button-secondary-ink: var(--ink);
+  --rent-text: var(--accent);
 
-  /* Viền */
-  --border: #e3dfd5;
-  --border-strong: #8a857b;
+  --danger: light-dark(#ba1a1a, #ffb4ab);
+  --danger-surface: light-dark(#ffdad6, #4b1918);
+  --warn: light-dark(#7b4400, #ffc57c);
+  --warning-surface: light-dark(#fff0d0, #392a14);
+  --ok: light-dark(#24633b, #91d8a4);
+  --success-surface: light-dark(#e3f3e5, #183a23);
+  --amber: var(--warn);
+  --amber-surface: var(--warning-surface);
+  --v-higher: var(--danger);
+  --v-higher-bg: var(--warning-surface);
+  --v-near: var(--ink-2);
+  --v-lower: var(--ok);
+  --v-none: var(--ink-3);
 
-  /* Chữ (contrast trên --surface) */
-  --ink: #17181c; /* 17.6:1 */
-  --ink-2: #57554e; /* 7.4:1 */
-  --ink-3: #6b685f; /* 5.5:1 */
-  --icon: #6b685f; /* chỉ icon */
+  --mk-price: light-dark(#ffe566, #665714);
+  --mk-area: light-dark(#a6ebc9, #235632);
+  --mk-loc: light-dark(#b5dcff, #1d4a72);
+  --mk-room: light-dark(#dccbff, #4b3a78);
+  --mk-fee: light-dark(#ffc9b0, #773f2b);
+  --mk-ink: var(--ink);
 
-  /* Một điểm nhấn: mực xanh. Chữ trắng trên nền này 8.9:1 */
-  --accent: #2337c6;
-  --accent-hover: #1b2da8;
-  --accent-active: #15238a;
-  --accent-ink: #ffffff;
-  --accent-subtle: rgba(35, 55, 198, 0.08);
-  --focus: #2337c6;
+  --shell-paper: var(--paper);
+  --night: light-dark(#1c3028, #0b1410);
+  --night-2: light-dark(#294638, #1c3028);
+  --night-line: light-dark(#668272, #668272);
+  --on-night: light-dark(#f9f9ff, #e4eee8);
+  --on-night-2: light-dark(#c5d1cb, #c5d1cb);
+  --hl: var(--inverse-primary);
+  --on-hl: light-dark(#002019, #002019);
+  --chart-axis: var(--border-strong);
+  --chart-range: var(--accent-subtle);
+  --avatar-bg: var(--accent-subtle);
+  --avatar-ink: var(--accent);
+  --logo-icon-surface: light-dark(#ffffff, #ffffff);
 
-  /* Bút dạ quang cho nhãn — luôn đi kèm chữ nhãn, không dùng màu một mình */
-  --mk-price: #ffe566;
-  --mk-area: #a6ebc9;
-  --mk-loc: #b5dcff;
-  --mk-room: #dccbff;
-  --mk-fee: #ffc9b0;
-  --mk-ink: #17181c;
+  /* Photo-backed panels remain dark in both modes. The scrim bounds contrast
+   * even over white image pixels; hero-contrast-bg is a conservative bound. */
+  --hero-bg: light-dark(#101f1a, #101f1a);
+  --hero-text: light-dark(#f9f9ff, #f9f9ff);
+  --hero-accent: light-dark(#9bead3, #9bead3);
+  --hero-button-bg: var(--inverse-primary);
+  --hero-button-hover: light-dark(#a3f2db, #a3f2db);
+  --hero-button-ink: var(--on-hl);
+  --hero-panel: light-dark(#142d23, #142d23);
+  --hero-contrast-bg: light-dark(#53605a, #53605a);
+  --hero-line: light-dark(#92b3a3, #92b3a3);
+  --hero-overlay: linear-gradient(90deg, rgb(9 24 18 / .9), rgb(9 24 18 / .8) 70%, rgb(9 24 18 / .72)), linear-gradient(0deg, rgb(9 24 18 / .8), transparent 35%);
+  --scrim: light-dark(rgb(17 28 45 / .4), rgb(0 0 0 / .65));
+  --shadow-color: light-dark(rgb(17 28 45 / .12), rgb(0 0 0 / .45));
+  --shadow-paper-color: light-dark(rgb(17 28 45 / .18), rgb(0 0 0 / .6));
+  --shadow-overlay: 0 8px 24px var(--shadow-color);
+  --shadow-paper: 0 1px 0 var(--shadow-color), 0 24px 48px -24px var(--shadow-paper-color);
+  --shadow-post: 0 6px 24px var(--shadow-color);
 
-  /* Nhận định — chỉ dùng cho viền + chữ, kèm câu chữ đầy đủ */
-  --v-higher: #b42318;
-  --v-near: #57554e;
-  --v-lower: #067647;
-  --v-none: #6b685f;
-
-  /* Trạng thái (chấm 6px + chữ) */
-  --ok: #067647;
-  --warn: #b54708;
-  --danger: #b42318;
-
-  /* Chữ */
   --font-sans: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-serif: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
+  --font-serif: var(--font-sans);
+  --font-body: var(--font-sans);
+  --font-display: var(--font-sans);
   --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
-
-  /* Khoảng cách — lưới 4px */
+  --text-xs: 12px;
   --s-1: 4px;
   --s-2: 8px;
   --s-3: 12px;
@@ -67,94 +101,70 @@
   --s-12: 48px;
   --s-16: 64px;
   --s-24: 96px;
-
-  /* Bo góc */
   --r-sm: 4px;
   --r-md: 6px;
   --r-lg: 8px;
   --r-full: 9999px;
-
-  /* Lớp nổi duy nhất được có bóng */
-  --shadow-overlay: 0 8px 24px rgba(23, 24, 28, 0.1);
-  --shadow-paper: 0 1px 0 rgba(23, 24, 28, 0.04), 0 24px 48px -24px rgba(23, 24, 28, 0.18);
-
-  /* Chuyển động */
   --dur-fast: 120ms;
   --dur-base: 180ms;
   --dur-slow: 420ms;
   --ease: cubic-bezier(0.2, 0, 0, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-
-  /* Khung */
   --container: 1152px;
   --header-h: 56px;
 }
+:root[data-theme='light'] { color-scheme: light; }
+:root[data-theme='dark'] { color-scheme: dark; }
+[data-workspace] { --r-md: 8px; --r-lg: 16px; }
+[data-workspace-chrome] { --ease: cubic-bezier(.23, 1, .32, 1); }
 
-/* Interior app: the landing keeps its established palette and motion. */
-[data-workspace] {
-  color-scheme: light;
-  --paper: #f6f4ee;
-  --surface: #fffdf7;
-  --subtle: #eeece3;
-  --hover: #e7ebe1;
-  --ink: #172b25;
-  --ink-2: #43564a;
-  --ink-3: #59655b;
-  --icon: #59655b;
-  --accent: #244b3c;
-  --accent-hover: #193c2e;
-  --accent-active: #122f23;
-  --accent-ink: #fffdf7;
-  --accent-subtle: #e7ede4;
-  --focus: #244b3c;
-  --border: #d9dcd0;
-  --border-strong: #7d887b;
-  --amber: #f2cd64;
-  --amber-surface: #fff3ce;
-  --warn: #80420d;
-  --danger: #a33124;
-  --danger-surface: #fcece6;
-  --ok: #24613d;
-  --mk-price: #ffe566;
-  --mk-area: #a6ebc9;
-  --mk-loc: #b5dcff;
-  --mk-room: #dccbff;
-  --mk-fee: #ffc9b0;
-  --mk-ink: #172b25;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    color-scheme: dark;
-    --paper: #12120f;
-    --surface: #1b1a17;
-    --subtle: #24231f;
-    --hover: #22211d;
-    --border: #2f2e29;
-    --border-strong: #46443d;
-    --ink: #eeece5;
-    --ink-2: #b6b2a7;
-    --ink-3: #9d998e;
-    --icon: #7d7a71;
-    --accent: #9aa6ff;
-    --accent-hover: #b0b9ff;
-    --accent-active: #c3caff;
-    --accent-ink: #0d1033;
-    --accent-subtle: rgba(154, 166, 255, 0.12);
-    --focus: #9aa6ff;
-    --mk-price: #6b5d12;
-    --mk-area: #1f5a3f;
-    --mk-loc: #1d4a72;
-    --mk-room: #4b3a78;
-    --mk-fee: #77402a;
-    --mk-ink: #f6f4ee;
-    --v-higher: #ff8a80;
-    --v-near: #b6b2a7;
-    --v-lower: #6fd8a5;
-    --ok: #6fd8a5;
-    --warn: #f5b971;
-    --danger: #ff8a80;
-    --shadow-overlay: 0 8px 24px rgba(0, 0, 0, 0.45);
-    --shadow-paper: 0 1px 0 rgba(0, 0, 0, 0.3), 0 24px 48px -24px rgba(0, 0, 0, 0.6);
-  }
-}
+/* Declared foreground/background contracts, consumed by check-contrast.mjs.
+ * Ordinary text: 4.5; non-text controls/focus boundaries: 3. */
+/* @contrast body-paper --ink --paper 4.5 */
+/* @contrast body-card --ink --surface 4.5 */
+/* @contrast body-subtle --ink --subtle 4.5 */
+/* @contrast body-hover --ink --hover 4.5 */
+/* @contrast secondary-paper --ink-2 --paper 4.5 */
+/* @contrast secondary-card --ink-2 --surface 4.5 */
+/* @contrast secondary-subtle --ink-2 --subtle 4.5 */
+/* @contrast muted-paper --ink-3 --paper 4.5 */
+/* @contrast muted-card --ink-3 --surface 4.5 */
+/* @contrast muted-subtle --ink-3 --subtle 4.5 */
+/* @contrast muted-hover --ink-3 --hover 4.5 */
+/* @contrast link-paper --accent --paper 4.5 */
+/* @contrast link-card --accent --surface 4.5 */
+/* @contrast link-selected --accent --accent-subtle 4.5 */
+/* @contrast selected-text --ink --accent-subtle 4.5 */
+/* @contrast primary-button --button-primary-ink --button-primary-bg 4.5 */
+/* @contrast primary-hover --accent-ink --accent-hover 4.5 */
+/* @contrast primary-active --accent-ink --accent-active 4.5 */
+/* @contrast secondary-button --button-secondary-ink --button-secondary-bg 4.5 */
+/* @contrast primary-container --on-primary-container --primary-container 4.5 */
+/* @contrast error-paper --danger --paper 4.5 */
+/* @contrast error-card --danger --surface 4.5 */
+/* @contrast error-panel --danger --danger-surface 4.5 */
+/* @contrast warning-paper --warn --paper 4.5 */
+/* @contrast warning-panel --warn --warning-surface 4.5 */
+/* @contrast success-paper --ok --paper 4.5 */
+/* @contrast success-panel --ok --success-surface 4.5 */
+/* @contrast entity-price --mk-ink --mk-price 4.5 */
+/* @contrast entity-area --mk-ink --mk-area 4.5 */
+/* @contrast entity-location --mk-ink --mk-loc 4.5 */
+/* @contrast entity-room --mk-ink --mk-room 4.5 */
+/* @contrast entity-fee --mk-ink --mk-fee 4.5 */
+/* @contrast sidebar-body --on-night --night 4.5 */
+/* @contrast sidebar-muted --on-night-2 --night 4.5 */
+/* @contrast sidebar-selected --on-night --night-2 4.5 */
+/* @contrast sidebar-muted-selected --on-night-2 --night-2 4.5 */
+/* @contrast avatar --avatar-ink --avatar-bg 4.5 */
+/* @contrast highlight --on-hl --hl 4.5 */
+/* @contrast hero-body --hero-text --hero-contrast-bg 4.5 */
+/* @contrast hero-emphasis --hero-accent --hero-contrast-bg 4.5 */
+/* @contrast hero-panel --hero-text --hero-panel 4.5 */
+/* @contrast hero-button --hero-button-ink --hero-button-bg 4.5 */
+/* @contrast hero-button-hover --hero-button-ink --hero-button-hover 4.5 */
+/* @contrast control-paper --border-strong --paper 3 */
+/* @contrast control-card --border-strong --surface 3 */
+/* @contrast control-subtle --border-strong --subtle 3 */
+/* @contrast focus-paper --focus --paper 3 */
+/* @contrast focus-card --focus --surface 3 */

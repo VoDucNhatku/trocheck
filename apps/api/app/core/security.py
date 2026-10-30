@@ -8,8 +8,22 @@ import hmac
 import json
 import secrets
 import time
+import re
 
 PBKDF2_ROUNDS = int(os.environ.get("RENER_PBKDF2_ROUNDS", "240000"))
+
+
+def validate_password(value: str) -> str:
+    if not 8 <= len(value) <= 200 or not any(c.isupper() for c in value):
+        raise ValueError("Mật khẩu cần 8–200 ký tự và ít nhất một chữ hoa")
+    return value
+
+
+def normalize_email(value: str) -> str:
+    value = value.strip().casefold()
+    if len(value) > 254 or not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", value):
+        raise ValueError("Nhập email đúng định dạng")
+    return value
 
 
 def hash_password(password: str) -> str:
@@ -37,13 +51,13 @@ def _unb64(data: str) -> bytes:
     return base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))
 
 
-def sign_session(user_id: str, secret: str, max_age: int) -> str:
-    payload = _b64(json.dumps({"u": user_id, "exp": int(time.time()) + max_age}).encode())
+def sign_session(user_id: str, secret: str, max_age: int, version: int = 0) -> str:
+    payload = _b64(json.dumps({"u": user_id, "v": version, "exp": int(time.time()) + max_age}).encode())
     sig = _b64(hmac.new(secret.encode(), payload.encode(), hashlib.sha256).digest())
     return f"{payload}.{sig}"
 
 
-def read_session(cookie: str, secret: str) -> str | None:
+def read_session(cookie: str, secret: str, version: int | None = None) -> str | None:
     try:
         payload, sig = cookie.split(".")
     except ValueError:
@@ -53,6 +67,8 @@ def read_session(cookie: str, secret: str) -> str | None:
         return None
     data = json.loads(_unb64(payload))
     if data.get("exp", 0) < time.time():
+        return None
+    if version is not None and data.get("v", 0) != version:
         return None
     return data.get("u")
 

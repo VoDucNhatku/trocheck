@@ -38,4 +38,4 @@ Viết hoặc sửa ADR trong [docs/decisions](docs/decisions/README.md): bối 
 
 ## Dữ liệu
 
-Không commit dữ liệu thật. Đọc [data/README.md](data/README.md) và [cam kết dữ liệu](docs/05-delivery/03-rui-ro-va-phap-ly.md#2-cam-kết-về-dữ-liệu).
+Không commit dữ liệu thật. Đọc [data/README.md](data/README.md).

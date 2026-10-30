@@ -1,18 +1,14 @@
 import styles from './Logo.module.css';
 
-/** Wordmark: "Re" in ink, "NER" under a highlighter stroke, "VN" small. */
-export function Logo({ compact = false }: { compact?: boolean }) {
+/** Approved TroCheck image assets, unchanged from the shared brand files. */
+export function Logo({ compact = false, inverse = false }: { compact?: boolean; inverse?: boolean }) {
   return (
-    <span className={styles.logo}>
-      <span className={styles.mark} aria-hidden="true">
-        <span className={styles.bar} data-c="price" />
-        <span className={styles.bar} data-c="area" />
-        <span className={styles.bar} data-c="loc" />
-      </span>
+    <span className={styles.logo} role="img" aria-label="TrọCheck" data-logo-inverse={inverse || undefined}>
+      <img className={styles.mark} src="/brand/trocheck-icon.png" width={24} height={24} alt="" />
       {!compact && (
-        <span className={styles.word}>
-          Re<span className={styles.ner}>NER</span>
-          <span className={styles.vn}>VN</span>
+        <span className={styles.word} data-logo-wordmark>
+          <img className={styles.light} src="/brand/trocheck-wordmark-light.png" width={108} height={24} alt="" />
+          <img className={styles.dark} src="/brand/trocheck-wordmark-dark.png" width={108} height={24} alt="" />
         </span>
       )}
     </span>

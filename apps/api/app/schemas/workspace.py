@@ -49,6 +49,8 @@ class MarketCellDTO(BaseModel):
     property_type: PropertyType
     basis: Literal["per_unit", "per_person"]
     n: int
+    mean_vnd: int | None = None
+    mean_per_m2: int | None = None
     median: float | None
     p25: float | None
     p75: float | None

@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import path from 'node:path';
 
-const api = 'http://127.0.0.1:18000';
+const api = process.env.PUBLIC_API ?? 'http://127.0.0.1:18000';
 const evidence = path.resolve('../../.tmp/b1-ui-evidence');
 test.beforeEach(async ({ request, page }) => {
   await request.post(`${api}/_test/state`, { data: { mode: 'ok' } });

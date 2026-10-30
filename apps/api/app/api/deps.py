@@ -30,7 +30,9 @@ def optional_user(request: Request, session: Session = Depends(get_session),
     if cookie:
         user_id = security.read_session(cookie, settings.secret_key)
         if user_id:
-            return session.get(User, user_id)
+            user = session.get(User, user_id)
+            if user is not None and security.read_session(cookie, settings.secret_key, user.auth_version):
+                return user
     return None
 
 

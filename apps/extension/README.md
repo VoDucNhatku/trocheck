@@ -8,7 +8,6 @@
 2. [Schema một bài](../../spec/schemas/ingest-post.schema.json) và [schema lô](../../spec/schemas/ingest-batch.schema.json).
 3. [API contract §2](../../docs/03-system/03-api-contract.md#2-extension--api) — các endpoint extension gọi.
 4. [Màn hình extension](../../docs/01-product/03-tinh-nang-va-man-hinh.md#4-màn-hình-extension) — popup, xem trước, panel kết quả.
-5. [Rủi ro và pháp lý](../../docs/05-delivery/03-rui-ro-va-phap-ly.md) — cam kết về dữ liệu.
 
 ## Bàn giao gì
 

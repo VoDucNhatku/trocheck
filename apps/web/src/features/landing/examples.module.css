@@ -1,0 +1,37 @@
+﻿.phrase { white-space: nowrap; }
+.mark { display: inline-grid; vertical-align: bottom; margin: 5px 2px; padding: 3px 6px; border-radius: 4px; background: var(--mk-price); color: var(--mk-ink); line-height: 1.55; white-space: nowrap; font-size: 14px; }
+.mark small { font-size: 12px; font-weight: 600; }
+.mark[data-entity='Diện tích'] { background: var(--mk-area); }
+.mark[data-entity='Vị trí'] { background: var(--mk-loc); }
+.mark[data-entity='Loại phòng'] { background: var(--mk-room); }
+.mark[data-entity='Phí'] { background: var(--mk-fee); }
+.post { padding: 22px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-post); color: var(--ink); }
+.post header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-size: 14px; }
+.post header p, .note { font-size: 12px; color: var(--ink-3); line-height: 1.7; }
+.avatar { display: grid; place-items: center; width: 38px; height: 38px; flex: none; background: var(--avatar-bg); color: var(--avatar-ink); border-radius: 50%; font-weight: 700; }
+.excerpt { font-size: 14px; line-height: 2; }
+.note { margin-top: 14px; }
+.receipt { position: relative; background: var(--surface); color: var(--ink); border: 1px solid var(--border); border-bottom: 0; padding: 20px 22px 28px; box-shadow: var(--shadow-paper); border-radius: 10px 10px 0 0; }
+.receipt::after { content: ''; position: absolute; left: -1px; right: -1px; bottom: -12px; height: 14px; background: conic-gradient(from -45deg at 50% 100%, var(--surface) 90deg, transparent 0) 0 0 / 18px 100% repeat-x; }
+.receipt header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 14px; }
+.receipt header span { font-size: 12px; color: var(--accent); }
+.price { padding-block: 18px; border-bottom: 1px dashed var(--border-strong); }
+.price small { color: var(--ink-2); font-size: 12px; }
+.price p { font-size: clamp(23px, 2.5vw, 32px); font-weight: 600; line-height: 1.6; }
+.price p > span:last-child { font-size: 12px; color: var(--ink-3); font-weight: 400; }
+.receipt dl { margin: 0; }
+.receipt dl > div { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding-block: 10px; border-bottom: 1px solid var(--border); font-size: 13px; }
+.receipt dt { color: var(--ink-2); }
+.receipt dd { margin: 0; font-weight: 600; text-align: right; max-width: 62%; }
+.comparison { background: var(--surface); color: var(--ink); border: 1px solid var(--border-strong); border-radius: 12px; padding: 18px 20px; }
+.comparison > .note:first-child { margin: 0; }
+.bars { height: 88px; display: flex; align-items: flex-end; justify-content: space-around; gap: 12px; margin-top: 18px; border-bottom: 1px solid var(--border-strong); }
+.bars span { width: 8%; background: var(--accent); border-radius: 3px 3px 0 0; }
+.compareNumbers { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 14px; font-size: 12px; color: var(--ink-2); }
+.compareNumbers b { color: var(--ink); font-size: 16px; }
+.verdict { border-left: 3px solid var(--accent); padding-left: 12px; margin-top: 18px; font-size: 15px; font-weight: 600; }
+@media (max-width: 380px) {
+  .post, .receipt, .comparison { padding-inline: 14px; }
+  .mark { font-size: 13px; }
+  .receipt dl > div { font-size: 12px; }
+}

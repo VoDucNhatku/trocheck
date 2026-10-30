@@ -4,7 +4,7 @@ import { useDatasetHref } from '@/lib/useDatasetHref';
 import { Logo } from '../Logo/Logo';
 import styles from './SiteFooter.module.css';
 
-export function SiteFooter() {
+export function SiteFooter({ account = null }: { account?: string | null }) {
   const scoped = useDatasetHref();
   return (
     <footer className={styles.footer}>
@@ -28,6 +28,21 @@ export function SiteFooter() {
             <Link href="/tim-tro?demo=true">Bộ demo</Link>
             <Link href="/tim-tro?demo=false">Kho dữ liệu thật</Link>
             <Link href={scoped("/#cach-hoat-dong")}>Cách hoạt động</Link>
+          </div>
+          <div>
+            <h2>Tài khoản</h2>
+            {account ? (
+              <>
+                <Link href="/phan-tich">Phân tích bài đăng</Link>
+                <Link href="/thi-truong">Thị trường</Link>
+                <Link href="/tai-khoan">Tài khoản của tôi</Link>
+              </>
+            ) : (
+              <>
+                <Link href="/dang-nhap">Đăng nhập</Link>
+                <Link href="/dang-ky">Tạo tài khoản</Link>
+              </>
+            )}
           </div>
         </nav>
       </div>

@@ -14,6 +14,6 @@
   color: var(--accent);
 }
 .badge[data-tone='warning'] {
-  background: var(--v-higher-bg);
+  background: var(--warning-surface);
   color: var(--warn);
 }

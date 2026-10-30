@@ -17,7 +17,6 @@
 | O5 — tập chuẩn và đánh giá RQ1–RQ4 | [Kế hoạch đánh giá](../04-evaluation/01-ke-hoach-danh-gia.md) |
 | O6 — web app: Trích xuất, So sánh, Bảng dữ liệu, Thị trường, Đánh giá | [Tính năng và màn hình](../01-product/03-tinh-nang-va-man-hinh.md): Chi tiết tin + Lab (trích xuất, so sánh), Kho dữ liệu (bảng), Thị trường, Đánh giá |
 | Bảng 3 — kế hoạch 05/10–01/11 | [Lộ trình](../05-delivery/01-lo-trinh-va-phan-cong.md) |
-| Bảng 2 — rủi ro | [Rủi ro và pháp lý](../05-delivery/03-rui-ro-va-phap-ly.md) |
 
 ## Chỗ repo cụ thể hóa hoặc điều chỉnh so với proposal
 

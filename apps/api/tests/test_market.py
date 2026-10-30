@@ -1,7 +1,9 @@
 """M9 rules: worked example (gop-trung-va-thong-ke §6), AT08, AT09, AT17."""
 from datetime import UTC, datetime, timedelta
 
-from app.pipeline.market import (MarketConfig, MarketRow, compare, eligible_pool, percentile,
+import pytest
+
+from app.pipeline.market import (MarketConfig, MarketRow, compare, eligible_pool, group_stats, percentile,
                                  verdict_sentence)
 
 NOW = datetime(2026, 10, 25, tzinfo=UTC)
@@ -27,8 +29,9 @@ def test_worked_example():
     c = compare(target, pool, CFG)
     assert c.status == "ok" and c.stats.n == 12
     assert c.stats.median == 3_400_000
-    assert c.delta_percent == 14.7 and c.verdict == "higher"
-    assert verdict_sentence(c).startswith("Cao hơn 14.7% so với trung vị của 12 tin")
+    assert c.stats.mean == 3_416_667
+    assert c.delta_percent == 14.1 and c.verdict == "higher"
+    assert verdict_sentence(c).startswith("Cao hơn mức trung bình (+14,1%) của 12 tin")
 
 
 def test_at08_nine_samples_is_insufficient():
@@ -107,3 +110,139 @@ def test_near_band_is_configurable():
     assert c.verdict == "higher"
     c = compare(row(100, 3.6, cluster="T"), pool, CFG)
     assert c.verdict == "near"
+
+
+def test_mean_and_median_use_the_same_skewed_group():
+    stats = group_stats([row(i, p, area=20) for i, p in enumerate([3] * 9 + [13])], CFG)
+    assert stats.n == stats.n_per_m2 == 10
+    assert stats.median == stats.p25 == stats.p75 == 3_000_000
+    assert stats.mean == 4_000_000
+    assert stats.median_per_m2 == 150_000
+    assert stats.mean_per_m2 == 200_000
+
+
+@pytest.mark.parametrize("price,delta,verdict", [
+    (4.4, 10.0, "near"), (3.6, -10.0, "near"),
+    (4.8, 20.0, "higher"), (3.2, -20.0, "lower"),
+])
+def test_comparison_delta_and_verdict_use_mean(price, delta, verdict):
+    pool = [row(i, p) for i, p in enumerate([3] * 9 + [13])]
+    c = compare(row(100, price, cluster="T"), pool, CFG)
+    assert c.status == "ok"
+    assert c.delta_percent == delta
+    assert c.verdict == verdict
+    assert "mức trung bình" in verdict_sentence(c)
+
+
+def test_mean_is_hidden_below_ten_samples():
+    c = compare(row(100, 4.4, cluster="T"), [row(i, 3) for i in range(9)], CFG)
+    assert c.status == "insufficient_data"
+    assert c.stats.n == c.stats.n_per_m2 == 9
+    assert c.stats.mean is None and c.stats.mean_per_m2 is None
+
+
+def test_mean_per_m2_averages_only_explicit_positive_area_ratios():
+    rows = [row(i, p, area=a) for i, (p, a) in enumerate([(3, 20)] * 9 + [(13, 40)])]
+    rows += [row(20, 100, area=None), row(21, 100, area=0), row(22, 100, area=-20),
+             row(23, 100, area=20, area_from_dimensions=True)]
+    stats = group_stats(rows, CFG)
+    assert stats.n == 14 and stats.n_per_m2 == 10
+    assert stats.mean == 31_428_571
+    # (9 * 150_000 + 325_000) / 10; not mean(rent) / mean(area).
+    assert stats.mean_per_m2 == 167_500
+    assert stats.median_per_m2 == 150_000
+
+
+def test_mean_per_m2_needs_ten_eligible_areas():
+    rows = [row(i, 3, area=20) for i in range(9)]
+    rows.append(row(9, 13, area=20, area_from_dimensions=True))
+    stats = group_stats(rows, CFG)
+    assert stats.n == 10 and stats.n_per_m2 == 9
+    assert stats.mean == 4_000_000
+    assert stats.mean_per_m2 is None and stats.median_per_m2 is None
+
+
+@pytest.mark.parametrize("endpoint", ["comparison", "summary"])
+def test_market_api_exposes_means_without_removing_research_fields(api, endpoint):
+    from tests.test_api import seed
+
+    seed(api)
+    api.set_demo(True)
+    client = api.client()
+    if endpoint == "comparison":
+        page = client.get("/api/v1/listings", params={"page_size": 100}).json()
+        lid = page["items"][0]["listing_id"]
+        response = client.get(f"/api/v1/listings/{lid}/comparison")
+        assert response.status_code == 200
+        cells = [response.json()]
+    else:
+        response = client.get("/api/v1/market/summary")
+        assert response.status_code == 200
+        cells = response.json()["cells"]
+    assert cells
+    for cell in cells:
+        assert {"mean_vnd", "mean_per_m2", "median", "median_per_m2", "p25", "p75"} <= cell.keys()
+        if cell["n"] < 10:
+            assert cell["mean_vnd"] is None
+        else:
+            assert isinstance(cell["mean_vnd"], int)
+        if cell["n_per_m2"] < 10:
+            assert cell["mean_per_m2"] is None
+        else:
+            assert isinstance(cell["mean_per_m2"], int)
+
+
+@pytest.mark.parametrize("price,delta,verdict,percentage", [
+    (4.4, 10.0, "near", "+10,0%"),
+    (3.5, -12.5, "lower", "-12,5%"),
+    (4.5, 12.5, "higher", "+12,5%"),
+])
+def test_verdict_message_formats_signed_percentages_in_vietnamese(price, delta, verdict, percentage):
+    pool = [row(i, p) for i, p in enumerate([3] * 9 + [13])]
+    c = compare(row(100, price, cluster="T"), pool, CFG)
+    assert c.delta_percent == delta and isinstance(c.delta_percent, float)
+    assert c.verdict == verdict
+    message = verdict_sentence(c)
+    assert percentage in message
+    assert percentage.replace(",", ".") not in message
+
+
+@pytest.mark.parametrize("price,delta,percentage", [
+    (4_400_000, 10.0, "+10,0%"),
+    (3_500_000, -12.5, "-12,5%"),
+])
+def test_comparison_api_localizes_message_but_preserves_numeric_delta(api, price, delta, percentage):
+    from sqlalchemy import select
+
+    from app.core.ids import utcnow
+    from app.models import Listing
+    from tests.test_api import seed
+
+    seed(api)
+    api.set_demo(True)
+    with api.session() as session:
+        listings = session.scalars(select(Listing).order_by(Listing.id)).all()
+        assert len(listings) >= 11
+        for i, listing in enumerate(listings):
+            listing.is_current = i < 11
+            if listing.is_current:
+                listing.cluster_id = None
+                listing.rent_amount_vnd = price if i == 0 else 4_000_000
+                listing.rent_form = "exact"
+                listing.rent_period = "month"
+                listing.rent_basis = "per_unit"
+                listing.area_m2 = 32
+                listing.property_type = "ccmn"
+                listing.ward_code = "DEMO-W1"
+                listing.review_status = "approved"
+                listing.observed_at = utcnow()
+                listing.post.contributed = True
+        target_id = listings[0].id
+        session.commit()
+    response = api.client().get(f"/api/v1/listings/{target_id}/comparison")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "ok" and body["n"] == 10 and body["mean_vnd"] == 4_000_000
+    assert body["delta_percent"] == delta and isinstance(body["delta_percent"], (int, float))
+    assert percentage in body["message"]
+    assert percentage.replace(",", ".") not in body["message"]

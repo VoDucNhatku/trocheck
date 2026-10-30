@@ -168,6 +168,8 @@ class Comparison(BaseModel):
     reason_codes: list[Literal["too_few_samples", "price_not_exact", "basis_unknown", "ward_unresolved", "area_missing_broad_group"]]
     criteria: ComparisonCriteria
     n: int
+    mean_vnd: int | None = None
+    mean_per_m2: int | None = None
     median: float | None
     p25: float | None
     p75: float | None

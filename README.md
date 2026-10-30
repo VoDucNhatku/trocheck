@@ -66,7 +66,7 @@ Mở http://localhost:3000 và http://127.0.0.1:8000/docs. Có thể chạy `api
 | Làm frontend (TV3) | [Hành trình](docs/01-product/02-hanh-trinh-nguoi-dung.md) → [màn hình](docs/01-product/03-tinh-nang-va-man-hinh.md) → [API](docs/03-system/03-api-contract.md) → [apps/web](apps/web/README.md) |
 | Làm backend/LLM (TV2) | [Kiến trúc](docs/03-system/01-kien-truc.md) → [luồng web](docs/03-system/02-luong-web.md) → [API](docs/03-system/03-api-contract.md) → [CSDL](docs/03-system/04-co-so-du-lieu.md) → [apps/api](apps/api/README.md) |
 | Làm NLP/đánh giá (TV1) | [Từ điển dữ liệu](docs/02-data/01-tu-dien-du-lieu.md) → [gán nhãn](docs/02-data/02-huong-dan-gan-nhan.md) → [chuẩn hóa](docs/02-data/04-quy-tac-chuan-hoa.md) → [đánh giá](docs/04-evaluation/01-ke-hoach-danh-gia.md) |
-| Làm extension/dữ liệu (TV4) hoặc bên nhận làm extension | [Đặc tả extension](docs/03-system/05-extension.md) → [schema gửi bài](spec/schemas/ingest-post.schema.json) → [rủi ro và pháp lý](docs/05-delivery/03-rui-ro-va-phap-ly.md) |
+| Làm extension/dữ liệu (TV4) hoặc bên nhận làm extension | [Đặc tả extension](docs/03-system/05-extension.md) → [schema gửi bài](spec/schemas/ingest-post.schema.json) |
 | Giảng viên / người chấm | [Proposal và đối chiếu](docs/00-proposal/README.md) → [kế hoạch đánh giá](docs/04-evaluation/01-ke-hoach-danh-gia.md) → [kịch bản demo](docs/05-delivery/02-demo-va-nghiem-thu.md) |
 
 Toàn bộ mục lục: [docs/README.md](docs/README.md).
@@ -110,4 +110,4 @@ Cách làm việc chung: [CONTRIBUTING.md](CONTRIBUTING.md). Hướng dẫn cho 
 
 ## Nguyên tắc dữ liệu
 
-Chỉ thu bài trong nhóm Facebook mà người dùng là thành viên, quy mô nhỏ, dừng khi Facebook yêu cầu xác minh. Số điện thoại bị che ngay trên máy người dùng trước khi gửi đi. Không lưu tên người đăng. Dữ liệu chỉ dùng nội bộ cho đồ án, **không commit dữ liệu thật lên repo**. Chi tiết: [rủi ro và pháp lý](docs/05-delivery/03-rui-ro-va-phap-ly.md).
+Chỉ thu bài trong nhóm Facebook mà người dùng là thành viên, quy mô nhỏ, dừng khi Facebook yêu cầu xác minh. Số điện thoại bị che ngay trên máy người dùng trước khi gửi đi. Không lưu tên người đăng. Dữ liệu chỉ dùng nội bộ cho đồ án, **không commit dữ liệu thật lên repo**.
