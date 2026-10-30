@@ -12,7 +12,14 @@ Trình duyệt **không gọi API trực tiếp**:
 - Thao tác trên trình duyệt đi qua proxy `/api/workspace/*` cùng tên miền với web.
 - Cookie đăng nhập là cookie của tên miền Vercel, nên không có vấn đề cookie khác tên miền.
 
-**Chi phí.** Mức giá dưới đây chưa kiểm lại trên trang giá của Render:
+**Đang dùng gói Free (người dùng chọn ngày 30/10/2026).** Gói này:
+- không cần thẻ;
+- không có ổ đĩa, nên **mỗi lần khởi động lại hay deploy lại, database được tạo lại từ đầu với dữ liệu demo**. Tài khoản tự đăng ký và bài phân tích sẽ mất;
+- ngủ sau khoảng 15 phút không ai dùng.
+
+Muốn giữ dữ liệu thì sửa `render.yaml`: đổi sang `plan: starter` và thêm `disk` (có sẵn ghi chú trong file).
+
+**Chi phí nếu nâng cấp.** Mức giá dưới đây chưa kiểm lại trên trang giá của Render:
 - Ổ đĩa trên Render chỉ gắn được vào gói trả phí (Starter, khoảng 7 USD/tháng, cộng khoảng 0,25 USD/GB ổ đĩa).
 - Gói Free sẽ **mất database mỗi lần khởi động lại** và ngủ sau khoảng 15 phút.
 - Vercel gói Hobby miễn phí cho dự án cá nhân.

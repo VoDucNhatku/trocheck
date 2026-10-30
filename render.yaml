@@ -7,14 +7,14 @@ services:
     runtime: docker
     dockerfilePath: ./apps/api/Dockerfile
     dockerContext: .
-    plan: starter            # a persistent disk needs a paid instance; free instances lose the DB
+    # Free plan (chosen 2026-10-30): no persistent disk, so the SQLite DB is rebuilt and demo data
+    # re-seeded on every start/deploy, and the instance sleeps after ~15 idle minutes.
+    # To keep data: plan: starter and add
+    #   disk: { name: trocheck-data, mountPath: /srv/data, sizeGB: 1 }
+    plan: free
     region: singapore
     healthCheckPath: /api/v1/health
     autoDeploy: true
-    disk:
-      name: trocheck-data
-      mountPath: /srv/data
-      sizeGB: 1
     envVars:
       - key: SECRET_KEY
         generateValue: true
