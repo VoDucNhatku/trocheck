@@ -20,6 +20,7 @@ class User(Base):
     id: Mapped[str] = _id()
     username: Mapped[str] = mapped_column(String(80), unique=True)
     email: Mapped[str | None] = mapped_column(String(254), unique=True)
+    google_subject: Mapped[str | None] = mapped_column(String(255), unique=True)
     auth_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     password_hash: Mapped[str] = mapped_column(String(200))
     roles: Mapped[list] = mapped_column(JSON, default=list)

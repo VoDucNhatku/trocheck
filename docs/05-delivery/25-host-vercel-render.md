@@ -66,6 +66,8 @@ Muốn giữ dữ liệu thì sửa `render.yaml`: đổi sang `plan: starter` v
 
 ## Bước 3. Kiểm sau khi lên mạng
 
+Để bật Google login, làm thêm [thiết lập Google OAuth](26-google-login.md).
+
 - Mở trang chủ, Tìm trọ, một tin, Thị trường khi **chưa đăng nhập**. Phải có dữ liệu demo.
 - Đăng nhập `admin` bằng `SEED_PASSWORD`. Mở Hàng duyệt, Kho, Kiểm tra.
 - Phân tích một bài mới. Trạng thái phải chuyển sang "đã xong" (worker đang chạy).

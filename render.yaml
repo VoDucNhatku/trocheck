@@ -32,3 +32,10 @@ services:
         sync: false          # optional: without it the pipeline runs Regex only
       - key: GEMINI_MODEL_ID
         sync: false
+      # Optional Google OAuth: all three values must be set before Google sign-in works.
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        value: "https://trocheck.vercel.app/api/auth/google/callback"

@@ -30,9 +30,16 @@ erDiagram
 | `users.id` | TEXT PK | |
 | `users.username` | TEXT UNIQUE | |
 | `users.password_hash` | TEXT | Không lưu mật khẩu rõ |
+| `users.email` | TEXT UNIQUE, nullable | Email chuẩn hóa; tài khoản mật khẩu cũ có thể chưa xác minh email |
+| `users.google_subject` | TEXT UNIQUE, nullable | ID ổn định do Google trả qua userinfo; không dùng email để tự gộp tài khoản |
+| `users.auth_version` | INTEGER | Tăng khi đặt lại mật khẩu để thu hồi phiên cũ |
 | `users.roles` | TEXT (JSON array) | `["collector","reviewer"]` |
 | `extension_tokens.token_hash` | TEXT UNIQUE | Chỉ lưu hash |
 | `extension_tokens.user_id`, `expires_at`, `revoked_at`, `last_used_at` | | |
+
+Migration `0003` thêm `google_subject` tại chỗ và chỉ mục duy nhất, giữ nguyên mật khẩu,
+vai trò và khóa ngoại hiện có. Tài khoản tạo qua Google có `password_hash` rỗng (không có
+mật khẩu hợp lệ); chỉ lưu subject và email, không lưu access token/refresh token Google.
 
 ### `posts`
 

@@ -6,8 +6,8 @@ import { api, messageOf, WorkspaceError } from '@/lib/workspace/client';
 import { safeReturnPath } from '@/lib/workspace/safe-path';
 import styles from './auth.module.css';
 
-export function AuthForm({ next, register = false, expired = false, variant = false }: {
-  next: string; register?: boolean; expired?: boolean; variant?: boolean;
+export function AuthForm({ next, register = false, expired = false, variant = false, oauthError = '' }: {
+  next: string; register?: boolean; expired?: boolean; variant?: boolean; oauthError?: string;
 }) {
   const [password, setPassword] = useState('');
   const [visible, setVisible] = useState<Record<string, boolean>>({});
@@ -76,6 +76,15 @@ export function AuthForm({ next, register = false, expired = false, variant = fa
       lock.current = false; setBusy(false);
     }
   }
+  function googleLogin() {
+    if (lock.current) return;
+    if (register && !(document.getElementById('accept_terms') as HTMLInputElement | null)?.checked) {
+      setFields({ accept_terms: 'Bạn cần đồng ý điều khoản trước khi tạo tài khoản.' });
+      return;
+    }
+    lock.current = true; setBusy(true);
+    window.location.assign('/api/auth/google/start?next=' + encodeURIComponent(safeReturnPath(next)));
+  }
   const validity = (name: string) => ({ 'aria-invalid': !!fields[name], 'aria-describedby': [name + '-help', fields[name] ? name + '-error' : ''].filter(Boolean).join(' ') });
   const fieldError = (name: string) => fields[name] && <span className={styles.fieldError} id={name + '-error'}>{fields[name]}</span>;
   const passwordField = (name: string, label: string) => <div className={styles.field}>
@@ -90,6 +99,7 @@ export function AuthForm({ next, register = false, expired = false, variant = fa
       <div className={styles.content}><h1><span className={styles.phrase}>{register ? 'Tạo tài khoản' : 'Đăng nhập'}</span>{' '}<span className={styles.phrase}>TrọCheck</span></h1>
         {expired && <p className={styles.notice} role="status">Phiên đã hết hạn, đăng nhập lại để tiếp tục.</p>}
         {error && <p className={styles.error} role="alert">{error}</p>}
+        {oauthError && !error && <p className={styles.error} role="alert">{oauthError}</p>}
         <form className={styles.form} method="post" noValidate onSubmit={submit} aria-busy={busy}>
           <div className={styles.field}><label htmlFor="username">Tên tài khoản</label><input id="username" name="username" autoComplete="username" autoCapitalize="none" spellCheck={false} required maxLength={register ? 30 : 80} disabled={busy} {...validity('username')} /><small id="username-help">{register ? '3–30 ký tự: chữ không dấu, số hoặc gạch dưới' : 'Hiện chỉ hỗ trợ tên tài khoản, chưa hỗ trợ email.'}</small>{fieldError('username')}</div>
           {register && <div className={styles.field}><label htmlFor="email">Email</label><input id="email" name="email" type="email" maxLength={254} autoComplete="email" disabled={busy} {...validity('email')} /><small id="email-help">Không bắt buộc · Dùng để yêu cầu đặt lại mật khẩu.</small>{fieldError('email')}</div>}
@@ -98,7 +108,7 @@ export function AuthForm({ next, register = false, expired = false, variant = fa
             <div><label className={styles.check}><input id="accept_terms" name="accept_terms" type="checkbox" required disabled={busy} {...validity('accept_terms')} /><span>Tôi đồng ý <a href="#terms" onClick={revealTerms}>điều khoản sử dụng</a></span></label><span id="accept_terms-help" className={styles.srOnly}>Cần đồng ý để tạo tài khoản.</span>{fieldError('accept_terms')}</div></>}
           {!register && <label className={styles.check}><input type="checkbox" disabled aria-describedby="remember-help" /><span>Giữ đăng nhập trên máy này</span></label>}
           <div className={styles.actions}><a href="/" onClick={back} className={styles.primary}>Quay lại</a><button type="submit" className={styles.primary} disabled={busy}>{busy ? 'Đang gửi…' : register ? 'Tạo tài khoản' : 'Tiếp tục'}</button></div>
-          <div className={styles.or}>hoặc tiếp tục với</div><button type="button" className={styles.google} disabled aria-describedby="google-help">Tiếp tục với Google</button><p id="google-help" className={styles.note}>Google chưa kết nối.</p>
+          <div className={styles.or}>hoặc tiếp tục với</div><button type="button" className={styles.google} disabled={busy} onClick={googleLogin} aria-describedby="google-help">Tiếp tục với Google</button><p id="google-help" className={styles.note}>Dùng email đã xác minh của Google để đăng nhập hoặc tạo tài khoản. Khi tiếp tục, bạn đồng ý <a href={register ? '#terms' : '/dang-ky#terms'} onClick={register ? revealTerms : undefined}>điều khoản sử dụng</a>.</p>
         </form>
         <p className={styles.switch}>{register ? 'Đã có tài khoản?' : 'Chưa có tài khoản?'} <a href={(register ? '/dang-nhap' : '/dang-ky') + '?next=' + encodeURIComponent(next) + (variant ? '&v=b' : '')}>{register ? 'Đăng nhập' : 'Đăng ký ngay'}</a></p>
         <details id={register ? 'terms' : 'recovery'} className={styles.details}><summary>{register ? 'Điều khoản sử dụng' : 'Hỗ trợ đăng nhập'}</summary><p>{register ? 'TrọCheck là đồ án học tập. Kết quả đọc bài và so giá chỉ để tham khảo; hãy xác minh với người đăng trước khi thuê. Không gửi thông tin riêng tư của người khác. Bạn chủ động chọn khi đóng góp bài vào kho chung.' : 'Quên mật khẩu? Mở trang yêu cầu đặt lại. Tài khoản chưa gắn email cần liên hệ quản trị nhóm.'}</p>{!register && <a href="/quen-mat-khau">Yêu cầu đặt lại mật khẩu</a>}</details>

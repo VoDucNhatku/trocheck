@@ -477,6 +477,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/google/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Start */
+        get: operations["start_api_v1_auth_google_start_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/google/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Callback */
+        post: operations["callback_api_v1_auth_google_callback_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/team/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Users */
+        get: operations["users_api_v1_team_users_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/team/sources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sources */
+        get: operations["sources_api_v1_team_sources_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -638,6 +706,34 @@ export interface components {
         Contributed: {
             /** Contributed */
             contributed: boolean;
+        };
+        /** DirectoryUser */
+        DirectoryUser: {
+            /** User Id */
+            user_id: string;
+            /** Username */
+            username: string;
+            /** Roles */
+            roles: ("renter" | "collector" | "reviewer" | "researcher" | "admin")[];
+            /** Email */
+            email: string | null;
+            /** Email Redacted */
+            email_redacted: boolean;
+            /** Created At */
+            created_at: string | null;
+        };
+        /** DirectoryUsers */
+        DirectoryUsers: {
+            /** Items */
+            items: components["schemas"]["DirectoryUser"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Current User Id */
+            current_user_id: string;
         };
         /** DuplicateCandidate */
         DuplicateCandidate: {
@@ -827,6 +923,23 @@ export interface components {
             } | null;
             /** Adjudicated */
             adjudicated: boolean;
+        };
+        /** GoogleCallback */
+        GoogleCallback: {
+            /** Code */
+            code: string;
+            /** State */
+            state: string;
+        };
+        /** GoogleComplete */
+        GoogleComplete: {
+            /** Next */
+            next: string;
+        };
+        /** GoogleStart */
+        GoogleStart: {
+            /** Authorization Url */
+            authorization_url: string;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -1166,6 +1279,37 @@ export interface components {
             text_complete: boolean;
             /** Post Type */
             post_type: ("rental_offer" | "seeking" | "roommate" | "sale" | "spam" | "other") | null;
+        };
+        /** RecordedSource */
+        RecordedSource: {
+            /** Source Type */
+            source_type: string;
+            /** Source Group Id */
+            source_group_id: string | null;
+            /** Source Group Name */
+            source_group_name: string | null;
+            /** Is Demo */
+            is_demo: boolean;
+            /** Posts Count */
+            posts_count: number;
+            /** Last Seen At */
+            last_seen_at: string | null;
+        };
+        /** RecordedSources */
+        RecordedSources: {
+            /** Items */
+            items: components["schemas"]["RecordedSource"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /**
+             * Configuration Available
+             * @constant
+             */
+            configuration_available: false;
         };
         /** RegisterRequest */
         RegisterRequest: {
@@ -2450,6 +2594,137 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_api_v1_auth_google_start_get: {
+        parameters: {
+            query?: {
+                next?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoogleStart"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    callback_api_v1_auth_google_callback_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GoogleCallback"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoogleComplete"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    users_api_v1_team_users_get: {
+        parameters: {
+            query?: {
+                q?: string;
+                role?: ("renter" | "collector" | "reviewer" | "researcher" | "admin") | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DirectoryUsers"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sources_api_v1_team_sources_get: {
+        parameters: {
+            query?: {
+                page?: number;
+                page_size?: number;
+                demo?: boolean | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecordedSources"];
                 };
             };
             /** @description Validation Error */

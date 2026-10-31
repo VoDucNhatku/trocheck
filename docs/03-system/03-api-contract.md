@@ -10,7 +10,28 @@ có chữ hoa và chữ số), `confirm_password` khớp, `accept_terms` boolean
 trong demo local, hạn chế tạo hàng loạt và hash mật khẩu; tính cả request sai schema. Sliding window theo IP transport,
 không tin X-Forwarded-For do client gửi; bộ đếm trong RAM từng process, bounded10000 IP. BFF local chung một IP nên
 cùng chia hạn mức; khi triển khai nhiều process/proxy thật cần rate limiter shared và trust-proxy cấu hình ở hạ tầng.
-Không có email/OTP/reset/OAuth. Điều khoản được đọc ngay tại form; không thêm cột PII hoặc migration.
+Đăng ký bằng mật khẩu giữ nguyên; email/đặt lại mật khẩu đã được bổ sung sau mốc này.
+Đăng nhập Google được bổ sung theo yêu cầu ngày 31/10/2026, mô tả bên dưới.
+
+## Bổ sung đăng nhập Google (31/10/2026)
+
+- `GET /api/v1/auth/google/start?next=/phan-tich`: trả `authorization_url` và cookie giao dịch
+  `rener_google_oauth`, HttpOnly/SameSite=Lax, hạn 10 phút, đường dẫn `/api/auth/google`.
+  Dữ liệu giao dịch được ký HMAC, có state ngẫu nhiên và bộ kiểm chứng PKCE S256.
+- `POST /api/v1/auth/google/callback`: JSON `{code, state}`, kèm cookie giao dịch do Next.js chuyển tiếp.
+  API đối chiếu state, hạn dùng và chữ ký trước khi gọi Google; đổi code bằng Client Secret + PKCE,
+  đọc danh tính từ endpoint userinfo chính thức bằng access token. Chỉ nhận email được Google xác minh.
+  Thành công trả `{next}` và cookie phiên giống đăng nhập bằng mật khẩu. Không trả token Google cho web.
+- Web dùng hai đường cùng tên miền `/api/auth/google/start` và `/api/auth/google/callback`.
+  Callback kiểm tra đường quay lại bằng `safeReturnPath`, xóa cookie giao dịch và chuyển về trang đã yêu cầu.
+- Danh tính được đối chiếu bằng `users.google_subject` duy nhất. Tài khoản mới chỉ có role `renter`,
+  tên tài khoản được sinh ngẫu nhiên, `password_hash` rỗng và không đăng nhập được bằng mật khẩu
+  trước khi người dùng đặt mật khẩu. Không tự gộp vào tài khoản cũ có email trùng.
+- Lỗi: 400 `google_state_invalid`; 401 `google_denied`; 409 `google_account_conflict`;
+  503 `google_not_configured` / `google_unavailable`; 429 theo hạn mức đăng ký hiện có.
+  Thông báo không chứa code, Client Secret hay access token. Google tự chặn việc dùng lại authorization code.
+- Cấu hình API: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`;
+  hướng dẫn tại [thiết lập Google](../05-delivery/26-google-login.md).
 
 Prefix: `/api/v1`. JSON, `snake_case`, thời gian UTC ISO-8601, tiền là số nguyên đồng. FastAPI tự sinh OpenAPI tại `/docs`; web và extension dùng client sinh từ đó. File này là bản thỏa thuận trước khi code; khi code xong, OpenAPI là nguồn chính xác và file này cập nhật theo.
 

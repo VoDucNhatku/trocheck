@@ -25,6 +25,10 @@ class Settings(BaseSettings):
     # Explicit opt-in for local development only; production has no mail delivery yet.
     password_reset_dev_log: bool = False
     password_reset_base_url: str = "http://localhost:3000"
+    # Google OAuth credentials stay on the API server, never in the browser bundle.
+    google_client_id: str = ""
+    google_client_secret: str = Field(default="", repr=False)
+    google_redirect_uri: str = ""
 
     # Limits (api-contract §5)
     max_text_length: int = 20_000
