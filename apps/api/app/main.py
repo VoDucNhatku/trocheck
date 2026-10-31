@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import router
 from app.api.auth_password import router as password_router
+from app.api.auth_google import router as google_router
 from app.api.team_admin import router as team_admin_router
 from app.core import errors
 from app.core.config import get_settings
@@ -29,6 +30,7 @@ def create_app() -> FastAPI:
     app.state.registration_limit = RegistrationLimit()
     app.include_router(router)
     app.include_router(password_router)
+    app.include_router(google_router)
     app.include_router(team_admin_router)
     return app
 
