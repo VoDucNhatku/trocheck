@@ -2,6 +2,8 @@
 
 **Đọc đúng giá thuê trọ từ bài đăng Facebook, rồi biết giá đó cao hay thấp so với các tin tương tự.**
 
+**Web demo:** [TrọCheck — trocheck.vercel.app](https://trocheck.vercel.app/)
+
 Đồ án môn TMG301 — Xử lý ngôn ngữ tự nhiên, đề tài 8: *Trích xuất thông tin bất động sản từ bài đăng mạng xã hội (Real Estate NER)*. Repo này là nơi nhóm xây sản phẩm thật: web app, bộ xử lý dữ liệu và extension Chrome.
 
 > **Trạng thái:** đã có FastAPI + SQLite + worker/pipeline; web B1 đã nối API cho Trang chủ, Tìm trọ và Chi tiết. Các màn nhóm, extension, Gemini thật và đánh giá cuối chưa được hoàn tất/kiểm chứng trong B1. Xem [hướng dẫn web](apps/web/README.md), [API](apps/api/README.md) và [kế hoạch hoàn thiện](docs/05-delivery/04-ke-hoach-hoan-thien-2026-10-24.md).
