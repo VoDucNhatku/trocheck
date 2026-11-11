@@ -45,7 +45,7 @@ Mặc định là **chế độ tối**; `data-theme="light"` chuyển sang ch�
 
 Trang chủ kể theo cảnh cuộn (CSS scroll-driven animation): ảnh sân, bài đăng được đọc thành từng dòng, phiếu giá in ra, đặt cạnh tin cùng phường, rồi mây khép cảnh. Tiếp theo là dải mẩu bài chạy liên tục (có nút tạm dừng), số liệu, các kiểu bài khó, minh họa extension, nguyên tắc dữ liệu và lời mời tìm phòng.
 
-- Ảnh sân và mây là **ảnh minh họa**, có ghi rõ trên trang. Thẻ bài đăng đầu trang dùng một ảnh phòng (`public/images/phong-vi-du.jpg`) chú thích "Ảnh minh họa", do người dùng chọn: không có người, số nhà hay chữ, đã xóa thông tin ẩn trong file. Không dùng ảnh từ bài đăng Facebook đã thu.
+- Ảnh sân và mây là **ảnh minh họa**, có ghi rõ trên trang. Thẻ bài đăng đầu trang dùng một ảnh phòng (`public/images/phong-vi-du.jpg`) không kèm chú thích, do người dùng chọn: không có người, số nhà hay chữ, đã xóa thông tin ẩn trong file. Không dùng ảnh từ bài đăng Facebook đã thu.
 - Nội dung đọc được ngay cả khi chưa chạy JavaScript hoặc khi trình duyệt không hỗ trợ animation cuộn.
 
 ## Nội dung

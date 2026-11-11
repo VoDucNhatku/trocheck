@@ -54,6 +54,11 @@
   .landing-prototype .pin span { font-size: 12px; }
 }
 
+/* The width/height attributes reserve space; without height:auto the 400px attribute overrides aspect-ratio. */
+.landing-prototype .photo img { height: auto; aspect-ratio: 3 / 2; }
+/* The post card plus photo is about 1.3x its width tall; on short screens it ran past the chapter bar. */
+.landing-prototype .obj { width: min(100%, 420px, 46svh); }
+
 /* Closing call to action (góp ý 2026-11-11).
    The section carries .section and .wrap; .wrap's padding shorthand used to erase the block padding. */
 .landing-prototype .section.wrap { padding-block: 88px; }
