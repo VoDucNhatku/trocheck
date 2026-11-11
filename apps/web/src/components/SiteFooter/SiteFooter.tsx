@@ -21,7 +21,7 @@ export function SiteFooter({ account = null }: { account?: string | null }) {
             <h2>Người đi thuê</h2>
             <Link href={scoped('/tim-tro')}>Tìm trọ</Link>
             <Link href={scoped('/#nguyen-tac')}>Nguyên tắc dữ liệu</Link>
-            <Link href={scoped('/#extension')}>Minh họa extension</Link>
+            <Link href={scoped('/extension')}>Extension Chrome</Link>
           </div>
           <div>
             <h2>Dữ liệu</h2>
