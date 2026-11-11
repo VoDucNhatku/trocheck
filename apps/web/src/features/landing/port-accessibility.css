@@ -58,3 +58,31 @@
   .landing-prototype .ch-head { flex-wrap: wrap; }
   .landing-prototype .pin span { font-size: 12px; }
 }
+
+/* Extraction check and closing call to action (góp ý 2026-11-11).
+   Both sections carry .section and .wrap; .wrap's padding shorthand used to erase the block padding. */
+.landing-prototype .section.wrap { padding-block: 88px; }
+.landing-prototype #extract-check .extract-head { max-width: 760px; margin-bottom: 32px; }
+.landing-prototype #extract-check .lead { font-family: var(--font-body); }
+.landing-prototype .check-layer .hl { margin: 0 2px; padding: 0; background: none; }
+.landing-prototype .check-layer .hl > i { padding: 0 5px; background: none; color: var(--muted); font: 600 12px/1.4 var(--font-body); }
+.landing-prototype .check-layer .hl > span { padding: 1px 5px; border-radius: 3px; background: var(--c); color: var(--mk-ink); }
+.landing-prototype #extract-check .check-note { margin-top: 18px; }
+.landing-prototype #extract-check .extract-source { max-width: 760px; margin-top: 20px; color: var(--body); font-size: 15px; }
+.landing-prototype #extract-check .extract-source a,
+.landing-prototype .final-cta .cta-steps a { color: var(--on-night); text-decoration-color: var(--hl-text); }
+.landing-prototype #extract-check .analysis-actions { align-items: center; margin-top: 28px; }
+.landing-prototype .final-cta { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(40px, 6vw, 96px); align-items: end; }
+.landing-prototype .home-lower .final-cta h2 { font-size: clamp(36px, 4.5vw, 60px); }
+.landing-prototype .final-cta .cta-actions { margin-top: 32px; }
+.landing-prototype .final-cta .cta-steps { margin: 0; padding: 0; list-style: none; counter-reset: step; border-bottom: 1px solid var(--edge); }
+.landing-prototype .final-cta .cta-steps li { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 4px 12px; padding-block: 18px; border-top: 1px solid var(--edge); counter-increment: step; }
+.landing-prototype .final-cta .cta-steps li::before { content: counter(step, decimal-leading-zero); grid-row: span 2; color: var(--muted); font: 500 13px/1.7 var(--font-mono); }
+.landing-prototype .final-cta .cta-steps b { color: var(--on-night); font-size: 16px; font-weight: 600; }
+.landing-prototype .final-cta .cta-steps span { color: var(--body); font-size: 14px; }
+@media (max-width: 860px) {
+  .landing-prototype .final-cta { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 800px) {
+  .landing-prototype .section.wrap { padding-block: 56px; }
+}
