@@ -1,0 +1,18 @@
+{
+  "name": "trocheck-collector",
+  "version": "0.2.1",
+  "private": true,
+  "description": "TrọCheck Chrome extension: collects rendered Facebook group posts",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test --test-timeout=30000 tests/*.test.cjs",
+    "build:zip": "node scripts/build-zip.cjs"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "^6.2.6",
+    "jsdom": "^26.1.0"
+  }
+}

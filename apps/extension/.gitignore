@@ -1,0 +1,5 @@
+node_modules/
+outputs/
+# Real Facebook DOM samples stay on the team's machines, never in git.
+tests/fixtures/*.html
+tests/fixtures/expected-*.json
