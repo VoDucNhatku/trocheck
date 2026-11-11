@@ -3,7 +3,6 @@
 .landing-prototype { color: var(--on-night); margin-top: calc(-1 * var(--header-h) - 1px); }
 .landing-prototype .shot-placeholder { padding: 6px; aspect-ratio: 630 / 260; background: var(--card); color: var(--mk-ink); font: 12px/1.6 var(--font-body); }
 .landing-prototype .shot-placeholder b { font-size: 12px; }
-.landing-prototype .room-placeholder { width: 100%; aspect-ratio: 4 / 3; border-radius: 4px; background: repeating-linear-gradient(135deg, var(--night3) 0 10px, var(--night2) 10px 20px); }
 .landing-prototype .photo figcaption { position: absolute; left: 24px; bottom: 24px; font-size: 12px; }
 .landing-prototype .hl, .landing-prototype .hl i, .landing-prototype .entity, .landing-prototype .tagrow span,
 .landing-prototype .btn-primary, .landing-prototype .btn-hl, .landing-prototype .pin span { color: var(--mk-ink); }
