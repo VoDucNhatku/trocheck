@@ -78,6 +78,21 @@ class Post(Base):
                                                                  post_update=True)
 
 
+class PostImage(Base):
+    """A room photo from a post, stored on Cloudinary. One row per distinct file per post."""
+    __tablename__ = "post_images"
+    __table_args__ = (UniqueConstraint("post_id", "content_hash", name="uq_post_images_hash"),)
+    id: Mapped[str] = _id()
+    post_id: Mapped[str] = mapped_column(ForeignKey("posts.id", ondelete="CASCADE"), index=True)
+    content_hash: Mapped[str] = mapped_column(String(64))
+    url: Mapped[str] = mapped_column(String(500))
+    public_id: Mapped[str] = mapped_column(String(300))
+    width: Mapped[int | None] = mapped_column(Integer)
+    height: Mapped[int | None] = mapped_column(Integer)
+    uploaded_by: Mapped[str] = mapped_column(ForeignKey("users.id"))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, index=True)
+
+
 class PostVersion(Base):
     __tablename__ = "post_versions"
     id: Mapped[str] = _id()

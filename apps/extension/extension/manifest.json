@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "TrọCheck Collector",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Lưu bài cho thuê trọ từ nhóm Facebook trên máy bạn, che số điện thoại và gửi về kho TrọCheck khi bạn bấm.",
   "permissions": [
     "storage",

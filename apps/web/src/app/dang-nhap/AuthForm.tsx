@@ -6,9 +6,10 @@ import { api, messageOf, WorkspaceError } from '@/lib/workspace/client';
 import { safeReturnPath } from '@/lib/workspace/safe-path';
 import styles from './auth.module.css';
 import { AuthShowcase } from './AuthShowcase';
+import type { RoomImage } from './room-photos';
 
-export function AuthForm({ next, register = false, expired = false, variant = false, oauthError = '' }: {
-  next: string; register?: boolean; expired?: boolean; variant?: boolean; oauthError?: string;
+export function AuthForm({ next, register = false, expired = false, variant = false, oauthError = '', photos = [] }: {
+  next: string; register?: boolean; expired?: boolean; variant?: boolean; oauthError?: string; photos?: RoomImage[];
 }) {
   const [password, setPassword] = useState('');
   const [visible, setVisible] = useState<Record<string, boolean>>({});
@@ -117,6 +118,6 @@ export function AuthForm({ next, register = false, expired = false, variant = fa
       </div>
       <footer className={styles.footer}><a href={register ? '#terms' : '/dang-ky#terms'} onClick={register ? revealTerms : undefined}>Điều khoản và dữ liệu</a><a href="/tim-tro">Xem tin trọ trước</a></footer>
     </main>
-    <AuthShowcase />
+    <AuthShowcase photos={photos} />
   </div>;
 }

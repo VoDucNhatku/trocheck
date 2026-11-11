@@ -29,6 +29,13 @@ class Settings(BaseSettings):
     google_client_id: str = ""
     google_client_secret: str = Field(default="", repr=False)
     google_redirect_uri: str = ""
+    # Room photos sent by the extension are stored on Cloudinary; empty values disable uploads.
+    cloudinary_cloud_name: str = ""
+    cloudinary_api_key: str = ""
+    cloudinary_api_secret: str = Field(default="", repr=False)
+    cloudinary_folder: str = "trocheck/posts"
+    post_image_max_bytes: int = 5 * 1024 * 1024
+    post_image_max_per_post: int = 10
 
     # Limits (api-contract §5)
     max_text_length: int = 20_000

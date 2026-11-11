@@ -295,6 +295,36 @@
     });
   }
 
-  global.TroStorage = { readUnsent, markSent, openDatabase, insertBatch, readPage, readImages, getGeneration, clearAll, nextPendingImage,
+  /** Downloaded photos of posts the store accepted, not uploaded yet, each with its post record. */
+  async function readImagesToUpload() {
+    const db = await openDatabase();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(["raw-posts", "images"], "readonly");
+      const posts = transaction.objectStore("raw-posts").getAll();
+      const images = transaction.objectStore("images").getAll();
+      transaction.oncomplete = () => {
+        db.close();
+        const sent = new Map(posts.result.filter(post => post.sent_at && ["created", "duplicate"].includes(post.sent_status))
+          .map(post => [postId(post.id), post]));
+        resolve(images.result.filter(image => image.status === "downloaded" && image.data && !image.uploaded_at && sent.has(image.post_id))
+          .map(image => ({ image, record: sent.get(image.post_id) })));
+      };
+      transaction.onabort = () => { db.close(); reject(transaction.error || new Error("Image read aborted.")); };
+    });
+  }
+
+  async function markImageUploaded(id, status) {
+    const db = await openDatabase();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction("images", "readwrite");
+      const store = transaction.objectStore("images");
+      const request = store.get(id);
+      request.onsuccess = () => { if (request.result) store.put({ ...request.result, uploaded_at: new Date().toISOString(), upload_status: status }); };
+      transaction.oncomplete = () => { db.close(); resolve(); };
+      transaction.onerror = transaction.onabort = () => { db.close(); reject(transaction.error); };
+    });
+  }
+
+  global.TroStorage = { readUnsent, markSent, readImagesToUpload, markImageUploaded, openDatabase, insertBatch, readPage, readImages, getGeneration, clearAll, nextPendingImage,
     finishImage, readProcessingPosts, saveClassification, saveUnknownDecision, saveExtraction };
 })(globalThis);

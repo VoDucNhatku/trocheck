@@ -60,6 +60,44 @@
 
   const whoAmI = options => call({ ...options, path: "/auth/me" });
 
+  /** Sends each saved room photo once. Files the store will never take are marked so they are not retried. */
+  async function sendImages({ storage, apiUrl, token, fetcher = global.fetch.bind(global), onProgress }) {
+    const pending = storage.readImagesToUpload ? await storage.readImagesToUpload() : [];
+    const totals = { uploaded: 0, duplicate: 0, skipped: 0, total: pending.length };
+    if (!pending.length) return totals;
+    if (!String(token ?? "").trim()) throw new Error("Chưa có token. Nhập token trong phần Cài đặt.");
+    const base = normalizeApiUrl(apiUrl);
+    for (const { image, record } of pending) {
+      const key = toIngestPost(record).idempotency_key;
+      let response;
+      try {
+        response = await fetcher(`${base}/ingest/images?idempotency_key=${encodeURIComponent(key)}`, {
+          method: "PUT", credentials: "omit",
+          headers: { Authorization: `Bearer ${token.trim()}`, "Content-Type": image.data.type || "application/octet-stream" },
+          body: image.data,
+        });
+      } catch {
+        throw new Error("Không kết nối được máy chủ TrọCheck khi gửi ảnh.");
+      }
+      if (response.ok) {
+        const { status } = await response.json();
+        totals[status === "duplicate" ? "duplicate" : "uploaded"] += 1;
+        await storage.markImageUploaded(image.id, status);
+      } else if ([409, 413, 415].includes(response.status)) {
+        totals.skipped += 1;
+        await storage.markImageUploaded(image.id, "skipped");
+      } else if (response.status === 503) {
+        throw new Error("Máy chủ TrọCheck chưa bật lưu ảnh. Bài đã gửi, ảnh sẽ gửi ở lần sau.");
+      } else if (STATUS_MESSAGES[response.status]) {
+        throw new Error(STATUS_MESSAGES[response.status]);
+      } else {
+        totals.skipped += 1; // 404 and other answers: leave unmarked so a later send can retry
+      }
+      onProgress?.(totals);
+    }
+    return totals;
+  }
+
   /** Sends every unsent post in batches and marks each one the server answered for. */
   async function sendUnsent({ storage, apiUrl, token, version, fetcher, onProgress }) {
     const unsent = (await storage.readUnsent()).filter(record => String(record.text ?? "").trim());
@@ -78,8 +116,9 @@
       for (const key of Object.keys(totals)) totals[key] += answer.summary?.[key] ?? 0;
       onProgress?.({ ...totals, total: unsent.length });
     }
-    return { ...totals, total: unsent.length };
+    const images = await sendImages({ storage, apiUrl, token, fetcher });
+    return { ...totals, total: unsent.length, images };
   }
 
-  global.TroCheck = { DEFAULT_API_URL, BATCH_SIZE, normalizeApiUrl, toIngestPost, whoAmI, sendUnsent };
+  global.TroCheck = { DEFAULT_API_URL, BATCH_SIZE, normalizeApiUrl, toIngestPost, whoAmI, sendUnsent, sendImages };
 })(globalThis);

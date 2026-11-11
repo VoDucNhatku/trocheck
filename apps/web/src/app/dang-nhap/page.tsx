@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { AuthForm } from './AuthForm';
+import { getRoomPhotos } from './room-photos';
 import { sessionUser } from '@/lib/workspace/server';
 import { safeReturnPath } from '@/lib/workspace/safe-path';
 import { googleErrorMessage } from '@/lib/workspace/google-auth';
@@ -8,5 +9,5 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
   const query = await searchParams;
   const next = safeReturnPath(typeof query.next === 'string' ? query.next : null);
   if (await sessionUser()) redirect(next);
-  return <AuthForm next={next} oauthError={googleErrorMessage(query.oauth_error)} expired={query.expired === '1' || query.state === 'expired'} variant={query.v === 'b'} />;
+  return <AuthForm next={next} oauthError={googleErrorMessage(query.oauth_error)} expired={query.expired === '1' || query.state === 'expired'} variant={query.v === 'b'} photos={await getRoomPhotos()} />;
 }
