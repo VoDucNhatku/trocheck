@@ -10,9 +10,6 @@
 .landing-prototype .btn-primary, .landing-prototype .btn-hl { border-color: var(--mk-ink); }
 .landing-prototype .tabs .chip { position: static; opacity: 1; animation: none; color: var(--on-night); background: transparent; border: 1px solid var(--edge2); min-height: 44px; box-shadow: none; }
 .landing-prototype .tabs .chip[aria-pressed="true"] { background: var(--hl); color: var(--mk-ink); border-color: var(--mk-ink); }
-.landing-prototype .analysis-status { margin-block: 18px; font-size: 14px; color: var(--on-night2); }
-.landing-prototype .analysis-status:empty { display: none; }
-.landing-prototype .analysis-actions { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
 .landing-prototype .browser-post .evidence { margin-top: 20px; }
 .landing-prototype .clip p { margin-top: 24px; }
 .landing-prototype .evidence .hl{ display: inline-grid; vertical-align: bottom; line-height: 1.5; }
@@ -50,7 +47,6 @@
 @media (max-width: 560px) {
   .landing-prototype .rcpt { padding-inline: 16px; }
   .landing-prototype .zig { margin-inline: -16px; }
-  .landing-prototype .check-layer { padding: 18px; }
   .landing-prototype .browser-post { padding: 14px; }
   .landing-prototype .receipt-row { flex-wrap: wrap; gap: 4px 12px; }
   .landing-prototype .receipt-row dd { margin-inline-start: auto; }
@@ -59,19 +55,10 @@
   .landing-prototype .pin span { font-size: 12px; }
 }
 
-/* Extraction check and closing call to action (góp ý 2026-11-11).
-   Both sections carry .section and .wrap; .wrap's padding shorthand used to erase the block padding. */
+/* Closing call to action (góp ý 2026-11-11).
+   The section carries .section and .wrap; .wrap's padding shorthand used to erase the block padding. */
 .landing-prototype .section.wrap { padding-block: 88px; }
-.landing-prototype #extract-check .extract-head { max-width: 760px; margin-bottom: 32px; }
-.landing-prototype #extract-check .lead { font-family: var(--font-body); }
-.landing-prototype .check-layer .hl { margin: 0 2px; padding: 0; background: none; }
-.landing-prototype .check-layer .hl > i { padding: 0 5px; background: none; color: var(--muted); font: 600 12px/1.4 var(--font-body); }
-.landing-prototype .check-layer .hl > span { padding: 1px 5px; border-radius: 3px; background: var(--c); color: var(--mk-ink); }
-.landing-prototype #extract-check .check-note { margin-top: 18px; }
-.landing-prototype #extract-check .extract-source { max-width: 760px; margin-top: 20px; color: var(--body); font-size: 15px; }
-.landing-prototype #extract-check .extract-source a,
 .landing-prototype .final-cta .cta-steps a { color: var(--on-night); text-decoration-color: var(--hl-text); }
-.landing-prototype #extract-check .analysis-actions { align-items: center; margin-top: 28px; }
 .landing-prototype .final-cta { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(40px, 6vw, 96px); align-items: end; }
 .landing-prototype .home-lower .final-cta h2 { font-size: clamp(36px, 4.5vw, 60px); }
 .landing-prototype .final-cta .cta-actions { margin-top: 32px; }

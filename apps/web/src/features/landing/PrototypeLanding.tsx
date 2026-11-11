@@ -8,8 +8,6 @@ import { protectLandingPhrases } from './landing-phrases';
 import './prototype.css';
 import './port-accessibility.css';
 
-const EXAMPLE_TEXT = 'Cho thuê CCMN 30m2 gần ĐH FPT. Giá 5tr5/tháng. Nước 100k/người. Liên hệ [SĐT].';
-
 /** The authored prototype DOM stays intact so its CSS timelines share the same targets. */
 export function PrototypeLanding({ demo, market }: { demo?: boolean; market?: ReactNode }) {
   const container = useRef<HTMLDivElement>(null);
@@ -37,38 +35,6 @@ export function PrototypeLanding({ demo, market }: { demo?: boolean; market?: Re
         link.href = url.pathname + url.search + url.hash;
       }
     });
-
-    const analyze = root.querySelector<HTMLButtonElement>('[data-run-example]');
-    const status = root.querySelector<HTMLElement>('[data-analysis-status]');
-    analyze?.addEventListener('click', async () => {
-      if (!status || analyze.disabled) return;
-      analyze.disabled = true;
-      analyze.setAttribute('aria-busy', 'true');
-      status.textContent = 'Đang gửi bài ví dụ để phân tích…';
-      try {
-        const response = await fetch('/api/workspace/analyses', {
-          method: 'POST', credentials: 'same-origin', signal: controller.signal,
-          headers: { 'Content-Type': 'application/json', 'X-ReNER-Request': '1' },
-          body: JSON.stringify({ idempotency_key: 'landing-example:' + crypto.randomUUID(), source_type: 'fixture', text: EXAMPLE_TEXT, text_complete: true, phone_masked: true }),
-        });
-        const body = await response.json().catch(() => null);
-        if (response.status === 401) {
-          status.textContent = 'Đăng nhập để phân tích bài ví dụ. ';
-          const link = document.createElement('a');
-          link.href = '/dang-nhap?next=%2F%23extract-check'; link.textContent = 'Đăng nhập'; status.append(link);
-        } else if (!response.ok) {
-          status.textContent = body?.error?.message || 'Chưa phân tích được bài ví dụ. Hãy thử lại.';
-        } else if (typeof body?.analysis_id === 'string') {
-          status.textContent = 'Đã tiếp nhận bài ví dụ. ';
-          const link = document.createElement('a');
-          link.href = '/phan-tich/' + encodeURIComponent(body.analysis_id); link.textContent = 'Mở bản đọc'; status.append(link);
-        } else status.textContent = 'Máy chủ chưa trả mã bản đọc. Hãy thử lại.';
-      } catch (error) {
-        if (!controller.signal.aborted) status.textContent = 'Không kết nối được máy chủ. Hãy thử lại.';
-      } finally {
-        analyze.disabled = false; analyze.removeAttribute('aria-busy');
-      }
-    }, options);
 
     const tilt = root.querySelector<HTMLElement>('#tilt');
     const content = root.querySelector<HTMLElement>('#ctn');
