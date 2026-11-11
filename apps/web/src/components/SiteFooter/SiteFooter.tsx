@@ -46,11 +46,6 @@ export function SiteFooter({ account = null }: { account?: string | null }) {
           </div>
         </nav>
       </div>
-      <div className={`container ${styles.legal}`}>
-        <span>
-          Bài có nhãn “Ví dụ tự tạo” là bài minh họa. Kho tin và số liệu được đọc từ API; dữ liệu thật được che số điện thoại trước khi lưu.
-        </span>
-      </div>
     </footer>
   );
 }

@@ -58,7 +58,7 @@
    The section carries .section and .wrap; .wrap's padding shorthand used to erase the block padding. */
 .landing-prototype .section.wrap { padding-block: 88px; }
 .landing-prototype .final-cta .cta-steps a { color: var(--on-night); text-decoration-color: var(--hl-text); }
-.landing-prototype .final-cta { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(40px, 6vw, 96px); align-items: end; }
+.landing-prototype .final-cta { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(40px, 6vw, 96px); align-items: center; }
 .landing-prototype .home-lower .final-cta h2 { font-size: clamp(36px, 4.5vw, 60px); }
 .landing-prototype .final-cta .cta-actions { margin-top: 32px; }
 .landing-prototype .final-cta .cta-steps { margin: 0; padding: 0; list-style: none; counter-reset: step; border-bottom: 1px solid var(--edge); }
