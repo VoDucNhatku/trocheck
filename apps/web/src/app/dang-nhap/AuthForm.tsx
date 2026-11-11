@@ -5,6 +5,7 @@ import { Logo } from '@/components/Logo/Logo';
 import { api, messageOf, WorkspaceError } from '@/lib/workspace/client';
 import { safeReturnPath } from '@/lib/workspace/safe-path';
 import styles from './auth.module.css';
+import { AuthShowcase } from './AuthShowcase';
 
 export function AuthForm({ next, register = false, expired = false, variant = false, oauthError = '' }: {
   next: string; register?: boolean; expired?: boolean; variant?: boolean; oauthError?: string;
@@ -116,6 +117,6 @@ export function AuthForm({ next, register = false, expired = false, variant = fa
       </div>
       <footer className={styles.footer}><a href={register ? '#terms' : '/dang-ky#terms'} onClick={register ? revealTerms : undefined}>Điều khoản và dữ liệu</a><a href="/tim-tro">Xem tin trọ trước</a></footer>
     </main>
-    <aside className={styles.aside}><p>Từ một bài đăng, đến những điều rõ ràng</p><h2>Tiền nhà rõ.<br />Phí đứng riêng.</h2><div className={styles.paper}><span className={styles.tag}>Ví dụ tự tạo</span><p data-quote>Mình còn <mark data-entity="room">chung cư mini</mark> ở <mark data-entity="location">Cầu Giấy</mark>, gần điểm xe buýt.<br />Diện tích <mark data-entity="area">30 m²</mark>, có gác, WC riêng, nội thất cơ bản.<br />Giá <mark data-entity="price">4,7 tr/tháng/phòng</mark>. <mark data-entity="fee">Điện 3,5k/số</mark>, <mark data-entity="fee">nước 100k/người/tháng</mark>, <mark data-entity="fee">internet miễn phí</mark>.<br /><mark data-entity="fee">Cọc 1 tháng tiền thuê</mark>. Ngõ đi lại thoải mái, liên hệ [SĐT].</p></div><section className={styles.receipt} aria-label="Phiếu đọc ví dụ"><span className={styles.tag}>PHIẾU ĐỌC · VÍ DỤ</span><strong>4,7 tr <small>/tháng</small></strong><dl><div><dt>Diện tích</dt><dd>30 m²</dd></div><div><dt>Loại phòng</dt><dd>Chung cư mini</dd></div><div><dt>Vị trí</dt><dd>Cầu Giấy</dd></div><div><dt>Điện</dt><dd>3.500 đ/số</dd></div><div><dt>Nước</dt><dd>100.000 đ/người/tháng</dd></div><div><dt>Internet</dt><dd>Miễn phí</dd></div><div><dt>Đặt cọc</dt><dd>1 tháng tiền thuê</dd></div></dl></section><p>Ví dụ tự tạo · Dữ liệu 01/10–28/10/2026.<br />Giá chào thuê trong bài đăng, không phải giá giao dịch.</p></aside>
+    <AuthShowcase />
   </div>;
 }
