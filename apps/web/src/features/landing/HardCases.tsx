@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useId, useRef, useState } from 'react';
 import { motion, MotionConfig, type Variants } from 'motion/react';
 import { Phrase } from './examples';
 import { EASE, SideBlock, useScrollReveal } from './ScrollReveal';
@@ -78,7 +78,10 @@ function Quote({ parts }: { parts: QuotePart[] }) {
 }
 
 function CaseStudy({ item, index }: { item: HardCase; index: number }) {
-  return <article className={styles.case}>
+  // On phones the two explanation cells fold behind a button; on wider screens they always show.
+  const [open, setOpen] = useState(false);
+  const details = useId();
+  return <article className={styles.case} data-open={open}>
     <SideBlock side="left" className={styles.head}>
       <p className={styles.number}>{String(index + 1).padStart(2, '0')}</p>
       <h3 className={styles.title}>{item.title}</h3>
@@ -88,13 +91,13 @@ function CaseStudy({ item, index }: { item: HardCase; index: number }) {
         <p className={styles.partLabel}>Bài viết</p>
         <Quote parts={item.quote} />
       </div>
-      <div className={styles.cell}>
+      <div className={`${styles.cell} ${styles.detail}`} id={`${details}-problem`}>
         <p className={styles.partLabel}>Khó ở đâu</p>
         <p className={styles.text}>{item.problem}</p>
       </div>
     </SideBlock>
     <SideBlock side="right" className={styles.column}>
-      <div className={styles.cell}>
+      <div className={`${styles.cell} ${styles.detail}`} id={`${details}-solution`}>
         <p className={`${styles.partLabel} ${styles.solutionLabel}`}>TrọCheck xử lý</p>
         <p className={`${styles.text} ${styles.solution}`}>{item.solution}</p>
       </div>
@@ -103,6 +106,9 @@ function CaseStudy({ item, index }: { item: HardCase; index: number }) {
         <p className={styles.resultValue}>{item.result.map((value, i) => <span key={value}>{i > 0 && ' · '}<Phrase>{value}</Phrase></span>)}</p>
       </div>
     </SideBlock>
+    <button type="button" className={styles.more} aria-expanded={open} aria-controls={`${details}-problem ${details}-solution`} onClick={() => setOpen(value => !value)}>
+      {open ? 'Ẩn cách xử lý' : 'Xem cách xử lý'}
+    </button>
   </article>;
 }
 

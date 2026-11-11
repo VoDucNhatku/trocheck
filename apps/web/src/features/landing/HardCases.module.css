@@ -31,8 +31,23 @@
 .mark[data-tone='fee'] { --c: var(--mk-fee); }
 .mark[data-tone='gap'] .ink { padding-inline: 2px; border-bottom: 1.5px dashed var(--edge2); border-radius: 0; background-image: none; color: inherit; }
 
+.more { display: none; }
+
 @media (max-width: 860px) {
   .case { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
   .column { grid-row: auto; grid-template-rows: none; }
   .column + .column { margin-top: 24px; padding-top: 20px; border-top: 1px dashed var(--edge); }
+}
+
+/* Phones: title, quote and result; the two explanation cells open on demand. */
+@media (max-width: 700px) {
+  .case { padding-block: 32px; }
+  .head { margin-bottom: 16px; }
+  .case .title { font-size: 24px; }
+  .root .intro .lede { font-size: 26px; }
+  .case:not([data-open='true']) .detail { display: none; }
+  .case:not([data-open='true']) .detail + .cell { margin-top: 0; padding-top: 0; border-top: 0; }
+  .column + .column { margin-top: 16px; padding-top: 14px; }
+  .cell + .cell { margin-top: 16px; padding-top: 14px; }
+  .more { display: inline-flex; align-items: center; min-height: 44px; margin-top: 12px; padding: 0 16px; border: 1px solid var(--edge2); border-radius: 8px; background: transparent; color: var(--on-night); font: 600 14px/1 var(--font-body); }
 }

@@ -77,3 +77,19 @@
 @media (max-width: 800px) {
   .landing-prototype .section.wrap { padding-block: 56px; }
 }
+
+/* Phones (góp ý 2026-11-12): smaller type, one line per hero sentence, shorter story. */
+@media (max-width: 700px) {
+  .landing-prototype .copy .h1 { font-size: clamp(28px, 9.4vw, 40px); white-space: nowrap; }
+  .landing-prototype .copy .stepn { font-size: 22px; line-height: 1.2; }
+  .landing-prototype .copy h2.ch { font-size: 26px; }
+  .landing-prototype .home-lower h2 { font-size: 28px; }
+  /* The colour legend above names each mark, so the stacked labels that made fees wrap 3-4 lines are dropped. */
+  .landing-prototype .excerpt .l2 .hl { display: inline; line-height: inherit; }
+  .landing-prototype .excerpt .l2 .hl > i { display: none; }
+  .landing-prototype .l2 .post.excerpt { line-height: 1.75; }
+  .landing-prototype .feedband h2,
+  .landing-prototype .home-lower .final-cta h2 { font-size: 28px; }
+  .landing-prototype .home-lower .section { padding-block: 44px; }
+  .landing-prototype .section.wrap { padding-block: 44px; }
+}
