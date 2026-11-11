@@ -6,7 +6,7 @@ export function protectLandingPhrases(root: HTMLElement) {
   const nodes: Text[] = [];
   while (walker.nextNode()) {
     const text = walker.currentNode as Text;
-    if (!text.parentElement?.closest('.phrase, script, style')) nodes.push(text);
+    if (!text.parentElement?.closest('.phrase, script, style, [data-react-section]')) nodes.push(text);
   }
   for (const text of nodes) {
     const parts = text.data.split(PHRASES);

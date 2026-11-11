@@ -15,10 +15,8 @@
 .landing-prototype .analysis-actions { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
 .landing-prototype .browser-post .evidence { margin-top: 20px; }
 .landing-prototype .clip p { margin-top: 24px; }
-.landing-prototype .hard-case .hl,
-.landing-prototype .evidence .hl { display: inline-grid; vertical-align: bottom; line-height: 1.5; }
-.landing-prototype .hard-case .hl > i,
-.landing-prototype .evidence .hl > i { position: static; font-size: 12px; }
+.landing-prototype .evidence .hl{ display: inline-grid; vertical-align: bottom; line-height: 1.5; }
+.landing-prototype .evidence .hl > i{ position: static; font-size: 12px; }
 .landing-prototype .hl i, .landing-prototype small, .landing-prototype .chip b,
 .landing-prototype .lt, .landing-prototype .ch-tag, .landing-prototype .ticks,
 .landing-prototype .medline span, .landing-prototype .pin span, .landing-prototype .rc-note,
