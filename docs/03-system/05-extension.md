@@ -1,5 +1,7 @@
 # Đặc tả extension Chrome
 
+> **Hiện trạng:** mã nguồn ở [`apps/extension`](../../apps/extension/README.md). Đã có chế độ Thu thập (lưu trên máy, che số điện thoại, gửi về kho bằng token khi người dùng bấm). Khác đặc tả: tự chạy khi mở nhóm chứ chưa có công tắc, chưa có danh sách nhóm được phép và giới hạn 50 bài/phiên, có thêm bước lọc và trích xuất gọi TypeSafe và Ollama Cloud bằng key của người dùng. Chế độ Nhận định chưa làm.
+
 Tài liệu bàn giao cho người hoặc nhóm làm extension. Mô tả **extension phải làm gì và gửi gì cho backend**, không quy định cách code. Ưu tiên số 1: **chạy được và thu được dữ liệu** vào kho để nhóm có 300–500 bài.
 
 ## 1. Extension làm hai việc

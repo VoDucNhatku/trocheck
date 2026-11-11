@@ -21,7 +21,7 @@ export function SiteFooter({ account = null }: { account?: string | null }) {
             <h2>Người đi thuê</h2>
             <Link href={scoped('/tim-tro')}>Tìm trọ</Link>
             <Link href={scoped('/#nguyen-tac')}>Nguyên tắc dữ liệu</Link>
-            <Link href={scoped('/#extension')}>Minh họa extension</Link>
+            <Link href={scoped('/extension')}>Extension Chrome</Link>
           </div>
           <div>
             <h2>Dữ liệu</h2>
@@ -45,11 +45,6 @@ export function SiteFooter({ account = null }: { account?: string | null }) {
             )}
           </div>
         </nav>
-      </div>
-      <div className={`container ${styles.legal}`}>
-        <span>
-          Bài có nhãn “Ví dụ tự tạo” là bài minh họa. Kho tin và số liệu được đọc từ API; dữ liệu thật được che số điện thoại trước khi lưu.
-        </span>
       </div>
     </footer>
   );

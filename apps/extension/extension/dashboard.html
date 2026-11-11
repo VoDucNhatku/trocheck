@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TrọCheck Collector</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <main>
+    <header><div><h1>TrọCheck Collector</h1><p>Các bài đã lưu trong trình duyệt này</p></div><button id="refresh">Tải lại</button></header>
+    <nav aria-label="Bảng dữ liệu">
+      <button type="button" data-page="all" aria-current="page">Tất cả bài</button>
+      <button type="button" data-page="process">Xử lý bài</button>
+      <button type="button" data-page="settings">Cài đặt</button>
+    </nav>
+    <section id="all-page">
+      <div class="actions"><p id="send-count">Đang đếm bài chưa gửi…</p><button id="send-trocheck" type="button">Gửi về kho TrọCheck</button></div>
+      <p id="send-status" role="status"></p>
+      <p id="status" role="status">Đang đọc dữ liệu…</p>
+      <div id="records" class="table-wrap" aria-label="Các bài đã lưu"></div>
+      <button id="next" hidden>Trang sau</button>
+    </section>
+    <section id="process-page" hidden>
+      <div class="actions"><p id="counts">Đang đọc dữ liệu…</p><button id="classify">Lọc</button><button id="retry-unknown">Lọc lại bài chưa chắc</button><button id="extract">Trích xuất</button></div>
+      <p id="process-status" role="status"></p>
+      <p class="hint">Xác suất phụ thuộc vào model đang dùng và cần đối chiếu với bài đã gán nhãn.</p>
+      <div id="processed-records" class="table-wrap" aria-label="Kết quả xử lý"></div>
+    </section>
+    <section id="settings-page" hidden>
+      <form id="trocheck-form" class="panel">
+        <h2>Kết nối TrọCheck</h2>
+        <label>Địa chỉ API<input id="trocheck-api" type="url" autocomplete="off" spellcheck="false"></label>
+        <label>Token<input id="trocheck-token" type="password" autocomplete="off" spellcheck="false"></label>
+        <p class="hint">Tạo token trong trang Tài khoản trên web TrọCheck. Bài chỉ được gửi khi bạn bấm nút gửi, và số điện thoại đã được che.</p>
+        <button type="submit">Lưu và kiểm tra</button>
+        <p id="trocheck-status" role="status"></p>
+      </form>
+      <form id="settings-form" class="panel">
+        <label>TypeSafe API key<input id="typesafe-api-key" type="password" autocomplete="off" spellcheck="false"></label>
+        <label>Ollama Cloud API key<input id="ollama-api-key" type="password" autocomplete="off" spellcheck="false"></label>
+        <label>Model trích xuất<input id="extraction-model" type="text" placeholder="Tên model" autocomplete="off" required></label>
+        <p class="hint">Cài đặt và API key lưu trong trình duyệt này. Bước lọc dùng TypeSafe Jev, bước trích xuất dùng Ollama Cloud.</p>
+        <h2>Prompts</h2>
+        <p class="hint">Sửa câu hỏi Jev và hướng dẫn trích xuất bên dưới. Các trường JSON bắt buộc được thêm tự động.</p>
+        <label>Jev: câu hỏi có cho thuê không<textarea id="jev-listing" rows="3" required></textarea></label>
+        <label>Jev: câu hỏi có giá thuê không<textarea id="jev-price" rows="3" required></textarea></label>
+        <label>Jev: câu hỏi số căn<textarea id="jev-count" rows="3" required></textarea></label>
+        <p class="hint">Jev questions are answered independently. Probabilities above 0.6 count as yes, below 0.4 as no; 0.4 through 0.6 are uncertain. Listing count uses Jev’s selected option; unknown remains uncertain.</p>
+        <label>Prompt trích xuất<textarea id="extraction-prompt" rows="8" required></textarea></label>
+        <label>Hướng dẫn cho bài một căn<textarea id="single-prompt" rows="3" required></textarea></label>
+        <label>Hướng dẫn cho bài nhiều căn<textarea id="multiple-prompt" rows="3" required></textarea></label>
+        <button id="reset-prompts" type="button">Khôi phục prompt mặc định</button>
+        <button type="submit">Lưu cài đặt</button>
+        <p id="settings-status" role="status"></p>
+      </form>
+      <div class="panel"><h2>Xóa dữ liệu đã lưu</h2><p>Xóa toàn bộ bài, ảnh và kết quả xử lý. API key và cài đặt model vẫn được giữ.</p><button id="clear" class="danger" type="button">Xóa toàn bộ dữ liệu</button> <span id="storage-usage">Đang tính dung lượng…</span><p id="clear-status" role="status"></p></div>
+    </section>
+  </main>
+  <script src="privacy.js"></script>
+  <script src="trocheck.js"></script>
+  <script src="storage.js"></script>
+  <script src="processing.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

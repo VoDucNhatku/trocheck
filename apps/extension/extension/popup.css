@@ -1,0 +1,9 @@
+:root { --bg: #EEECE6; --card: #FFFDF8; --ink: #15161A; --ink2: #4A473F; --muted: #6B675E; --line: #CFC9BB; --accent: #FFE14D; color-scheme: light dark; }
+@media (prefers-color-scheme: dark) { :root { --bg: #111214; --card: #1A1B1E; --ink: #F4F1EA; --ink2: #BDB9AE; --muted: #B0ACA2; --line: #555650; } }
+body { width: 280px; margin: 20px; font: 14px/1.5 system-ui, sans-serif; color: var(--ink); }
+h1 { margin: 0 0 12px; font-size: 20px; }
+button { width: 100%; padding: 10px; border: 0; border-radius: 6px; background: var(--accent); color: #15161A; cursor: pointer; font: inherit; }
+button:disabled { opacity: .5; cursor: default; }
+.note { color: var(--muted); font-size: 12px; }
+
+button + button { margin-top: 8px; }

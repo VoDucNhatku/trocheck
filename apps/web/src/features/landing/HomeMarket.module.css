@@ -1,0 +1,22 @@
+.root { overflow-x: clip; }
+.grid { display: grid; grid-template-columns: 5fr 6fr; gap: clamp(40px, 6vw, 96px); }
+.grid > * { min-width: 0; }
+.intro .title { font-size: clamp(30px, 3.1vw, 44px); line-height: 1.12; text-wrap: balance; }
+.intro .lead { margin-block: 14px 24px; color: var(--body); font-size: 16px; line-height: 1.6; }
+
+.rows { margin: 0; padding: 0; list-style: none; border-bottom: 1px solid var(--edge); }
+.rows li { border-top: 1px solid var(--edge); }
+.root .rows a { display: flex; justify-content: space-between; align-items: center; gap: 20px; min-height: 68px; padding: 12px 4px; color: var(--on-night); text-decoration: none; transition: background-color var(--dur-base) var(--ease); }
+.place, .price { display: grid; gap: 2px; min-width: 0; }
+.price { flex: none; justify-items: end; }
+.place b { font-size: 15px; font-weight: 600; }
+.place > span, .price > span { color: var(--muted); font-size: 14px; }
+.price strong { font-family: var(--font-display); font-size: 24px; font-weight: 600; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.root .note { margin-top: 16px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+@media (hover: hover) and (pointer: fine) {
+  .root .rows a:hover { background: var(--panel1); color: var(--on-night); }
+}
+
+@media (max-width: 860px) {
+  .grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+}

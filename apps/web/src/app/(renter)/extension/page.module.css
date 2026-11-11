@@ -37,6 +37,5 @@
 @media(prefers-reduced-motion:reduce) { .primary, .secondary, .primary:hover:not(:disabled), .secondary:hover:not(:disabled), .primary:active:not(:disabled), .secondary:active:not(:disabled) { transform:none; transition:none; } }
 
 /* Embedded landing examples use this page's themed palette without editing the landing files. */
-.page :global([class*="LandingDemos_controls__"]) button { color:var(--on-night); background:var(--night2); border-color:var(--control-edge); }
-.page :global([class*="LandingDemos_controls__"]) button[aria-pressed=true] { color:var(--ink); background:var(--hl); border-color:var(--ink); }
-.page :global([class*="LandingDemos_link__"]) { color:var(--hl-text); }
+.limits { display:grid; gap:14px; margin:0; padding-left:18px; color:var(--on-night2); font-size:16px; line-height:1.7; }
+.page code { font-family:var(--font-mono); font-size:13px; font-variant-ligatures:none; overflow-wrap:anywhere; }

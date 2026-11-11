@@ -60,6 +60,7 @@
 .themeToggle { display: inline-flex; gap: 2px; padding: 2px; border: 1px solid var(--edge2); border-radius: var(--r-full); }
 .themeButton { display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: var(--r-full); background: transparent; color: var(--on-night); cursor: pointer; }
 .themeButton[aria-pressed='true'] { background: var(--accent); color: var(--accent-ink); }
+@media (max-width: 720px) { .themeButton { width: 44px; height: 44px; } }
 .catalog { display: grid; gap: var(--s-6); }
 .catalogPage { padding-block: var(--s-8); }
 .catalogIntro { display: grid; gap: var(--s-3); margin-bottom: var(--s-6); }

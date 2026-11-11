@@ -1,16 +1,15 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { EXTENSION_PANELS, PROTOTYPE_MARKUP } from './prototypeMarkup';
+import { useEffect, useRef, type ReactNode } from 'react';
+import { MARKUP_AFTER_CASES, MARKUP_AFTER_LOWER, MARKUP_BEFORE_CASES, MARKUP_BEFORE_LOWER } from './prototypeMarkup';
+import { ExtensionSection } from './ExtensionFlow';
+import { HardCases } from './HardCases';
 import { protectLandingPhrases } from './landing-phrases';
 import './prototype.css';
 import './port-accessibility.css';
 
-type Panel = keyof typeof EXTENSION_PANELS;
-const EXAMPLE_TEXT = 'Cho thuê CCMN 30m2 gần ĐH FPT. Giá 5tr5/tháng. Nước 100k/người. Liên hệ [SĐT].';
-
 /** The authored prototype DOM stays intact so its CSS timelines share the same targets. */
-export function PrototypeLanding({ demo }: { demo?: boolean }) {
+export function PrototypeLanding({ demo, market }: { demo?: boolean; market?: ReactNode }) {
   const container = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const root = container.current;
@@ -18,7 +17,6 @@ export function PrototypeLanding({ demo }: { demo?: boolean }) {
     protectLandingPhrases(root);
     const controller = new AbortController();
     const options = { signal: controller.signal };
-    const timers = new Set<ReturnType<typeof setTimeout>>();
     const feed = root.querySelector<HTMLElement>('#feed');
     const pause = root.querySelector<HTMLButtonElement>('#pause');
     pause?.addEventListener('click', () => {
@@ -37,58 +35,6 @@ export function PrototypeLanding({ demo }: { demo?: boolean }) {
         link.href = url.pathname + url.search + url.hash;
       }
     });
-
-    const extension = root.querySelector<HTMLElement>('[data-extension-demo]');
-    let selected: Panel = 'preview';
-    const selectPanel = (panel: Panel) => {
-      selected = panel;
-      const output = extension?.querySelector('[data-ext-output]');
-      if (output) { output.innerHTML = EXTENSION_PANELS[panel]; protectLandingPhrases(output as HTMLElement); }
-      extension?.querySelectorAll<HTMLElement>('.tabs [data-ext-state]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.extState === panel)));
-    };
-    extension?.addEventListener('click', event => {
-      const button = (event.target as HTMLElement).closest<HTMLElement>('[data-ext-state]');
-      const panel = button?.dataset.extState as Panel | undefined;
-      if (!panel || !Object.hasOwn(EXTENSION_PANELS, panel)) return;
-      selectPanel(panel);
-      if (panel === 'loading') {
-        // This explicitly labeled extension demo mirrors the prototype's three states.
-        const timer = setTimeout(() => { timers.delete(timer); if (selected === 'loading') selectPanel('result'); }, 1800);
-        timers.add(timer);
-      }
-    }, options);
-
-    const analyze = root.querySelector<HTMLButtonElement>('[data-run-example]');
-    const status = root.querySelector<HTMLElement>('[data-analysis-status]');
-    analyze?.addEventListener('click', async () => {
-      if (!status || analyze.disabled) return;
-      analyze.disabled = true;
-      analyze.setAttribute('aria-busy', 'true');
-      status.textContent = 'Đang gửi bài ví dụ để phân tích…';
-      try {
-        const response = await fetch('/api/workspace/analyses', {
-          method: 'POST', credentials: 'same-origin', signal: controller.signal,
-          headers: { 'Content-Type': 'application/json', 'X-ReNER-Request': '1' },
-          body: JSON.stringify({ idempotency_key: 'landing-example:' + crypto.randomUUID(), source_type: 'fixture', text: EXAMPLE_TEXT, text_complete: true, phone_masked: true }),
-        });
-        const body = await response.json().catch(() => null);
-        if (response.status === 401) {
-          status.textContent = 'Đăng nhập để phân tích bài ví dụ. ';
-          const link = document.createElement('a');
-          link.href = '/dang-nhap?next=%2F%23extract-check'; link.textContent = 'Đăng nhập'; status.append(link);
-        } else if (!response.ok) {
-          status.textContent = body?.error?.message || 'Chưa phân tích được bài ví dụ. Hãy thử lại.';
-        } else if (typeof body?.analysis_id === 'string') {
-          status.textContent = 'Đã tiếp nhận bài ví dụ. ';
-          const link = document.createElement('a');
-          link.href = '/phan-tich/' + encodeURIComponent(body.analysis_id); link.textContent = 'Mở bản đọc'; status.append(link);
-        } else status.textContent = 'Máy chủ chưa trả mã bản đọc. Hãy thử lại.';
-      } catch (error) {
-        if (!controller.signal.aborted) status.textContent = 'Không kết nối được máy chủ. Hãy thử lại.';
-      } finally {
-        analyze.disabled = false; analyze.removeAttribute('aria-busy');
-      }
-    }, options);
 
     const tilt = root.querySelector<HTMLElement>('#tilt');
     const content = root.querySelector<HTMLElement>('#ctn');
@@ -127,7 +73,21 @@ export function PrototypeLanding({ demo }: { demo?: boolean }) {
       }
     }, { threshold: .3 });
     counters.forEach(counter => { counter.dataset.count = counter.textContent || '0'; observer.observe(counter); });
-    return () => { controller.abort(); resize.disconnect(); observer.disconnect(); timers.forEach(clearTimeout); frames.forEach(cancelAnimationFrame); };
+    return () => { controller.abort(); resize.disconnect(); observer.disconnect(); frames.forEach(cancelAnimationFrame); };
   }, [demo]);
-  return <div ref={container} className="landing-prototype" dangerouslySetInnerHTML={{ __html: PROTOTYPE_MARKUP }} />;
+  return <div ref={container} className="landing-prototype">
+    <Markup html={MARKUP_BEFORE_LOWER} />
+    <div className="home-lower">
+      <Markup html={MARKUP_BEFORE_CASES} />
+      <HardCases />
+      <ExtensionSection />
+      {market}
+      <Markup html={MARKUP_AFTER_CASES} />
+    </div>
+    <Markup html={MARKUP_AFTER_LOWER} />
+  </div>;
+}
+
+function Markup({ html }: { html: string }) {
+  return <div style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: html }} />;
 }

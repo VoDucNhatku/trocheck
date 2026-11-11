@@ -1,0 +1,31 @@
+:root { --bg: #EEECE6; --card: #FFFDF8; --ink: #15161A; --ink2: #4A473F; --muted: #6B675E; --line: #CFC9BB; --accent: #FFE14D; color-scheme: light dark; }
+@media (prefers-color-scheme: dark) { :root { --bg: #111214; --card: #1A1B1E; --ink: #F4F1EA; --ink2: #BDB9AE; --muted: #B0ACA2; --line: #555650; } }
+:root { font: 14px/1.5 system-ui, sans-serif; color: var(--ink); background: var(--bg); }
+body { margin: 0; }
+main { max-width: 1400px; margin: 36px auto; padding: 0 24px; }
+header { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+h1 { font-size: 24px; margin: 0; }
+h2 { font-size: 18px; }
+header p, .hint { color: var(--muted); }
+nav { display: flex; gap: 8px; border-bottom: 1px solid var(--line); margin-bottom: 18px; }
+nav button { color: var(--ink2); background: transparent; border-radius: 0; border-bottom: 3px solid transparent; }
+nav button[aria-current="page"] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; background: var(--card); }
+th, td { padding: 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { white-space: nowrap; }
+td { white-space: pre-wrap; overflow-wrap: anywhere; min-width: 80px; }
+#records td:nth-child(2) { min-width: 300px; }
+button { padding: 9px 16px; border: 0; border-radius: 6px; background: var(--accent); color: #15161A; font: inherit; cursor: pointer; }
+button:disabled { opacity: .5; cursor: default; }
+.danger { background: #a22c2c; }
+.actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.actions p { margin-right: auto; }
+.panel { max-width: 680px; padding: 20px; margin-bottom: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 8px; }
+label { display: block; margin-bottom: 14px; font-weight: 600; }
+input, select, textarea { display: block; box-sizing: border-box; width: 100%; margin-top: 5px; padding: 9px; border: 1px solid #aeb9ca; border-radius: 5px; font: inherit; }
+a { color: var(--ink); }
+summary { cursor: pointer; }
+.image-gallery { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.image-gallery img { width: 120px; height: 90px; object-fit: contain; background: #edf0f5; }
+@media (max-width: 600px) { main { margin: 18px auto; padding: 0 14px; } nav { flex-wrap: wrap; } }

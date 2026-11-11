@@ -28,6 +28,7 @@ Mặc định là **chế độ tối**; `data-theme="light"` chuyển sang ch�
 ## Chữ
 
 - Tiêu đề: **Newsreader** (chữ có chân), dùng tiết chế.
+- Không dùng chữ nghiêng ở bất kỳ đâu. Từ cần nhấn dùng màu.
 - Nội dung: **Be Vietnam Pro**.
 - Số liệu, mã: **JetBrains Mono**.
 - Chữ nhỏ nhất 12px. Không bẻ dòng giữa một cụm ("12,5 tr", "Cầu Giấy", "25 m²", "diện tích"); xuống dòng giữa các cụm. Không dùng `nowrap` cho cả khối dài.
@@ -44,7 +45,7 @@ Mặc định là **chế độ tối**; `data-theme="light"` chuyển sang ch�
 
 Trang chủ kể theo cảnh cuộn (CSS scroll-driven animation): ảnh sân, bài đăng được đọc thành từng dòng, phiếu giá in ra, đặt cạnh tin cùng phường, rồi mây khép cảnh. Tiếp theo là dải mẩu bài chạy liên tục (có nút tạm dừng), số liệu, các kiểu bài khó, minh họa extension, nguyên tắc dữ liệu và lời mời tìm phòng.
 
-- Ảnh sân và mây là **ảnh minh họa**, có ghi rõ trên trang. Không dùng ảnh bài đăng hay ảnh phòng thật; chỗ cần ảnh phòng dùng khối giữ chỗ "Ảnh phòng (ví dụ)".
+- Ảnh sân và mây là **ảnh minh họa**, có ghi rõ trên trang. Thẻ bài đăng đầu trang dùng một ảnh phòng (`public/images/phong-vi-du.jpg`) không kèm chú thích, do người dùng chọn: không có người, số nhà hay chữ, đã xóa thông tin ẩn trong file. Không dùng ảnh từ bài đăng Facebook đã thu.
 - Nội dung đọc được ngay cả khi chưa chạy JavaScript hoặc khi trình duyệt không hỗ trợ animation cuộn.
 
 ## Nội dung

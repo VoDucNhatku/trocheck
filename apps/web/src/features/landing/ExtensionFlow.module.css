@@ -1,0 +1,34 @@
+.intro { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px 48px; margin-bottom: 40px; }
+.intro > div { flex: 1 1 560px; min-width: 0; }
+.intro .title { font-size: clamp(30px, 3.1vw, 44px); line-height: 1.12; text-wrap: balance; }
+.intro .lead { max-width: 660px; margin-top: 14px; color: var(--body); font-size: 16px; line-height: 1.6; }
+
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.tab { min-height: 44px; padding: 0 18px; border: 1px solid var(--edge2); border-radius: var(--r-full); background: transparent; color: var(--on-night); font: 600 14px var(--font-body); cursor: pointer; transition: background-color var(--dur-base) var(--ease), color var(--dur-base) var(--ease); }
+.tab[aria-pressed='true'] { border-color: var(--hl); background: var(--hl); color: var(--mk-ink); }
+.tab:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.frame { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: clip; border: 1px solid var(--edge); border-radius: var(--radius-panel); }
+.pane { min-width: 0; padding: clamp(24px, 3vw, 36px); }
+.pane + .pane { border-left: 1px solid var(--edge); }
+.frame .label { margin-bottom: 14px; color: var(--muted); font-size: 14px; font-weight: 600; line-height: 1.4; }
+.frame .post { color: var(--on-night); font-size: 17px; line-height: 1.75; }
+.hit { margin-inline: -3px; padding: 1px 3px; border-radius: 3px; white-space: nowrap; transition: background-color 240ms var(--ease), color 240ms var(--ease); }
+.hit[data-on='true'] { background: var(--hl); color: var(--mk-ink); }
+
+.result { min-height: 318px; }
+.frame .stepTitle { margin-bottom: 12px; color: var(--on-night); font-family: var(--font-display); font-size: 24px; font-weight: 500; letter-spacing: -0.015em; line-height: 1.25; }
+.rows { margin: 0; }
+.rows > div { display: grid; grid-template-columns: 124px minmax(0, 1fr); gap: 16px; padding-block: 11px; border-top: 1px solid var(--edge); }
+.rows dt { color: var(--muted); font-size: 14px; line-height: 1.5; }
+.rows dd { margin: 0; color: var(--on-night); font-size: 15px; font-weight: 500; line-height: 1.5; }
+
+@media (max-width: 860px) {
+  .frame { grid-template-columns: minmax(0, 1fr); }
+  .pane + .pane { border-top: 1px solid var(--edge); border-left: 0; }
+  .result { min-height: 0; }
+}
+@media (max-width: 420px) {
+  .rows > div { grid-template-columns: 104px minmax(0, 1fr); gap: 12px; }
+}
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }

@@ -89,7 +89,7 @@ spec/
 apps/
   web/                Next.js — B1 nối API cho 3 trang công khai
   api/                FastAPI + pipeline + worker + tests
-  extension/          Chrome MV3 — chưa code, giao bên làm extension
+  extension/          Chrome MV3 — TrọCheck Collector: thu bài trên máy, gửi về kho bằng token
 data/                 Quy ước lưu dữ liệu (dữ liệu thật không commit)
 eval/                 Script đánh giá; không chạy test split trong B1
 ```
