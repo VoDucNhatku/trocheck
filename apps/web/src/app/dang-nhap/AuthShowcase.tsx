@@ -6,7 +6,7 @@ import styles from './auth.module.css';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-/** Room photos for the strip; replace with images from the data store when the API serves them. */
+/** Bundled fallback when the store has no photos yet or the API is unreachable. */
 const ROOM_PHOTOS = [
   { src: '/images/phong-vi-du.jpg', alt: 'Phòng ngủ có giường đôi, tủ quần áo trắng và cửa ra ban công' },
 ];
@@ -34,7 +34,7 @@ function Mark({ entity, children }: { entity: string; children: ReactNode }) {
   return <motion.mark data-entity={entity} variants={sweep}>{children}</motion.mark>;
 }
 
-type RoomImage = { src: string; alt: string };
+import type { RoomImage } from './room-photos';
 
 /** A band of room photos that keeps moving. With one photo it slowly pans; with more it scrolls past like a reel. */
 export function RoomStrip({ photos = ROOM_PHOTOS }: { photos?: RoomImage[] }) {
@@ -54,12 +54,12 @@ export function RoomStrip({ photos = ROOM_PHOTOS }: { photos?: RoomImage[] }) {
   </motion.figure>;
 }
 
-export function AuthShowcase() {
+export function AuthShowcase({ photos = [] }: { photos?: RoomImage[] }) {
   return <MotionConfig reducedMotion="user">
     <motion.aside className={styles.aside} initial="hidden" animate="shown">
       <motion.p variants={rise}>Từ một bài đăng, đến những điều rõ ràng</motion.p>
       <motion.h2 variants={rise} custom={0.1}>Tiền nhà rõ.<br />Phí đứng riêng.</motion.h2>
-      <RoomStrip />
+      <RoomStrip photos={photos.length ? photos : ROOM_PHOTOS} />
       <div className={styles.stage}>
         <motion.div className={styles.paper} variants={rise} custom={0.3}>
           <span className={styles.tag}>Ví dụ tự tạo</span>

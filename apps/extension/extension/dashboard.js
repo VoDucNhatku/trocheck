@@ -319,7 +319,8 @@ document.querySelector("#clear").addEventListener("click", async () => {
 async function updateSendCount() {
   const label = document.querySelector("#send-count");
   try {
-    label.textContent = `${(await TroStorage.readUnsent()).length} bài chưa gửi về kho TrọCheck.`;
+    const photos = (await TroStorage.readImagesToUpload()).length;
+    label.textContent = `${(await TroStorage.readUnsent()).length} bài chưa gửi về kho TrọCheck${photos ? `, ${photos} ảnh của bài đã gửi đang chờ` : ""}.`;
   } catch (_) { label.textContent = "Không đếm được bài chưa gửi."; }
 }
 
@@ -356,9 +357,10 @@ document.querySelector("#send-trocheck").addEventListener("click", async () => {
     const result = await TroCheck.sendUnsent({ storage: TroStorage, apiUrl: trocheckApiUrl || "", token: trocheckToken,
       version: chrome.runtime.getManifest().version,
       onProgress: progress => { label.textContent = `Đang gửi: ${progress.created + progress.duplicate + progress.rejected}/${progress.total} bài…`; } });
-    label.textContent = result.total
+    const photos = result.images?.total ? ` Ảnh: ${result.images.uploaded} ảnh mới, ${result.images.duplicate} ảnh trùng, ${result.images.skipped} ảnh bỏ qua.` : "";
+    label.textContent = (result.total
       ? `Đã gửi ${result.total} bài: ${result.created} bài mới, ${result.duplicate} bài trùng, ${result.rejected} bài bị từ chối.`
-      : "Không có bài nào cần gửi.";
+      : "Không có bài nào cần gửi.") + photos;
   } catch (error) { label.textContent = error.message; }
   finally { button.disabled = false; updateSendCount(); }
 });

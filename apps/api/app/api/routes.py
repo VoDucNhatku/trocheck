@@ -7,6 +7,7 @@ from __future__ import annotations
 from typing import Literal
 
 from fastapi import APIRouter, Depends, Query, Response, Request
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -19,7 +20,7 @@ from app.models import User
 from app.schemas import IngestBatch, IngestPost, LabRunRequest, LoginRequest, RegisterRequest, ReviewDecision, TokenCreate
 from app.schemas.public import Comparison, ErrorResponse, ListingDetail, ListingsResponse, StatsOverview
 from app.schemas import workspace as dto
-from app.services import analyses, evaluation, ingest, lab, listings, market, reviews, team, users
+from app.services import analyses, evaluation, images, ingest, lab, listings, market, reviews, team, users
 
 router = APIRouter(prefix="/api/v1")
 
@@ -84,6 +85,25 @@ def who_am_i(user: User = Depends(current_user)):
 def ingest_batch(body: IngestBatch, user: User = Depends(require_roles("collector")),
                  session: Session = Depends(get_session), settings: Settings = Depends(settings_dep)):
     return ingest.ingest_batch(session, user, body.posts, settings)
+
+
+@router.put("/ingest/images", tags=["extension"])
+async def ingest_image(request: Request, idempotency_key: str = Query(min_length=1, max_length=200),
+                       user: User = Depends(require_roles("collector")), session: Session = Depends(get_session),
+                       settings: Settings = Depends(settings_dep)):
+    """One room photo for a post already sent by this collector; the body is the raw image file."""
+    length = request.headers.get("content-length")
+    if length and length.isdigit() and int(length) > settings.post_image_max_bytes:
+        raise ApiError(413, code="image_too_large", message="Ảnh lớn hơn giới hạn cho phép.")
+    data = await request.body()
+    # Upload is blocking network I/O; keep it off the event loop.
+    return await run_in_threadpool(images.add, session, user, idempotency_key, data, settings)
+
+
+@router.get("/images/recent", tags=["public"])
+def recent_images(limit: int = Query(12, ge=1, le=24), session: Session = Depends(get_session)):
+    """Newest room photos from contributed, non-demo posts (one per post)."""
+    return images.recent(session, limit)
 
 
 @router.post("/analyses", status_code=202, tags=["extension"], response_model=dto.AnalysisCreated)
