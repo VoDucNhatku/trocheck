@@ -141,6 +141,7 @@ svg {
 }
 
 h1, h2, h3, h4, [class*="title"], [class*="heading"] { font-family: var(--font-display); }
+em, i, cite, dfn, var, address { font-style: normal; }
 
 /* Shared examples are also embedded outside the landing page: their paper stays light. */
 :is([class*="examples_post__"], [class*="examples_receipt__"]) {

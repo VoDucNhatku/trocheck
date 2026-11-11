@@ -28,6 +28,7 @@ Mặc định là **chế độ tối**; `data-theme="light"` chuyển sang ch�
 ## Chữ
 
 - Tiêu đề: **Newsreader** (chữ có chân), dùng tiết chế.
+- Không dùng chữ nghiêng ở bất kỳ đâu. Từ cần nhấn dùng màu.
 - Nội dung: **Be Vietnam Pro**.
 - Số liệu, mã: **JetBrains Mono**.
 - Chữ nhỏ nhất 12px. Không bẻ dòng giữa một cụm ("12,5 tr", "Cầu Giấy", "25 m²", "diện tích"); xuống dòng giữa các cụm. Không dùng `nowrap` cho cả khối dài.
