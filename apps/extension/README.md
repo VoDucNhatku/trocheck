@@ -23,8 +23,8 @@ File tải trên web nằm ở `apps/web/public/downloads/trocheck-collector.zip
 
 ## Nối với web
 
-1. Trên web, vào **Tài khoản → Các kết nối của bạn** và bấm **Kết nối extension trên trình duyệt này**. Tài khoản cần quyền `collector` mới gửi được bài.
-2. Bài đủ chữ và ảnh sẽ tự gửi về kho sau khi lưu. Lỗi mạng sẽ tự thử lại; mã bị từ chối hoặc thiếu quyền sẽ dừng gửi và báo nguyên nhân.
+1. Trên web, vào **Tài khoản → Các kết nối của bạn** và bấm **Kết nối extension trên trình duyệt này**. Tài khoản nào đã đăng nhập cũng gửi được bài; tài khoản không có vai trò `collector` bị giới hạn số bài mới và số ảnh mỗi ngày.
+2. Bài đủ chữ và ảnh sẽ tự gửi về kho sau khi lưu. Lỗi mạng sẽ tự thử lại; mã bị từ chối sẽ dừng gửi và báo nguyên nhân; chạm giới hạn ngày thì phần còn lại nằm trên máy và tự gửi tiếp sau 0 giờ.
 3. Trong **Cài đặt** có thể tắt tự động gửi, ngắt kết nối hoặc dán mã thủ công. Nút **Gửi về kho TrọCheck** vẫn dùng được; lọc và trích xuất vẫn chạy thủ công.
 
 Địa chỉ API mặc định là `https://trocheck-api.onrender.com/api/v1`; khi phát triển có thể đổi sang `http://127.0.0.1:8000/api/v1`.

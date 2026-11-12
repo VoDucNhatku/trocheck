@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "TrọCheck Collector",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Lưu bài từ nhóm và tìm kiếm bài viết Facebook, che số điện thoại, tự động gửi về kho sau khi kết nối. Có thể tắt trong Cài đặt.",
   "permissions": [
     "storage",

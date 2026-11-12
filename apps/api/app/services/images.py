@@ -11,13 +11,15 @@ import time
 from typing import Callable
 
 import httpx
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings
 from app.core.errors import ApiError
+from app.core.ids import seconds_to_vn_midnight, vn_day_start
 from app.models import IdempotencyKey, Post, PostImage, User
+from app.services import users
 
 Uploader = Callable[[bytes, str, Settings], dict]
 
@@ -78,6 +80,13 @@ def add(session: Session, user: User, idempotency_key: str, data: bytes, setting
     count = len(session.scalars(select(PostImage.id).where(PostImage.post_id == post.id)).all())
     if count >= settings.post_image_max_per_post:
         raise ApiError(409, code="image_limit", message="Bài này đã đủ số ảnh cho phép.")
+    if settings.ingest_image_daily_limit and not users.has_role(user, "collector"):
+        today = session.scalar(select(func.count()).select_from(PostImage)
+                               .where(PostImage.uploaded_by == user.id, PostImage.created_at >= vn_day_start()))
+        if today >= settings.ingest_image_daily_limit:
+            raise ApiError(429, code="daily_limit",
+                           message=f"Hôm nay tài khoản này đã gửi đủ {settings.ingest_image_daily_limit} ảnh.",
+                           headers={"Retry-After": str(seconds_to_vn_midnight())})
     stored = (uploader or upload_to_cloudinary)(data, f"{post.id}-{digest[:16]}", settings)
     image = PostImage(post_id=post.id, content_hash=digest, url=stored["secure_url"], public_id=str(stored.get("public_id", "")),
                       width=stored.get("width"), height=stored.get("height"), uploaded_by=user.id)

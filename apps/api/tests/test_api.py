@@ -29,7 +29,7 @@ def test_at15_renter_cannot_review(api):
     assert c.get(f"{V1}/team/reviews").status_code == 403
     r = c.post(f"{V1}/team/reviews/XYZ/decision", json={"action": "approve", "expected_version": 1})
     assert r.status_code == 403 and r.json()["error"]["code"] == "forbidden"
-    assert c.post(f"{V1}/ingest/batch", json=batch(post_payload("k1", CCMN))).status_code == 403
+    assert c.get(f"{V1}/team/posts").status_code == 403
 
 
 def test_at10_same_post_twice_is_one_post(api):

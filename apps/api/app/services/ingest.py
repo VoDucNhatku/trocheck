@@ -13,13 +13,13 @@ from sqlalchemy.orm import Session
 
 from app.core.config import Settings
 from app.core.errors import ApiError, conflict
-from app.core.ids import utcnow
+from app.core.ids import seconds_to_vn_midnight, utcnow, vn_day_start
 from app.core.security import content_hash
 from app.models import IdempotencyKey, Job, Post, PostVersion, User
 from app.pipeline.preprocess import text_hash
 from app.pipeline.privacy import mask_phones
 from app.schemas import IngestPost
-from app.services import jobs
+from app.services import jobs, users
 
 
 @dataclass
@@ -57,6 +57,21 @@ def check_rate(session: Session, user: User, incoming: int, settings: Settings) 
                             .where(IdempotencyKey.user_id == user.id, IdempotencyKey.created_at >= since))
     if recent + incoming > settings.ingest_rate_per_minute:
         raise ApiError(429, message="Gửi quá nhanh, thử lại sau một phút", headers={"Retry-After": "60"})
+
+
+def daily_limit_error(message: str) -> ApiError:
+    return ApiError(429, code="daily_limit", message=message,
+                    headers={"Retry-After": str(seconds_to_vn_midnight())})
+
+
+def daily_left(session: Session, user: User, settings: Settings) -> int | None:
+    """New posts this account may still add today. None: not capped (collector role, or the cap is off)."""
+    if not settings.ingest_daily_limit or users.has_role(user, "collector"):
+        return None
+    used = session.scalar(select(func.count()).select_from(Post)
+                          .where(Post.collector_id == user.id, Post.mode == "collect",
+                                 Post.first_seen_at >= vn_day_start()))
+    return max(0, settings.ingest_daily_limit - used)
 
 
 def ingest_post(session: Session, user: User, post_in: IngestPost, *, mode: str, contributed: bool,
@@ -135,8 +150,17 @@ def ingest_batch(session: Session, user: User, posts: list[dict], settings: Sett
     if len(posts) > settings.ingest_batch_max:
         raise ApiError(422, message=f"Tối đa {settings.ingest_batch_max} bài/lô")
     check_rate(session, user, len(posts), settings)
+    left = daily_left(session, user, settings)
+    if left == 0:
+        raise daily_limit_error(f"Hôm nay tài khoản này đã gửi đủ {settings.ingest_daily_limit} bài mới.")
     results = []
+    deferred = 0
     for raw in posts:
+        if left == 0:
+            # The cap was reached inside this batch. The rest gets no answer, so the sender keeps it
+            # and sends it again tomorrow (an answered post is never sent again).
+            deferred += 1
+            continue
         post_in, reason = validate(raw, settings)
         key = raw.get("idempotency_key") if isinstance(raw, dict) else None
         if post_in is None:
@@ -145,6 +169,8 @@ def ingest_batch(session: Session, user: User, posts: list[dict], settings: Sett
         try:
             with session.begin_nested():
                 results.append(ingest_post(session, user, post_in, mode="collect", contributed=True))
+            if left is not None and results[-1].status == "created":
+                left -= 1
         except ApiError as exc:
             if exc.status != 409:
                 raise
@@ -160,6 +186,8 @@ def ingest_batch(session: Session, user: User, posts: list[dict], settings: Sett
         if r.reason:
             item["reason"] = r.reason
         out.append(item)
+    if deferred:
+        summary["deferred"] = deferred
     return {"results": out, "summary": summary}
 
 

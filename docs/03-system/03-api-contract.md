@@ -60,6 +60,7 @@ Prefix: `/api/v1`. JSON, `snake_case`, thời gian UTC ISO-8601, tiền là số
 | 409 | `conflict` | Cùng idempotency key nhưng nội dung khác; duyệt trên phiên bản cũ |
 | 422 | `validation_error` | Dữ liệu sai schema |
 | 429 | `rate_limited` | Gửi quá nhanh |
+| 429 | `daily_limit` | Tài khoản đã gửi đủ số bài mới hoặc số ảnh trong ngày; `Retry-After` là số giây tới 0 giờ (giờ Việt Nam) |
 | 503 | `unavailable` | DB/LLM tạm không dùng được |
 
 Không trả traceback hay khóa API trong lỗi.
@@ -68,7 +69,7 @@ Không trả traceback hay khóa API trong lỗi.
 
 ### `POST /ingest/batch` — chế độ Thu thập
 
-Vai trò: `collector`. Tối đa 20 bài/lô. Schema từng bài: [ingest-post.schema.json](../../spec/schemas/ingest-post.schema.json).
+Vai trò: mọi tài khoản đã đăng nhập (từ 2026-11-12; trước đó chỉ `collector`). Tối đa 20 bài/lô. Schema từng bài: [ingest-post.schema.json](../../spec/schemas/ingest-post.schema.json).
 
 ```json
 {
@@ -97,6 +98,12 @@ Phản hồi `200`:
 ```
 
 `status` từng bài: `created` · `duplicate` (đã có, không tạo mới) · `rejected` (kèm `reason`: `schema`, `not_masked`, `too_long`, `empty`).
+
+Giới hạn ngày: tài khoản không có vai trò `collector` chỉ được thêm một số bài mới mỗi ngày (bảng §5; bài `duplicate` không tính). Chạm giới hạn giữa một lô thì các bài còn lại không có dòng trong `results` và `summary` có thêm `deferred`; bên gửi giữ các bài đó để gửi lại hôm sau. Đã hết hạn mức từ đầu lô thì trả `429` với mã `daily_limit`.
+
+### `PUT /ingest/images?idempotency_key=…` — ảnh phòng của một bài đã gửi
+
+Vai trò: mọi tài khoản đã đăng nhập; chỉ gắn được ảnh vào bài do chính tài khoản đó gửi. Thân request là file ảnh (JPEG, PNG, WebP). Phản hồi `200`: `{"status": "created" | "duplicate", "url": "…"}`. Lỗi: `404` chưa có bài, `409` bài đã đủ ảnh, `413` ảnh quá lớn, `415` không phải ảnh, `429` `daily_limit`, `503` máy chủ chưa bật lưu ảnh.
 
 ### `POST /analyses` — chế độ Nhận định
 
@@ -171,6 +178,9 @@ Khi `status ≠ ok` thì `median`, `p25`, `p75`, `delta_percent`, `verdict` là 
 | Độ dài `text` | ≤ 20.000 ký tự |
 | Lô thu thập | ≤ 20 bài/request |
 | Tốc độ gửi của một token | ≤ 60 bài/phút |
+| Bài mới mỗi ngày của một tài khoản không có vai trò `collector` | ≤ 200 (`INGEST_DAILY_LIMIT`, 0 = bỏ giới hạn) |
+| Ảnh mỗi ngày của một tài khoản không có vai trò `collector` | ≤ 600 (`INGEST_IMAGE_DAILY_LIMIT`, 0 = bỏ giới hạn) |
+| Lần gọi LLM mỗi ngày của cả hệ thống | ≤ 2.000 (`LLM_DAILY_CALL_LIMIT`, 0 = bỏ giới hạn). Hết hạn mức: bài thu thập cần LLM chờ tới hôm sau, bài phân tích chạy Regex |
 | Phân tích đang chạy cùng lúc của một người | 1 |
 | Lần gọi LLM tối đa cho một bài | 3 (gồm thử lại) |
 

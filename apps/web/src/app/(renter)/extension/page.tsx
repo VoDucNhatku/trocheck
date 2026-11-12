@@ -34,7 +34,7 @@ export default function ExtensionPage() {
     <section className={`${styles.section} ${styles.split}`} aria-labelledby="connect-title">
       <h2 id="connect-title">Kết nối tài khoản</h2>
       <div className={styles.stack}>
-        <p>Kết nối một lần trên trình duyệt đang cài extension. Tài khoản cần có quyền thu dữ liệu (collector); nếu thiếu quyền, extension sẽ giữ bài trên máy và báo cần liên hệ quản trị viên. Tạo mã rồi dán vào Cài đặt vẫn có sẵn để dùng khi cần.</p>
+        <p>Kết nối một lần trên trình duyệt đang cài extension. Tài khoản nào đã đăng nhập cũng gửi được bài. Mỗi tài khoản có giới hạn số bài mới và số ảnh mỗi ngày; phần vượt giới hạn nằm lại trên máy và tự gửi tiếp vào hôm sau. Tạo mã rồi dán vào Cài đặt vẫn có sẵn để dùng khi cần.</p>
         <Link className={styles.primary} href="/tai-khoan">Kết nối extension</Link>
       </div>
     </section>

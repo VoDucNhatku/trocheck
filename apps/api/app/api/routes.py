@@ -82,16 +82,16 @@ def who_am_i(user: User = Depends(current_user)):
 # --- extension -> API ----------------------------------------------------------------
 
 @router.post("/ingest/batch", tags=["extension"])
-def ingest_batch(body: IngestBatch, user: User = Depends(require_roles("collector")),
+def ingest_batch(body: IngestBatch, user: User = Depends(current_user),
                  session: Session = Depends(get_session), settings: Settings = Depends(settings_dep)):
     return ingest.ingest_batch(session, user, body.posts, settings)
 
 
 @router.put("/ingest/images", tags=["extension"])
 async def ingest_image(request: Request, idempotency_key: str = Query(min_length=1, max_length=200),
-                       user: User = Depends(require_roles("collector")), session: Session = Depends(get_session),
+                       user: User = Depends(current_user), session: Session = Depends(get_session),
                        settings: Settings = Depends(settings_dep)):
-    """One room photo for a post already sent by this collector; the body is the raw image file."""
+    """One room photo for a post already sent by this account; the body is the raw image file."""
     length = request.headers.get("content-length")
     if length and length.isdigit() and int(length) > settings.post_image_max_bytes:
         raise ApiError(413, code="image_too_large", message="Ảnh lớn hơn giới hạn cho phép.")

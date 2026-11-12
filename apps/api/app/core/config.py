@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     max_text_length: int = 20_000
     ingest_batch_max: int = 20
     ingest_rate_per_minute: int = 60
+    # Accounts without the collector role: new posts and photos taken per day (Vietnam time). 0 = no cap.
+    ingest_daily_limit: int = Field(default=200, ge=0)
+    ingest_image_daily_limit: int = Field(default=600, ge=0)
     max_running_analyses_per_user: int = 1
     register_rate_limit: int = Field(default=10, ge=1, le=1000)
     register_window_seconds: int = Field(default=600, ge=1, le=86400)
@@ -51,6 +54,8 @@ class Settings(BaseSettings):
     gemini_api_key: str = ""
     gemini_model_id: str = ""
     llm_max_attempts: int = 3
+    # Gemini calls the worker may make per day (Vietnam time), all accounts together. 0 = no cap.
+    llm_daily_call_limit: int = Field(default=2000, ge=0)
     llm_timeout_seconds: float = 45
     llm_temperature: float = 0.0
     job_max_attempts: int = 5

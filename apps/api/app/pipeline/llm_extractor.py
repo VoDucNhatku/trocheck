@@ -35,6 +35,10 @@ class LlmTransientError(Exception):
         self.retry_after = retry_after
 
 
+class LlmBudgetExceeded(Exception):
+    """Today's call budget is used up. Not caught by extract(): the worker puts the job off until tomorrow."""
+
+
 class LlmFatalError(Exception):
     def __init__(self, code: str):
         super().__init__(code)
