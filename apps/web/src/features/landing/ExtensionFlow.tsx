@@ -26,9 +26,9 @@ const STEPS = [
     ['Diện tích', '30 m²'],
     ['Thông tin thêm', 'Có gác, WC riêng, điện 3,5k/số, nước 100k/người/tháng, cọc 1 tháng'],
   ] },
-  { id: 'gui', label: 'Gửi về kho', title: 'Chỉ gửi khi bạn bấm', rows: [
-    ['Có gửi', 'Chữ bài đã che số, link bài, tên nhóm'],
-    ['Không gửi', 'Ảnh, tên người đăng'],
+  { id: 'gui', label: 'Gửi về kho', title: 'Tự gửi sau khi kết nối', rows: [
+    ['Có gửi', 'Chữ bài đã che số, link bài, tên nhóm, ảnh phòng'],
+    ['Không gửi', 'Tên người đăng, bình luận'],
     ['Kết quả', 'Bài vào kho TrọCheck để nhóm duyệt'],
   ] },
 ] as const;
@@ -83,7 +83,7 @@ export function ExtensionSection() {
         <div>
           <p className="eyebrow">Extension Chrome</p>
           <h2 className={styles.title}>Lưu bài trọ ngay khi lướt Facebook.</h2>
-          <p className={styles.lead}>Cuộn nhóm Facebook như bình thường. Extension lưu bài trên máy bạn, che số điện thoại, rồi gửi về kho TrọCheck khi bạn bấm.</p>
+          <p className={styles.lead}>Cuộn nhóm Facebook như bình thường. Extension lưu bài trên máy bạn, che số điện thoại, rồi tự gửi về kho TrọCheck sau khi bạn kết nối tài khoản.</p>
         </div>
         <div className={styles.actions}><a className="btn btn-primary" href="/downloads/trocheck-collector.zip" download>Tải extension</a><Link className="btn" href="/extension">Xem cách cài</Link></div>
       </motion.div>

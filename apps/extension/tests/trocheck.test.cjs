@@ -84,8 +84,8 @@ test('a rejected token stops sending and leaves posts unsent', async () => {
   const storage = { readUnsent: async () => [record('1')], markSent: async items => marked.push(...items) };
   await assert.rejects(
     TroCheck.sendUnsent({ storage, apiUrl: '', token: 'bad', version: '0.2.0', fetcher: async () => ({ ok: false, status: 401 }) }),
-    /Token sai/,
+    /Mã kết nối sai.*Kết nối lại/,
   );
   assert.equal(marked.length, 0);
-  await assert.rejects(TroCheck.sendUnsent({ storage, apiUrl: '', token: '', version: '0.2.0' }), /Chưa có token/);
+  await assert.rejects(TroCheck.sendUnsent({ storage, apiUrl: '', token: '', version: '0.2.0' }), /Chưa kết nối/);
 });

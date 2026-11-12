@@ -1,6 +1,7 @@
 "use strict";
 importScripts("privacy.js");
 importScripts("storage.js");
+importScripts("sync.js");
 
 const IMAGE_ALARM = "download-pending-images";
 const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
@@ -38,13 +39,16 @@ async function downloadPendingImages() {
 }
 
 function startImageQueue() {
-  downloadPendingImages().catch(error => console.error("[TrọCheck Collector] Image queue failed", error.message));
+  downloadPendingImages().then(scheduleSend).catch(error => console.error("[TrọCheck Collector] Image queue failed", error.message));
 }
 
 // Recreate the alarm whenever the worker starts, including after a browser restart.
 if (chrome.alarms) {
   chrome.alarms.create(IMAGE_ALARM, { periodInMinutes: 1 });
-  chrome.alarms.onAlarm.addListener(alarm => { if (alarm.name === IMAGE_ALARM) startImageQueue(); });
+  chrome.alarms.onAlarm.addListener(alarm => {
+    if (alarm.name === IMAGE_ALARM) { startImageQueue(); sendStored().catch(() => {}); }
+    if (alarm.name === SEND_ALARM) sendStored().catch(() => {});
+  });
   chrome.runtime.onStartup?.addListener(startImageQueue);
   chrome.runtime.onInstalled?.addListener(startImageQueue);
   startImageQueue();
@@ -69,11 +73,16 @@ function validatePost(post) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (sender.id !== chrome.runtime.id || message?.type !== "SAVE_RAW_POSTS") return;
+  if (sender.id !== chrome.runtime.id) return;
+  if (message?.type !== "SAVE_RAW_POSTS") return controlMessage(message, sender, sendResponse);
   (async () => {
     const source = new URL(sender.url || "");
-    if (!sender.tab || source.origin !== "https://www.facebook.com" ||
-        !/^\/(?:groups|search)\//u.test(source.pathname)) throw new Error("Invalid collector sender.");
+    if (!sender.tab || source.origin !== "https://www.facebook.com") throw new Error("Invalid collector sender.");
+    if (message.pageUrl && !supportedUrl(message.pageUrl)) throw new Error("Invalid collector page.");
+    // sender.url keeps the address the document was loaded with. After Facebook's client-side
+    // navigation only the tab URL is current, so that is the one that must be a supported area.
+    const currentTab = await chrome.tabs?.get?.(sender.tab.id);
+    if (!supportedUrl(currentTab?.url || sender.tab.url || sender.url)) throw new Error("Trang này không được phép lưu. Mở nhóm hoặc tìm kiếm bài viết Facebook.");
     if (!Array.isArray(message.posts) || !message.posts.length) throw new Error("Empty or invalid post batch.");
     const generation = await TroStorage.getGeneration();
     const now = new Date().toISOString();
@@ -86,11 +95,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       group_id: typeof post.groupId === "string" && /^[A-Za-z0-9._-]{1,100}$/u.test(post.groupId) ? post.groupId : null,
     }));
     const saved = records.length ? await TroStorage.insertBatch(records, generation) : 0;
-    if (saved && chrome.alarms) startImageQueue();
-    return { ok: true, saved, partial: posts.length - records.length, duplicates: records.length - saved };
+    if (saved) {
+      await tabCount(sender.tab.id, saved);
+      if (chrome.alarms) startImageQueue();
+      await scheduleSend();
+    }
+    await updateBadge(sender.tab.id, currentTab?.url || sender.url);
+    return { ok: true, saved, partial: posts.length - records.length, duplicates: records.length - saved, note: await sendNote() };
   })().then(sendResponse, error => {
     console.error("[TrọCheck Collector] Storage failed", error);
-    sendResponse({ ok: false, error: error.message || "Storage failed." });
+    sendResponse({ ok: false, error: `Không lưu được bài trên máy: ${error.message || "bộ nhớ không trả lời"}. Mở bảng dữ liệu để kiểm tra dung lượng và xóa bài cũ nếu bộ nhớ đầy.` });
   });
   return true;
 });

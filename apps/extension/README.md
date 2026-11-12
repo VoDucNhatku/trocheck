@@ -5,8 +5,8 @@ Tiện ích Chrome (Manifest V3) lưu các bài cho thuê trọ đã hiện trê
 ## Cài
 
 1. Trên web, vào trang **Extension** và bấm **Tải extension**, rồi giải nén file.
-2. Mở `chrome://extensions`, bật Developer mode, chọn **Load unpacked** và chọn thư mục `trocheck-collector`.
-3. Mở lại tab nhóm Facebook hoặc trang tìm kiếm rồi cuộn.
+2. Mở `chrome://extensions` (Chrome) hoặc `edge://extensions` (Microsoft Edge), bật Developer mode, chọn **Load unpacked** và chọn thư mục `trocheck-collector`.
+3. Vào trang **Tài khoản**, bấm **Kết nối extension trên trình duyệt này**, rồi mở nhóm Facebook hoặc tìm kiếm bài viết và cuộn. Bảng tin, trang cá nhân, Pages, Marketplace và Messenger không được lưu.
 
 Sau khi sửa code: tải lại extension rồi tải lại tab Facebook. Khi phát triển có thể nạp thẳng thư mục `extension/`.
 
@@ -19,13 +19,13 @@ File tải trên web nằm ở `apps/web/public/downloads/trocheck-collector.zip
 | Lưu bài | Đọc chữ, link và ảnh của bài đã hiện, tự mở "Xem thêm". Che số điện thoại thành `[SĐT]` trước khi lưu | IndexedDB trên máy |
 | Lọc | Phân loại bài cho thuê, có giá, số căn | Chữ đã che gửi tới TypeSafe, cần API key riêng |
 | Trích xuất | Tách loại phòng, địa chỉ, giá, diện tích | Chữ đã che gửi tới Ollama Cloud, cần API key riêng |
-| Gửi về kho | `POST /ingest/batch` tới API TrọCheck, tối đa 20 bài/lô, bài đã gửi không gửi lại | Chỉ gửi khi người dùng bấm. Không gửi ảnh và tên người đăng |
+| Gửi về kho | `POST /ingest/batch` tới API TrọCheck, tối đa 20 bài/lô, ảnh qua `PUT /ingest/images` | Tự động sau khi kết nối; có thể tắt trong Cài đặt. Chữ đã che số điện thoại, không gửi tên người đăng riêng |
 
 ## Nối với web
 
-1. Trên web, vào **Tài khoản → Các kết nối của bạn** và tạo mã. Tài khoản cần quyền `collector` mới gửi được bài.
-2. Trong extension, mở **Bảng dữ liệu → Cài đặt → Kết nối TrọCheck**, dán mã rồi bấm **Lưu và kiểm tra**.
-3. Ở **Tất cả bài**, bấm **Gửi về kho TrọCheck**. Bài xuất hiện trong trang **Kho dữ liệu** của web.
+1. Trên web, vào **Tài khoản → Các kết nối của bạn** và bấm **Kết nối extension trên trình duyệt này**. Tài khoản cần quyền `collector` mới gửi được bài.
+2. Bài đủ chữ và ảnh sẽ tự gửi về kho sau khi lưu. Lỗi mạng sẽ tự thử lại; mã bị từ chối hoặc thiếu quyền sẽ dừng gửi và báo nguyên nhân.
+3. Trong **Cài đặt** có thể tắt tự động gửi, ngắt kết nối hoặc dán mã thủ công. Nút **Gửi về kho TrọCheck** vẫn dùng được; lọc và trích xuất vẫn chạy thủ công.
 
 Địa chỉ API mặc định là `https://trocheck-api.onrender.com/api/v1`; khi phát triển có thể đổi sang `http://127.0.0.1:8000/api/v1`.
 

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "TrọCheck Collector",
-  "version": "0.2.2",
-  "description": "Lưu bài cho thuê trọ từ nhóm Facebook trên máy bạn, che số điện thoại và gửi về kho TrọCheck khi bạn bấm.",
+  "version": "0.3.0",
+  "description": "Lưu bài từ nhóm và tìm kiếm bài viết Facebook, che số điện thoại, tự động gửi về kho sau khi kết nối. Có thể tắt trong Cài đặt.",
   "permissions": [
     "storage",
     "alarms"
@@ -26,14 +26,18 @@
   "content_scripts": [
     {
       "matches": [
-        "https://www.facebook.com/groups/*",
-        "https://www.facebook.com/search/*"
+        "https://www.facebook.com/*"
       ],
       "js": [
         "privacy.js",
         "collector.js",
         "content-script.js"
       ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://trocheck.vercel.app/*", "http://localhost:3000/*", "http://127.0.0.1:3000/*"],
+      "js": ["web-connect.js"],
       "run_at": "document_idle"
     }
   ],

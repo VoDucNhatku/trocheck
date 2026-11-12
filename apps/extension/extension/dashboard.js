@@ -325,9 +325,12 @@ async function updateSendCount() {
 }
 
 async function loadConnection() {
-  const saved = await chrome.storage.local.get(["trocheckApiUrl", "trocheckToken"]);
+  const saved = await chrome.storage.local.get(["trocheckApiUrl", "trocheckToken", "trocheckAutoSend", "trocheckAccount", "trocheckSync"]);
   document.querySelector("#trocheck-api").value = saved.trocheckApiUrl || TroCheck.DEFAULT_API_URL;
   document.querySelector("#trocheck-token").placeholder = saved.trocheckToken ? "Đã lưu token; để trống để giữ nguyên" : "Dán token từ trang Tài khoản";
+  document.querySelector("#auto-send").checked = saved.trocheckAutoSend !== false;
+  document.querySelector("#trocheck-status").textContent = saved.trocheckToken
+    ? `Đã kết nối: ${saved.trocheckAccount || "tài khoản TrọCheck"}. ${saved.trocheckSync?.error || saved.trocheckSync?.lastResult || ""}` : "Chưa kết nối. Mở trang Tài khoản để kết nối một lần.";
   return saved;
 }
 
@@ -339,11 +342,11 @@ document.querySelector("#trocheck-form").addEventListener("submit", async event 
     const saved = await chrome.storage.local.get(["trocheckToken"]);
     const apiUrl = TroCheck.normalizeApiUrl(document.querySelector("#trocheck-api").value);
     const token = document.querySelector("#trocheck-token").value.trim() || saved.trocheckToken;
-    const user = await TroCheck.whoAmI({ apiUrl, token });
-    await chrome.storage.local.set({ trocheckApiUrl: apiUrl, trocheckToken: token });
+    const result = await chrome.runtime.sendMessage({ type: "CONNECT_MANUAL", apiUrl, token });
+    if (!result?.ok) throw new Error(result?.error || "Không kiểm tra được kết nối.");
     document.querySelector("#trocheck-token").value = "";
     await loadConnection();
-    label.textContent = `Đã kết nối: ${user.username}`;
+    label.textContent = `Đã kết nối: ${result.account}`;
   } catch (error) { label.textContent = error.message; }
 });
 
@@ -353,16 +356,25 @@ document.querySelector("#send-trocheck").addEventListener("click", async () => {
   button.disabled = true;
   label.textContent = "Đang gửi…";
   try {
-    const { trocheckApiUrl, trocheckToken } = await chrome.storage.local.get(["trocheckApiUrl", "trocheckToken"]);
-    const result = await TroCheck.sendUnsent({ storage: TroStorage, apiUrl: trocheckApiUrl || "", token: trocheckToken,
-      version: chrome.runtime.getManifest().version,
-      onProgress: progress => { label.textContent = `Đang gửi: ${progress.created + progress.duplicate + progress.rejected}/${progress.total} bài…`; } });
+    const answer = await chrome.runtime.sendMessage({ type: "SEND_NOW" });
+    if (!answer?.ok) throw new Error(answer?.error || "Không gửi được bài. Kiểm tra kết nối trong Cài đặt.");
+    const result = answer.result;
     const photos = result.images?.total ? ` Ảnh: ${result.images.uploaded} ảnh mới, ${result.images.duplicate} ảnh trùng, ${result.images.skipped} ảnh bỏ qua.` : "";
     label.textContent = (result.total
       ? `Đã gửi ${result.total} bài: ${result.created} bài mới, ${result.duplicate} bài trùng, ${result.rejected} bài bị từ chối.`
       : "Không có bài nào cần gửi.") + photos;
   } catch (error) { label.textContent = error.message; }
   finally { button.disabled = false; updateSendCount(); }
+});
+
+document.querySelector("#auto-send").addEventListener("change", async event => {
+  const answer = await chrome.runtime.sendMessage({ type: "AUTO_SEND", enabled: event.target.checked });
+  document.querySelector("#trocheck-status").textContent = answer?.ok
+    ? (event.target.checked ? "Đã bật tự động gửi." : "Đã tắt tự động gửi. Bài vẫn được lưu trên máy.") : answer?.error;
+});
+document.querySelector("#disconnect").addEventListener("click", async () => {
+  await chrome.runtime.sendMessage({ type: "DISCONNECT" });
+  await loadConnection();
 });
 
 if (globalThis.chrome?.storage?.local) { updateSendCount(); loadConnection().catch(() => {}); }
