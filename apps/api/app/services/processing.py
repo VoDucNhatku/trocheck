@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.core.config import Settings
 from app.core.ids import vn_day_start
-from app.models import Cluster, ExtractionRun, Job, Listing, LlmCache, Post, PostVersion
+from app.models import BotReview, Cluster, ExtractionRun, Job, Listing, LlmCache, Post, PostVersion
 from app.pipeline import dedup
 from app.pipeline.engine import PipelineResult, run_pipeline
 from app.pipeline.llm_extractor import LlmClient, prompt_version
@@ -23,9 +23,10 @@ def cache_key(text_hash: str, model_id: str) -> str:
 
 
 def llm_calls_today(session: Session) -> int:
-    """Gemini calls recorded on today's extraction runs (Vietnam day), retries included."""
-    return session.scalar(select(func.coalesce(func.sum(ExtractionRun.llm_calls), 0))
-                          .where(ExtractionRun.created_at >= vn_day_start()))
+    """All recorded Gemini calls today (Vietnam day), including shadow reviews and retries."""
+    return sum(session.scalar(select(func.coalesce(func.sum(model.llm_calls), 0))
+                              .where(model.created_at >= vn_day_start()))
+               for model in (ExtractionRun, BotReview))
 
 
 def run_for_version(session: Session, version: PostVersion, *, llm: LlmClient | None, settings: Settings,
@@ -89,6 +90,9 @@ def store_run(session: Session, post: Post, version: PostVersion, result: Pipeli
             assign_cluster(session, listing, post, version, settings)
         else:
             _touch_cluster(session, listing.cluster_id)
+    from app.services.bot_reviews import enqueue_backlog
+    if post.current_version_id == version.id:
+        enqueue_backlog(session, settings, post_version_id=version.id)
     return run
 
 

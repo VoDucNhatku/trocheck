@@ -140,6 +140,13 @@ def run_pipeline(text: str, *, mode: str = "production", llm: LlmClient | None =
         total = len(listings)
         for listing, meta in zip(listings, metas):
             _apply_context_rules(listing, post_type=post_type, listing_count=total, text=text)
+            loc = listing["location"]
+            if places.outside_provinces(text):
+                loc.update(ward_code=None, ward_name=None, resolution="unresolved", decision="needs_review")
+                meta.review_reasons.append("outside_hcm_province")
+            if loc.get("ward_code") and places.unconfirmed_districts(loc["ward_code"], text):
+                loc.update(ward_code=None, ward_name=None, resolution="unresolved", decision="needs_review")
+                meta.review_reasons.append("former_district_unverified")
             finalize_status(listing, meta, total)
 
     return PipelineResult(

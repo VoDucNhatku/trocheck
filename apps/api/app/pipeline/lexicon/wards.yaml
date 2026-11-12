@@ -1,10 +1,2212 @@
-# Wards covered by the team (new 2-level administrative system, from 01/07/2025).
-# Fill in when the 3-5 wards are chosen (lo-trinh M1). `code` must come from an official
-# source (e.g. the admin-units library cited in the proposal, ref. [21]); never invent one.
-#
-# - code: "<official ward code>"
-#   name: "Phường <Tên>"
-#   aliases: ["<Tên>", "P. <Tên>"]
-#   old_names: ["<tên phường/xã cũ>"]   # optional, for posts that still use old names
-version: "0.0.0"
-wards: []
+# Source: Decision 19/2025/QĐ-TTg, Appendix II, section 79.
+# Official Gazette 921 + 922, 2025-07-18; National Statistics Office directory service.
+# Read 2026-11-13: 168 units (113 phường, 54 xã, 1 đặc khu); official 5-digit codes.
+# old_names records source relations, including partial territories; it is not an alias list.
+version: "1.0.0"
+wards:
+- code: '25747'
+  name: Phường Thủ Dầu Một
+  aliases:
+  - P. Thủ Dầu Một
+  - P.Thủ Dầu Một
+  - Phường Phú Cường
+  - P. Phú Cường
+  - P.Phú Cường
+  - Phường Chánh Nghĩa
+  - P. Chánh Nghĩa
+  - P.Chánh Nghĩa
+  old_names:
+  - Phường Phú Cường
+  - Phường Phú Thọ
+  - Phường Chánh Nghĩa
+  - Phường Hiệp Thành (thành phố Thủ Dầu Một)
+  - Phường Chánh Mỹ
+- code: '25750'
+  name: Phường Phú Lợi
+  aliases:
+  - P. Phú Lợi
+  - P.Phú Lợi
+  - Phường Phú Hòa
+  - P. Phú Hòa
+  - P.Phú Hòa
+  old_names:
+  - Phường Phú Hòa
+  - Phường Phú Lợi
+  - Phường Hiệp Thành (thành phố Thủ Dầu Một)
+- code: '25760'
+  name: Phường Bình Dương
+  aliases:
+  - P. Bình Dương
+  - P.Bình Dương
+  - Phường Phú Mỹ (thành phố Thủ Dầu Một)
+  - P. Phú Mỹ (thành phố Thủ Dầu Một)
+  - P.Phú Mỹ (thành phố Thủ Dầu Một)
+  - Phường Phú Tân
+  - P. Phú Tân
+  - P.Phú Tân
+  - Phường Phú Chánh
+  - P. Phú Chánh
+  - P.Phú Chánh
+  old_names:
+  - Phường Phú Mỹ (thành phố Thủ Dầu Một)
+  - Phường Hòa Phú
+  - Phường Phú Tân
+  - Phường Phú Chánh
+- code: '25768'
+  name: Phường Phú An
+  aliases:
+  - P. Phú An
+  - P.Phú An
+  - Phường Tân An
+  - P. Tân An
+  - P.Tân An
+  - Xã Phú An
+  - X. Phú An
+  old_names:
+  - Phường Tân An
+  - Xã Phú An
+  - Phường Hiệp An
+- code: '25771'
+  name: Phường Chánh Hiệp
+  aliases:
+  - P. Chánh Hiệp
+  - P.Chánh Hiệp
+  - Phường Định Hòa
+  - P. Định Hòa
+  - P.Định Hòa
+  - Phường Tương Bình Hiệp
+  - P. Tương Bình Hiệp
+  - P.Tương Bình Hiệp
+  old_names:
+  - Phường Định Hòa
+  - Phường Tương Bình Hiệp
+  - Phường Hiệp An
+  - Phường Chánh Mỹ
+- code: '25777'
+  name: Xã Dầu Tiếng
+  aliases:
+  - X. Dầu Tiếng
+  - Thị trấn Dầu Tiếng
+  - Xã Định An
+  - X. Định An
+  - Xã Định Thành
+  - X. Định Thành
+  old_names:
+  - Thị trấn Dầu Tiếng
+  - Xã Định An
+  - Xã Định Thành
+  - Xã Định Hiệp
+- code: '25780'
+  name: Xã Minh Thạnh
+  aliases:
+  - X. Minh Thạnh
+  - Xã Minh Hòa
+  - X. Minh Hòa
+  old_names:
+  - Xã Minh Hòa
+  - Xã Minh Tân
+  - Xã Minh Thạnh
+- code: '25792'
+  name: Xã Long Hòa
+  aliases:
+  - X. Long Hòa
+  - Xã Long Tân (huyện Dầu Tiếng)
+  - X. Long Tân (huyện Dầu Tiếng)
+  - Xã Long Hòa (huyện Dầu Tiếng)
+  - X. Long Hòa (huyện Dầu Tiếng)
+  old_names:
+  - Xã Long Tân (huyện Dầu Tiếng)
+  - Xã Long Hòa (huyện Dầu Tiếng)
+  - Xã Minh Tân
+  - Xã Minh Thạnh
+- code: '25807'
+  name: Xã Thanh An
+  aliases: []
+  old_names:
+  - Xã Thanh An
+  - Xã Định Hiệp
+  - Xã Thanh Tuyền
+  - Xã An Lập
+- code: '25813'
+  name: Phường Bến Cát
+  aliases:
+  - P. Bến Cát
+  - P.Bến Cát
+  - Xã Tân Hưng (huyện Bàu Bàng)
+  - X. Tân Hưng (huyện Bàu Bàng)
+  - Xã Lai Hưng
+  - X. Lai Hưng
+  old_names:
+  - Xã Tân Hưng (huyện Bàu Bàng)
+  - Xã Lai Hưng
+  - Phường Mỹ Phước
+- code: '25819'
+  name: Xã Trừ Văn Thố
+  aliases:
+  - X. Trừ Văn Thố
+  - Xã Cây Trường II
+  - X. Cây Trường II
+  old_names:
+  - Xã Trừ Văn Thố
+  - Xã Cây Trường II
+  - Thị trấn Lai Uyên
+- code: '25822'
+  name: Xã Bàu Bàng
+  aliases:
+  - X. Bàu Bàng
+  old_names:
+  - Thị trấn Lai Uyên
+- code: '25837'
+  name: Phường Chánh Phú Hòa
+  aliases:
+  - P. Chánh Phú Hòa
+  - P.Chánh Phú Hòa
+  - Xã Hưng Hòa
+  - X. Hưng Hòa
+  old_names:
+  - Phường Chánh Phú Hòa
+  - Xã Hưng Hòa
+- code: '25840'
+  name: Phường Long Nguyên
+  aliases:
+  - P. Long Nguyên
+  - P.Long Nguyên
+  - Phường An Điền
+  - P. An Điền
+  - P.An Điền
+  - Xã Long Nguyên
+  - X. Long Nguyên
+  old_names:
+  - Phường An Điền
+  - Xã Long Nguyên
+  - Phường Mỹ Phước
+- code: '25843'
+  name: Phường Tây Nam
+  aliases:
+  - P. Tây Nam
+  - P.Tây Nam
+  - Phường An Tây
+  - P. An Tây
+  - P.An Tây
+  old_names:
+  - Phường An Tây
+  - Xã Thanh Tuyền
+  - Xã An Lập
+- code: '25846'
+  name: Phường Thới Hòa
+  aliases:
+  - P. Thới Hòa
+  - P.Thới Hòa
+- code: '25849'
+  name: Phường Hòa Lợi
+  aliases:
+  - P. Hòa Lợi
+  - P.Hòa Lợi
+  - Phường Tân Định (thành phố Bến Cát)
+  - P. Tân Định (thành phố Bến Cát)
+  - P.Tân Định (thành phố Bến Cát)
+  old_names:
+  - Phường Tân Định (thành phố Bến Cát)
+  - Phường Hòa Lợi
+- code: '25858'
+  name: Xã Phú Giáo
+  aliases:
+  - X. Phú Giáo
+  - Thị trấn Phước Vĩnh
+  old_names:
+  - Thị trấn Phước Vĩnh
+  - Xã An Bình
+  - Xã Tam Lập
+- code: '25864'
+  name: Xã Phước Thành
+  aliases:
+  - X. Phước Thành
+  - Xã Tân Hiệp (huyện Phú Giáo)
+  - X. Tân Hiệp (huyện Phú Giáo)
+  - Xã An Thái
+  - X. An Thái
+  - Xã Phước Sang
+  - X. Phước Sang
+  old_names:
+  - Xã Tân Hiệp (huyện Phú Giáo)
+  - Xã An Thái
+  - Xã Phước Sang
+- code: '25867'
+  name: Xã An Long
+  aliases:
+  - X. An Long
+  - Xã An Linh
+  - X. An Linh
+  - Xã Tân Long
+  - X. Tân Long
+  old_names:
+  - Xã An Linh
+  - Xã Tân Long
+  - Xã An Long
+- code: '25882'
+  name: Xã Phước Hòa
+  aliases:
+  - X. Phước Hòa
+  - Xã Vĩnh Hòa
+  - X. Vĩnh Hòa
+  old_names:
+  - Xã Vĩnh Hòa
+  - Xã Phước Hòa
+  - Xã Tam Lập
+- code: '25888'
+  name: Phường Tân Uyên
+  aliases:
+  - P. Tân Uyên
+  - P.Tân Uyên
+  - Phường Uyên Hưng
+  - P. Uyên Hưng
+  - P.Uyên Hưng
+  - Xã Bạch Đằng
+  - X. Bạch Đằng
+  - Xã Tân Lập
+  - X. Tân Lập
+  old_names:
+  - Phường Uyên Hưng
+  - Xã Bạch Đằng
+  - Xã Tân Lập
+  - Xã Tân Mỹ
+- code: '25891'
+  name: Phường Tân Khánh
+  aliases:
+  - P. Tân Khánh
+  - P.Tân Khánh
+  - Phường Thạnh Phước
+  - P. Thạnh Phước
+  - P.Thạnh Phước
+  - Phường Tân Phước Khánh
+  - P. Tân Phước Khánh
+  - P.Tân Phước Khánh
+  - Phường Tân Vĩnh Hiệp
+  - P. Tân Vĩnh Hiệp
+  - P.Tân Vĩnh Hiệp
+  - Xã Thạnh Hội
+  - X. Thạnh Hội
+  old_names:
+  - Phường Thạnh Phước
+  - Phường Tân Phước Khánh
+  - Phường Tân Vĩnh Hiệp
+  - Xã Thạnh Hội
+  - Phường Thái Hòa
+- code: '25906'
+  name: Xã Bắc Tân Uyên
+  aliases:
+  - X. Bắc Tân Uyên
+  - Thị trấn Tân Thành
+  - Xã Đất Cuốc
+  - X. Đất Cuốc
+  old_names:
+  - Thị trấn Tân Thành
+  - Xã Đất Cuốc
+  - Xã Tân Định
+- code: '25909'
+  name: Xã Thường Tân
+  aliases:
+  - X. Thường Tân
+  - Xã Lạc An
+  - X. Lạc An
+  - Xã Hiếu Liêm
+  - X. Hiếu Liêm
+  old_names:
+  - Xã Lạc An
+  - Xã Hiếu Liêm
+  - Xã Thường Tân
+  - Xã Tân Mỹ
+- code: '25912'
+  name: Phường Vĩnh Tân
+  aliases:
+  - P. Vĩnh Tân
+  - P.Vĩnh Tân
+  - Thị trấn Tân Bình
+  old_names:
+  - Phường Vĩnh Tân
+  - Thị trấn Tân Bình
+- code: '25915'
+  name: Phường Bình Cơ
+  aliases:
+  - P. Bình Cơ
+  - P.Bình Cơ
+  - Xã Bình Mỹ (huyện Bắc Tân Uyên)
+  - X. Bình Mỹ (huyện Bắc Tân Uyên)
+  - Phường Hội Nghĩa
+  - P. Hội Nghĩa
+  - P.Hội Nghĩa
+  old_names:
+  - Xã Bình Mỹ (huyện Bắc Tân Uyên)
+  - Phường Hội Nghĩa
+- code: '25920'
+  name: Phường Tân Hiệp
+  aliases:
+  - P. Tân Hiệp
+  - P.Tân Hiệp
+  - Phường Khánh Bình
+  - P. Khánh Bình
+  - P.Khánh Bình
+  old_names:
+  - Phường Khánh Bình
+  - Phường Tân Hiệp
+- code: '25942'
+  name: Phường Dĩ An
+  aliases:
+  - P. Dĩ An
+  - P.Dĩ An
+  old_names:
+  - Phường An Bình
+  - Phường Dĩ An
+  - Phường Tân Đông Hiệp
+- code: '25945'
+  name: Phường Tân Đông Hiệp
+  aliases:
+  - P. Tân Đông Hiệp
+  - P.Tân Đông Hiệp
+  old_names:
+  - Phường Tân Bình
+  - Phường Thái Hòa
+  - Phường Tân Đông Hiệp
+- code: '25951'
+  name: Phường Đông Hòa
+  aliases:
+  - P. Đông Hòa
+  - P.Đông Hòa
+  - Phường Bình An
+  - P. Bình An
+  - P.Bình An
+  - Phường Bình Thắng
+  - P. Bình Thắng
+  - P.Bình Thắng
+  old_names:
+  - Phường Bình An
+  - Phường Bình Thắng
+  - Phường Đông Hòa
+- code: '25966'
+  name: Phường Lái Thiêu
+  aliases:
+  - P. Lái Thiêu
+  - P.Lái Thiêu
+  - Phường Bình Nhâm
+  - P. Bình Nhâm
+  - P.Bình Nhâm
+  old_names:
+  - Phường Bình Nhâm
+  - Phường Lái Thiêu
+  - Phường Vĩnh Phú
+- code: '25969'
+  name: Phường Thuận Giao
+  aliases:
+  - P. Thuận Giao
+  - P.Thuận Giao
+  old_names:
+  - Phường Thuận Giao
+  - Phường Bình Chuẩn
+- code: '25975'
+  name: Phường An Phú
+  aliases:
+  - P. An Phú
+  - P.An Phú
+  - Phường An Phú (thành phố Thuận An)
+  - P. An Phú (thành phố Thuận An)
+  - P.An Phú (thành phố Thuận An)
+  old_names:
+  - Phường An Phú (thành phố Thuận An)
+  - Phường Bình Chuẩn
+- code: '25978'
+  name: Phường Thuận An
+  aliases:
+  - P. Thuận An
+  - P.Thuận An
+  - Phường Hưng Định
+  - P. Hưng Định
+  - P.Hưng Định
+  - Phường An Thạnh
+  - P. An Thạnh
+  - P.An Thạnh
+  - Xã An Sơn
+  - X. An Sơn
+  old_names:
+  - Phường Hưng Định
+  - Phường An Thạnh
+  - Xã An Sơn
+- code: '25987'
+  name: Phường Bình Hòa
+  aliases:
+  - P. Bình Hòa
+  - P.Bình Hòa
+  old_names:
+  - Phường Bình Hòa
+  - Phường Vĩnh Phú
+- code: '26506'
+  name: Phường Vũng Tàu
+  aliases:
+  - P. Vũng Tàu
+  - P.Vũng Tàu
+  - Phường 1 (thành phố Vũng Tàu)
+  - P. 1 (thành phố Vũng Tàu)
+  - P.1 (thành phố Vũng Tàu)
+  - Phường 2 (thành phố Vũng Tàu)
+  - P. 2 (thành phố Vũng Tàu)
+  - P.2 (thành phố Vũng Tàu)
+  - Phường 3 (thành phố Vũng Tàu)
+  - P. 3 (thành phố Vũng Tàu)
+  - P.3 (thành phố Vũng Tàu)
+  - Phường 4 (thành phố Vũng Tàu)
+  - P. 4 (thành phố Vũng Tàu)
+  - P.4 (thành phố Vũng Tàu)
+  - Phường 5 (thành phố Vũng Tàu)
+  - P. 5 (thành phố Vũng Tàu)
+  - P.5 (thành phố Vũng Tàu)
+  - Phường Thắng Nhì
+  - P. Thắng Nhì
+  - P.Thắng Nhì
+  - Phường Thắng Tam
+  - P. Thắng Tam
+  - P.Thắng Tam
+  old_names:
+  - Phường 1 (thành phố Vũng Tàu)
+  - Phường 2 (thành phố Vũng Tàu)
+  - Phường 3 (thành phố Vũng Tàu)
+  - Phường 4 (thành phố Vũng Tàu)
+  - Phường 5 (thành phố Vũng Tàu)
+  - Phường Thắng Nhì
+  - Phường Thắng Tam
+- code: '26526'
+  name: Phường Tam Thắng
+  aliases:
+  - P. Tam Thắng
+  - P.Tam Thắng
+  - Phường 7 (thành phố Vũng Tàu)
+  - P. 7 (thành phố Vũng Tàu)
+  - P.7 (thành phố Vũng Tàu)
+  - Phường 8 (thành phố Vũng Tàu)
+  - P. 8 (thành phố Vũng Tàu)
+  - P.8 (thành phố Vũng Tàu)
+  - Phường 9 (thành phố Vũng Tàu)
+  - P. 9 (thành phố Vũng Tàu)
+  - P.9 (thành phố Vũng Tàu)
+  - Phường Nguyễn An Ninh
+  - P. Nguyễn An Ninh
+  - P.Nguyễn An Ninh
+  old_names:
+  - Phường 7 (thành phố Vũng Tàu)
+  - Phường 8 (thành phố Vũng Tàu)
+  - Phường 9 (thành phố Vũng Tàu)
+  - Phường Nguyễn An Ninh
+- code: '26536'
+  name: Phường Rạch Dừa
+  aliases:
+  - P. Rạch Dừa
+  - P.Rạch Dừa
+  - Phường 10 (thành phố Vũng Tàu)
+  - P. 10 (thành phố Vũng Tàu)
+  - P.10 (thành phố Vũng Tàu)
+  - Phường Thắng Nhất
+  - P. Thắng Nhất
+  - P.Thắng Nhất
+  old_names:
+  - Phường 10 (thành phố Vũng Tàu)
+  - Phường Thắng Nhất
+  - Phường Rạch Dừa
+- code: '26542'
+  name: Phường Phước Thắng
+  aliases:
+  - P. Phước Thắng
+  - P.Phước Thắng
+  - Phường 11 (thành phố Vũng Tàu)
+  - P. 11 (thành phố Vũng Tàu)
+  - P.11 (thành phố Vũng Tàu)
+  - Phường 12 (thành phố Vũng Tàu)
+  - P. 12 (thành phố Vũng Tàu)
+  - P.12 (thành phố Vũng Tàu)
+  old_names:
+  - Phường 11 (thành phố Vũng Tàu)
+  - Phường 12 (thành phố Vũng Tàu)
+- code: '26545'
+  name: Xã Long Sơn
+  aliases:
+  - X. Long Sơn
+- code: '26560'
+  name: Phường Bà Rịa
+  aliases:
+  - P. Bà Rịa
+  - P.Bà Rịa
+  - Phường Phước Trung
+  - P. Phước Trung
+  - P.Phước Trung
+  - Phường Phước Nguyên
+  - P. Phước Nguyên
+  - P.Phước Nguyên
+  - Phường Long Toàn
+  - P. Long Toàn
+  - P.Long Toàn
+  old_names:
+  - Phường Phước Trung
+  - Phường Phước Nguyên
+  - Phường Long Toàn
+  - Phường Phước Hưng
+- code: '26566'
+  name: Phường Long Hương
+  aliases:
+  - P. Long Hương
+  - P.Long Hương
+  - Xã Tân Hưng (thành phố Bà Rịa)
+  - X. Tân Hưng (thành phố Bà Rịa)
+  - Phường Kim Dinh
+  - P. Kim Dinh
+  - P.Kim Dinh
+  old_names:
+  - Xã Tân Hưng (thành phố Bà Rịa)
+  - Phường Kim Dinh
+  - Phường Long Hương
+- code: '26572'
+  name: Phường Tam Long
+  aliases:
+  - P. Tam Long
+  - P.Tam Long
+  - Phường Long Tâm
+  - P. Long Tâm
+  - P.Long Tâm
+  - Xã Hòa Long
+  - X. Hòa Long
+  old_names:
+  - Phường Long Tâm
+  - Xã Hòa Long
+  - Xã Long Phước
+- code: '26575'
+  name: Xã Ngãi Giao
+  aliases:
+  - X. Ngãi Giao
+  - Thị trấn Ngãi Giao
+  - Xã Bình Ba
+  - X. Bình Ba
+  - Xã Suối Nghệ
+  - X. Suối Nghệ
+  old_names:
+  - Thị trấn Ngãi Giao
+  - Xã Bình Ba
+  - Xã Suối Nghệ
+- code: '26584'
+  name: Xã Xuân Sơn
+  aliases:
+  - X. Xuân Sơn
+  - Xã Suối Rao
+  - X. Suối Rao
+  - Xã Sơn Bình
+  - X. Sơn Bình
+  old_names:
+  - Xã Suối Rao
+  - Xã Sơn Bình
+  - Xã Xuân Sơn
+- code: '26590'
+  name: Xã Bình Giã
+  aliases:
+  - X. Bình Giã
+  - X. Bình Trung
+  - Xã Quảng Thành
+  - X. Quảng Thành
+  old_names:
+  - Xã Bình Trung
+  - Xã Quảng Thành
+  - Xã Bình Giã
+- code: '26596'
+  name: Xã Châu Đức
+  aliases:
+  - X. Châu Đức
+  - Xã Cù Bị
+  - X. Cù Bị
+  - Xã Xà Bang
+  - X. Xà Bang
+  old_names:
+  - Xã Cù Bị
+  - Xã Xà Bang
+- code: '26608'
+  name: Xã Kim Long
+  aliases:
+  - X. Kim Long
+  - Thị trấn Kim Long
+  - Xã Bàu Chinh
+  - X. Bàu Chinh
+  - Xã Láng Lớn
+  - X. Láng Lớn
+  old_names:
+  - Thị trấn Kim Long
+  - Xã Bàu Chinh
+  - Xã Láng Lớn
+- code: '26617'
+  name: Xã Nghĩa Thành
+  aliases:
+  - X. Nghĩa Thành
+  - Xã Đá Bạc
+  - X. Đá Bạc
+  old_names:
+  - Xã Đá Bạc
+  - Xã Nghĩa Thành
+- code: '26620'
+  name: Xã Hồ Tràm
+  aliases:
+  - X. Hồ Tràm
+  - Thị trấn Phước Bửu
+  - Xã Phước Tân
+  - X. Phước Tân
+  - Xã Phước Thuận
+  - X. Phước Thuận
+  old_names:
+  - Thị trấn Phước Bửu
+  - Xã Phước Tân
+  - Xã Phước Thuận
+- code: '26632'
+  name: Xã Xuyên Mộc
+  aliases:
+  - X. Xuyên Mộc
+  - Xã Bông Trang
+  - X. Bông Trang
+  - Xã Bưng Riềng
+  - X. Bưng Riềng
+  old_names:
+  - Xã Bông Trang
+  - Xã Bưng Riềng
+  - Xã Xuyên Mộc
+- code: '26638'
+  name: Xã Bàu Lâm
+  aliases:
+  - X. Bàu Lâm
+  - Xã Tân Lâm
+  - X. Tân Lâm
+  old_names:
+  - Xã Tân Lâm
+  - Xã Bàu Lâm
+- code: '26641'
+  name: Xã Hòa Hội
+  aliases:
+  - X. Hòa Hội
+  - X. Hòa Hưng
+  - X. Hòa Bình
+  old_names:
+  - Xã Hòa Hưng
+  - Xã Hòa Bình
+  - Xã Hòa Hội
+- code: '26647'
+  name: Xã Hòa Hiệp
+  aliases:
+  - X. Hòa Hiệp
+- code: '26656'
+  name: Xã Bình Châu
+  aliases:
+  - X. Bình Châu
+- code: '26659'
+  name: Xã Long Điền
+  aliases:
+  - X. Long Điền
+  - Thị trấn Long Điền
+  - Xã Tam An
+  - X. Tam An
+  old_names:
+  - Thị trấn Long Điền
+  - Xã Tam An
+- code: '26662'
+  name: Xã Long Hải
+  aliases:
+  - X. Long Hải
+  - Thị trấn Long Hải
+  - Xã Phước Tỉnh
+  - X. Phước Tỉnh
+  old_names:
+  - Thị trấn Long Hải
+  - Xã Phước Tỉnh
+  - Xã Phước Hưng
+- code: '26680'
+  name: Xã Đất Đỏ
+  aliases:
+  - X. Đất Đỏ
+  - Thị trấn Đất Đỏ
+  - Xã Long Tân (huyện Long Đất)
+  - X. Long Tân (huyện Long Đất)
+  - Xã Láng Dài
+  - X. Láng Dài
+  - Xã Phước Long Thọ
+  - X. Phước Long Thọ
+  old_names:
+  - Thị trấn Đất Đỏ
+  - Xã Long Tân (huyện Long Đất)
+  - Xã Láng Dài
+  - Xã Phước Long Thọ
+- code: '26686'
+  name: Xã Phước Hải
+  aliases:
+  - X. Phước Hải
+  - Thị trấn Phước Hải
+  - Xã Phước Hội
+  - X. Phước Hội
+  old_names:
+  - Thị trấn Phước Hải
+  - Xã Phước Hội
+- code: '26704'
+  name: Phường Phú Mỹ
+  aliases:
+  - P. Phú Mỹ
+  - P.Phú Mỹ
+  - Phường Phú Mỹ (thành phố Phú Mỹ)
+  - P. Phú Mỹ (thành phố Phú Mỹ)
+  - P.Phú Mỹ (thành phố Phú Mỹ)
+  - Phường Mỹ Xuân
+  - P. Mỹ Xuân
+  - P.Mỹ Xuân
+  old_names:
+  - Phường Phú Mỹ (thành phố Phú Mỹ)
+  - Phường Mỹ Xuân
+- code: '26710'
+  name: Phường Tân Hải
+  aliases:
+  - P. Tân Hải
+  - P.Tân Hải
+  old_names:
+  - Phường Tân Hòa
+  - Phường Tân Hải
+- code: '26713'
+  name: Phường Tân Phước
+  aliases:
+  - P. Tân Phước
+  - P.Tân Phước
+  old_names:
+  - Phường Phước Hòa
+  - Phường Tân Phước
+- code: '26725'
+  name: Phường Tân Thành
+  aliases:
+  - P. Tân Thành
+  - P.Tân Thành
+  - Phường Hắc Dịch
+  - P. Hắc Dịch
+  - P.Hắc Dịch
+  - Xã Sông Xoài
+  - X. Sông Xoài
+  old_names:
+  - Phường Hắc Dịch
+  - Xã Sông Xoài
+- code: '26728'
+  name: Xã Châu Pha
+  aliases:
+  - X. Châu Pha
+  - Xã Tóc Tiên
+  - X. Tóc Tiên
+  old_names:
+  - Xã Tóc Tiên
+  - Xã Châu Pha
+- code: '26732'
+  name: Đặc khu Côn Đảo
+  aliases:
+  - Côn Đảo
+  - Huyện Côn Đảo
+  old_names:
+  - Huyện Côn Đảo
+- code: '26737'
+  name: Phường Tân Định
+  aliases:
+  - P. Tân Định
+  - P.Tân Định
+  - Phường Tân Định (Quận 1)
+  - P. Tân Định (Quận 1)
+  - P.Tân Định (Quận 1)
+  old_names:
+  - Phường Tân Định (Quận 1)
+  - Phường Đa Kao
+- code: '26740'
+  name: Phường Sài Gòn
+  aliases:
+  - P. Sài Gòn
+  - P.Sài Gòn
+  - Phường Bến Nghé
+  - P. Bến Nghé
+  - P.Bến Nghé
+  old_names:
+  - Phường Bến Nghé
+  - Phường Đa Kao
+  - Phường Nguyễn Thái Bình
+- code: '26743'
+  name: Phường Bến Thành
+  aliases:
+  - P. Bến Thành
+  - P.Bến Thành
+  - Phường Phạm Ngũ Lão
+  - P. Phạm Ngũ Lão
+  - P.Phạm Ngũ Lão
+  old_names:
+  - Phường Bến Thành
+  - Phường Phạm Ngũ Lão
+  - Phường Cầu Ông Lãnh
+  - Phường Nguyễn Thái Bình
+- code: '26758'
+  name: Phường Cầu Ông Lãnh
+  aliases:
+  - P. Cầu Ông Lãnh
+  - P.Cầu Ông Lãnh
+  - Phường Nguyễn Cư Trinh
+  - P. Nguyễn Cư Trinh
+  - P.Nguyễn Cư Trinh
+  - Phường Cầu Kho
+  - P. Cầu Kho
+  - P.Cầu Kho
+  - Phường Cô Giang
+  - P. Cô Giang
+  - P.Cô Giang
+  old_names:
+  - Phường Nguyễn Cư Trinh
+  - Phường Cầu Kho
+  - Phường Cô Giang
+  - Phường Cầu Ông Lãnh
+- code: '26767'
+  name: Phường An Phú Đông
+  aliases:
+  - P. An Phú Đông
+  - P.An Phú Đông
+  - Phường Thạnh Lộc
+  - P. Thạnh Lộc
+  - P.Thạnh Lộc
+  old_names:
+  - Phường Thạnh Lộc
+  - Phường An Phú Đông
+- code: '26773'
+  name: Phường Thới An
+  aliases:
+  - P. Thới An
+  - P.Thới An
+  - Phường Thạnh Xuân
+  - P. Thạnh Xuân
+  - P.Thạnh Xuân
+  old_names:
+  - Phường Thạnh Xuân
+  - Phường Thới An
+- code: '26782'
+  name: Phường Tân Thới Hiệp
+  aliases:
+  - P. Tân Thới Hiệp
+  - P.Tân Thới Hiệp
+  - Phường Hiệp Thành (Quận 12)
+  - P. Hiệp Thành (Quận 12)
+  - P.Hiệp Thành (Quận 12)
+  old_names:
+  - Phường Hiệp Thành (Quận 12)
+  - Phường Tân Thới Hiệp
+- code: '26785'
+  name: Phường Trung Mỹ Tây
+  aliases:
+  - P. Trung Mỹ Tây
+  - P.Trung Mỹ Tây
+  - Phường Tân Chánh Hiệp
+  - P. Tân Chánh Hiệp
+  - P.Tân Chánh Hiệp
+  old_names:
+  - Phường Tân Chánh Hiệp
+  - Phường Trung Mỹ Tây
+- code: '26791'
+  name: Phường Đông Hưng Thuận
+  aliases:
+  - P. Đông Hưng Thuận
+  - P.Đông Hưng Thuận
+  - Phường Tân Thới Nhất
+  - P. Tân Thới Nhất
+  - P.Tân Thới Nhất
+  - Phường Tân Hưng Thuận
+  - P. Tân Hưng Thuận
+  - P.Tân Hưng Thuận
+  old_names:
+  - Phường Tân Thới Nhất
+  - Phường Tân Hưng Thuận
+  - Phường Đông Hưng Thuận
+- code: '26800'
+  name: Phường Linh Xuân
+  aliases:
+  - P. Linh Xuân
+  - P.Linh Xuân
+  - Phường Linh Trung
+  - P. Linh Trung
+  - P.Linh Trung
+  old_names:
+  - Phường Linh Trung
+  - Phường Linh Xuân
+  - Phường Linh Tây
+- code: '26803'
+  name: Phường Tam Bình
+  aliases:
+  - P. Tam Bình
+  - P.Tam Bình
+  - Phường Bình Chiểu
+  - P. Bình Chiểu
+  - P.Bình Chiểu
+  - Phường Tam Phú
+  - P. Tam Phú
+  - P.Tam Phú
+  old_names:
+  - Phường Bình Chiểu
+  - Phường Tam Phú
+  - Phường Tam Bình
+- code: '26809'
+  name: Phường Hiệp Bình
+  aliases:
+  - P. Hiệp Bình
+  - P.Hiệp Bình
+  - Phường Hiệp Bình Chánh
+  - P. Hiệp Bình Chánh
+  - P.Hiệp Bình Chánh
+  - Phường Hiệp Bình Phước
+  - P. Hiệp Bình Phước
+  - P.Hiệp Bình Phước
+  old_names:
+  - Phường Hiệp Bình Chánh
+  - Phường Hiệp Bình Phước
+  - Phường Linh Đông
+- code: '26824'
+  name: Phường Thủ Đức
+  aliases:
+  - P. Thủ Đức
+  - P.Thủ Đức
+  - Phường Bình Thọ
+  - P. Bình Thọ
+  - P.Bình Thọ
+  - Phường Linh Chiểu
+  - P. Linh Chiểu
+  - P.Linh Chiểu
+  - Phường Trường Thọ
+  - P. Trường Thọ
+  - P.Trường Thọ
+  old_names:
+  - Phường Bình Thọ
+  - Phường Linh Chiểu
+  - Phường Trường Thọ
+  - Phường Linh Tây
+  - Phường Linh Đông
+- code: '26833'
+  name: Phường Long Bình
+  aliases:
+  - P. Long Bình
+  - P.Long Bình
+  old_names:
+  - Phường Long Bình
+  - Phường Long Thạnh Mỹ
+- code: '26842'
+  name: Phường Tăng Nhơn Phú
+  aliases:
+  - P. Tăng Nhơn Phú
+  - P.Tăng Nhơn Phú
+  - Phường Tân Phú (thành phố Thủ Đức)
+  - P. Tân Phú (thành phố Thủ Đức)
+  - P.Tân Phú (thành phố Thủ Đức)
+  - Phường Hiệp Phú
+  - P. Hiệp Phú
+  - P.Hiệp Phú
+  - Phường Tăng Nhơn Phú A
+  - P. Tăng Nhơn Phú A
+  - P.Tăng Nhơn Phú A
+  - Phường Tăng Nhơn Phú B
+  - P. Tăng Nhơn Phú B
+  - P.Tăng Nhơn Phú B
+  old_names:
+  - Phường Tân Phú (thành phố Thủ Đức)
+  - Phường Hiệp Phú
+  - Phường Tăng Nhơn Phú A
+  - Phường Tăng Nhơn Phú B
+  - Phường Long Thạnh Mỹ
+- code: '26848'
+  name: Phường Phước Long
+  aliases:
+  - P. Phước Long
+  - P.Phước Long
+  - Phường Phước Bình
+  - P. Phước Bình
+  - P.Phước Bình
+  - Phường Phước Long A
+  - P. Phước Long A
+  - P.Phước Long A
+  - Phường Phước Long B
+  - P. Phước Long B
+  - P.Phước Long B
+  old_names:
+  - Phường Phước Bình
+  - Phường Phước Long A
+  - Phường Phước Long B
+- code: '26857'
+  name: Phường Long Phước
+  aliases:
+  - P. Long Phước
+  - P.Long Phước
+  - Phường Trường Thạnh
+  - P. Trường Thạnh
+  - P.Trường Thạnh
+  old_names:
+  - Phường Trường Thạnh
+  - Phường Long Phước
+- code: '26860'
+  name: Phường Long Trường
+  aliases:
+  - P. Long Trường
+  - P.Long Trường
+  - Phường Phú Hữu
+  - P. Phú Hữu
+  - P.Phú Hữu
+  old_names:
+  - Phường Phú Hữu
+  - Phường Long Trường
+- code: '26876'
+  name: Phường An Nhơn
+  aliases:
+  - P. An Nhơn
+  - P.An Nhơn
+  - Phường 5 (quận Gò Vấp)
+  - P. 5 (quận Gò Vấp)
+  - P.5 (quận Gò Vấp)
+  - Phường 6 (quận Gò Vấp)
+  - P. 6 (quận Gò Vấp)
+  - P.6 (quận Gò Vấp)
+  old_names:
+  - Phường 5 (quận Gò Vấp)
+  - Phường 6 (quận Gò Vấp)
+- code: '26878'
+  name: Phường An Hội Đông
+  aliases:
+  - P. An Hội Đông
+  - P.An Hội Đông
+  - Phường 15 (quận Gò Vấp)
+  - P. 15 (quận Gò Vấp)
+  - P.15 (quận Gò Vấp)
+  - Phường 16 (quận Gò Vấp)
+  - P. 16 (quận Gò Vấp)
+  - P.16 (quận Gò Vấp)
+  old_names:
+  - Phường 15 (quận Gò Vấp)
+  - Phường 16 (quận Gò Vấp)
+- code: '26882'
+  name: Phường An Hội Tây
+  aliases:
+  - P. An Hội Tây
+  - P.An Hội Tây
+  - Phường 12 (quận Gò Vấp)
+  - P. 12 (quận Gò Vấp)
+  - P.12 (quận Gò Vấp)
+  - Phường 14 (quận Gò Vấp)
+  - P. 14 (quận Gò Vấp)
+  - P.14 (quận Gò Vấp)
+  old_names:
+  - Phường 12 (quận Gò Vấp)
+  - Phường 14 (quận Gò Vấp)
+- code: '26884'
+  name: Phường Gò Vấp
+  aliases:
+  - P. Gò Vấp
+  - P.Gò Vấp
+  - Phường 10 (quận Gò Vấp)
+  - P. 10 (quận Gò Vấp)
+  - P.10 (quận Gò Vấp)
+  - Phường 17 (quận Gò Vấp)
+  - P. 17 (quận Gò Vấp)
+  - P.17 (quận Gò Vấp)
+  old_names:
+  - Phường 10 (quận Gò Vấp)
+  - Phường 17 (quận Gò Vấp)
+- code: '26890'
+  name: Phường Hạnh Thông
+  aliases:
+  - P. Hạnh Thông
+  - P.Hạnh Thông
+  - Phường 1 (quận Gò Vấp)
+  - P. 1 (quận Gò Vấp)
+  - P.1 (quận Gò Vấp)
+  - Phường 3 (quận Gò Vấp)
+  - P. 3 (quận Gò Vấp)
+  - P.3 (quận Gò Vấp)
+  old_names:
+  - Phường 1 (quận Gò Vấp)
+  - Phường 3 (quận Gò Vấp)
+- code: '26898'
+  name: Phường Thông Tây Hội
+  aliases:
+  - P. Thông Tây Hội
+  - P.Thông Tây Hội
+  - Phường 8 (quận Gò Vấp)
+  - P. 8 (quận Gò Vấp)
+  - P.8 (quận Gò Vấp)
+  - Phường 11 (quận Gò Vấp)
+  - P. 11 (quận Gò Vấp)
+  - P.11 (quận Gò Vấp)
+  old_names:
+  - Phường 8 (quận Gò Vấp)
+  - Phường 11 (quận Gò Vấp)
+- code: '26905'
+  name: Phường Bình Lợi Trung
+  aliases:
+  - P. Bình Lợi Trung
+  - P.Bình Lợi Trung
+  - Phường 5 (quận Bình Thạnh)
+  - P. 5 (quận Bình Thạnh)
+  - P.5 (quận Bình Thạnh)
+  - Phường 11 (quận Bình Thạnh)
+  - P. 11 (quận Bình Thạnh)
+  - P.11 (quận Bình Thạnh)
+  - Phường 13 (quận Bình Thạnh)
+  - P. 13 (quận Bình Thạnh)
+  - P.13 (quận Bình Thạnh)
+  old_names:
+  - Phường 5 (quận Bình Thạnh)
+  - Phường 11 (quận Bình Thạnh)
+  - Phường 13 (quận Bình Thạnh)
+- code: '26911'
+  name: Phường Bình Quới
+  aliases:
+  - P. Bình Quới
+  - P.Bình Quới
+  old_names:
+  - Phường 27
+  - Phường 28
+- code: '26929'
+  name: Phường Bình Thạnh
+  aliases:
+  - P. Bình Thạnh
+  - P.Bình Thạnh
+  - Phường 12 (quận Bình Thạnh)
+  - P. 12 (quận Bình Thạnh)
+  - P.12 (quận Bình Thạnh)
+  - Phường 14 (quận Bình Thạnh)
+  - P. 14 (quận Bình Thạnh)
+  - P.14 (quận Bình Thạnh)
+  old_names:
+  - Phường 12 (quận Bình Thạnh)
+  - Phường 14 (quận Bình Thạnh)
+  - Phường 26
+- code: '26944'
+  name: Phường Gia Định
+  aliases:
+  - P. Gia Định
+  - P.Gia Định
+  - Phường 1 (quận Bình Thạnh)
+  - P. 1 (quận Bình Thạnh)
+  - P.1 (quận Bình Thạnh)
+  - Phường 2 (quận Bình Thạnh)
+  - P. 2 (quận Bình Thạnh)
+  - P.2 (quận Bình Thạnh)
+  - Phường 7 (quận Bình Thạnh)
+  - P. 7 (quận Bình Thạnh)
+  - P.7 (quận Bình Thạnh)
+  - Phường 17 (quận Bình Thạnh)
+  - P. 17 (quận Bình Thạnh)
+  - P.17 (quận Bình Thạnh)
+  old_names:
+  - Phường 1 (quận Bình Thạnh)
+  - Phường 2 (quận Bình Thạnh)
+  - Phường 7 (quận Bình Thạnh)
+  - Phường 17 (quận Bình Thạnh)
+- code: '26956'
+  name: Phường Thạnh Mỹ Tây
+  aliases:
+  - P. Thạnh Mỹ Tây
+  - P.Thạnh Mỹ Tây
+  old_names:
+  - Phường 19
+  - Phường 22
+  - Phường 25
+- code: '26968'
+  name: Phường Tân Sơn Nhất
+  aliases:
+  - P. Tân Sơn Nhất
+  - P.Tân Sơn Nhất
+  - Phường 4 (quận Tân Bình)
+  - P. 4 (quận Tân Bình)
+  - P.4 (quận Tân Bình)
+  - Phường 5 (quận Tân Bình)
+  - P. 5 (quận Tân Bình)
+  - P.5 (quận Tân Bình)
+  - Phường 7 (quận Tân Bình)
+  - P. 7 (quận Tân Bình)
+  - P.7 (quận Tân Bình)
+  old_names:
+  - Phường 4 (quận Tân Bình)
+  - Phường 5 (quận Tân Bình)
+  - Phường 7 (quận Tân Bình)
+- code: '26977'
+  name: Phường Tân Sơn Hòa
+  aliases:
+  - P. Tân Sơn Hòa
+  - P.Tân Sơn Hòa
+  - Phường 1 (quận Tân Bình)
+  - P. 1 (quận Tân Bình)
+  - P.1 (quận Tân Bình)
+  - Phường 2 (quận Tân Bình)
+  - P. 2 (quận Tân Bình)
+  - P.2 (quận Tân Bình)
+  - Phường 3 (quận Tân Bình)
+  - P. 3 (quận Tân Bình)
+  - P.3 (quận Tân Bình)
+  old_names:
+  - Phường 1 (quận Tân Bình)
+  - Phường 2 (quận Tân Bình)
+  - Phường 3 (quận Tân Bình)
+- code: '26983'
+  name: Phường Bảy Hiền
+  aliases:
+  - P. Bảy Hiền
+  - P.Bảy Hiền
+  - Phường 10 (quận Tân Bình)
+  - P. 10 (quận Tân Bình)
+  - P.10 (quận Tân Bình)
+  - Phường 11 (quận Tân Bình)
+  - P. 11 (quận Tân Bình)
+  - P.11 (quận Tân Bình)
+  - Phường 12 (quận Tân Bình)
+  - P. 12 (quận Tân Bình)
+  - P.12 (quận Tân Bình)
+  old_names:
+  - Phường 10 (quận Tân Bình)
+  - Phường 11 (quận Tân Bình)
+  - Phường 12 (quận Tân Bình)
+- code: '26995'
+  name: Phường Tân Hòa
+  aliases:
+  - P. Tân Hòa
+  - P.Tân Hòa
+  - Phường 6 (quận Tân Bình)
+  - P. 6 (quận Tân Bình)
+  - P.6 (quận Tân Bình)
+  - Phường 8 (quận Tân Bình)
+  - P. 8 (quận Tân Bình)
+  - P.8 (quận Tân Bình)
+  - Phường 9 (quận Tân Bình)
+  - P. 9 (quận Tân Bình)
+  - P.9 (quận Tân Bình)
+  old_names:
+  - Phường 6 (quận Tân Bình)
+  - Phường 8 (quận Tân Bình)
+  - Phường 9 (quận Tân Bình)
+- code: '27004'
+  name: Phường Tân Bình
+  aliases:
+  - P. Tân Bình
+  - P.Tân Bình
+  - Phường 13 (quận Tân Bình)
+  - P. 13 (quận Tân Bình)
+  - P.13 (quận Tân Bình)
+  - Phường 14 (quận Tân Bình)
+  - P. 14 (quận Tân Bình)
+  - P.14 (quận Tân Bình)
+  old_names:
+  - Phường 13 (quận Tân Bình)
+  - Phường 14 (quận Tân Bình)
+  - Phường 15 (quận Tân Bình)
+- code: '27007'
+  name: Phường Tân Sơn
+  aliases:
+  - P. Tân Sơn
+  - P.Tân Sơn
+  old_names:
+  - Phường 15 (quận Tân Bình)
+- code: '27013'
+  name: Phường Tây Thạnh
+  aliases:
+  - P. Tây Thạnh
+  - P.Tây Thạnh
+  old_names:
+  - Phường Tây Thạnh
+  - Phường Sơn Kỳ
+- code: '27019'
+  name: Phường Tân Sơn Nhì
+  aliases:
+  - P. Tân Sơn Nhì
+  - P.Tân Sơn Nhì
+  old_names:
+  - Phường Tân Sơn Nhì
+  - Phường Sơn Kỳ
+  - Phường Tân Quý
+  - Phường Tân Thành
+- code: '27022'
+  name: Phường Phú Thọ Hòa
+  aliases:
+  - P. Phú Thọ Hòa
+  - P.Phú Thọ Hòa
+  old_names:
+  - Phường Phú Thọ Hòa
+  - Phường Tân Thành
+  - Phường Tân Quý
+- code: '27028'
+  name: Phường Phú Thạnh
+  aliases:
+  - P. Phú Thạnh
+  - P.Phú Thạnh
+  - Phường Hiệp Tân
+  - P. Hiệp Tân
+  - P.Hiệp Tân
+  old_names:
+  - Phường Hiệp Tân
+  - Phường Phú Thạnh
+  - Phường Tân Thới Hòa
+- code: '27031'
+  name: Phường Tân Phú
+  aliases:
+  - P. Tân Phú
+  - P.Tân Phú
+  - Phường Phú Trung
+  - P. Phú Trung
+  - P.Phú Trung
+  - Phường Hòa Thạnh
+  - P. Hòa Thạnh
+  - P.Hòa Thạnh
+  old_names:
+  - Phường Phú Trung
+  - Phường Hòa Thạnh
+  - Phường Tân Thới Hòa
+  - Phường Tân Thành
+- code: '27043'
+  name: Phường Đức Nhuận
+  aliases:
+  - P. Đức Nhuận
+  - P.Đức Nhuận
+  - Phường 4 (quận Phú Nhuận)
+  - P. 4 (quận Phú Nhuận)
+  - P.4 (quận Phú Nhuận)
+  - Phường 5 (quận Phú Nhuận)
+  - P. 5 (quận Phú Nhuận)
+  - P.5 (quận Phú Nhuận)
+  - Phường 9 (quận Phú Nhuận)
+  - P. 9 (quận Phú Nhuận)
+  - P.9 (quận Phú Nhuận)
+  old_names:
+  - Phường 4 (quận Phú Nhuận)
+  - Phường 5 (quận Phú Nhuận)
+  - Phường 9 (quận Phú Nhuận)
+- code: '27058'
+  name: Phường Cầu Kiệu
+  aliases:
+  - P. Cầu Kiệu
+  - P.Cầu Kiệu
+  - Phường 1 (quận Phú Nhuận)
+  - P. 1 (quận Phú Nhuận)
+  - P.1 (quận Phú Nhuận)
+  - Phường 2 (quận Phú Nhuận)
+  - P. 2 (quận Phú Nhuận)
+  - P.2 (quận Phú Nhuận)
+  - Phường 7 (quận Phú Nhuận)
+  - P. 7 (quận Phú Nhuận)
+  - P.7 (quận Phú Nhuận)
+  old_names:
+  - Phường 1 (quận Phú Nhuận)
+  - Phường 2 (quận Phú Nhuận)
+  - Phường 7 (quận Phú Nhuận)
+  - Phường 15 (quận Phú Nhuận)
+- code: '27073'
+  name: Phường Phú Nhuận
+  aliases:
+  - P. Phú Nhuận
+  - P.Phú Nhuận
+  - Phường 8 (quận Phú Nhuận)
+  - P. 8 (quận Phú Nhuận)
+  - P.8 (quận Phú Nhuận)
+  - Phường 10 (quận Phú Nhuận)
+  - P. 10 (quận Phú Nhuận)
+  - P.10 (quận Phú Nhuận)
+  - Phường 11 (quận Phú Nhuận)
+  - P. 11 (quận Phú Nhuận)
+  - P.11 (quận Phú Nhuận)
+  - Phường 13 (quận Phú Nhuận)
+  - P. 13 (quận Phú Nhuận)
+  - P.13 (quận Phú Nhuận)
+  old_names:
+  - Phường 8 (quận Phú Nhuận)
+  - Phường 10 (quận Phú Nhuận)
+  - Phường 11 (quận Phú Nhuận)
+  - Phường 13 (quận Phú Nhuận)
+  - Phường 15 (quận Phú Nhuận)
+- code: '27094'
+  name: Phường An Khánh
+  aliases:
+  - P. An Khánh
+  - P.An Khánh
+  - Phường Thủ Thiêm
+  - P. Thủ Thiêm
+  - P.Thủ Thiêm
+  - Phường An Lợi Đông
+  - P. An Lợi Đông
+  - P.An Lợi Đông
+  - Phường Thảo Điền
+  - P. Thảo Điền
+  - P.Thảo Điền
+  old_names:
+  - Phường Thủ Thiêm
+  - Phường An Lợi Đông
+  - Phường Thảo Điền
+  - Phường An Khánh
+  - Phường An Phú (thành phố Thủ Đức)
+- code: '27097'
+  name: Phường Bình Trưng
+  aliases:
+  - P. Bình Trưng
+  - P.Bình Trưng
+  - Phường Bình Trưng Đông
+  - P. Bình Trưng Đông
+  - P.Bình Trưng Đông
+  - Phường Bình Trưng Tây
+  - P. Bình Trưng Tây
+  - P.Bình Trưng Tây
+  old_names:
+  - Phường Bình Trưng Đông
+  - Phường Bình Trưng Tây
+  - Phường An Phú (thành phố Thủ Đức)
+- code: '27112'
+  name: Phường Cát Lái
+  aliases:
+  - P. Cát Lái
+  - P.Cát Lái
+  - Phường Thạnh Mỹ Lợi
+  - P. Thạnh Mỹ Lợi
+  - P.Thạnh Mỹ Lợi
+  old_names:
+  - Phường Thạnh Mỹ Lợi
+  - Phường Cát Lái
+- code: '27139'
+  name: Phường Xuân Hòa
+  aliases:
+  - P. Xuân Hòa
+  - P.Xuân Hòa
+  - Phường Võ Thị Sáu
+  - P. Võ Thị Sáu
+  - P.Võ Thị Sáu
+  old_names:
+  - Phường Võ Thị Sáu
+  - Phường 4 (Quận 3)
+- code: '27142'
+  name: Phường Nhiêu Lộc
+  aliases:
+  - P. Nhiêu Lộc
+  - P.Nhiêu Lộc
+  - Phường 9 (Quận 3)
+  - P. 9 (Quận 3)
+  - P.9 (Quận 3)
+  - Phường 11 (Quận 3)
+  - P. 11 (Quận 3)
+  - P.11 (Quận 3)
+  - Phường 12 (Quận 3)
+  - P. 12 (Quận 3)
+  - P.12 (Quận 3)
+  - Phường 14 (Quận 3)
+  - P. 14 (Quận 3)
+  - P.14 (Quận 3)
+  old_names:
+  - Phường 9 (Quận 3)
+  - Phường 11 (Quận 3)
+  - Phường 12 (Quận 3)
+  - Phường 14 (Quận 3)
+- code: '27154'
+  name: Phường Bàn Cờ
+  aliases:
+  - P. Bàn Cờ
+  - P.Bàn Cờ
+  old_names:
+  - Phường 1
+  - Phường 2
+  - Phường 3
+  - Phường 5
+  - Phường 4 (Quận 3)
+- code: '27163'
+  name: Phường Hòa Hưng
+  aliases:
+  - P. Hòa Hưng
+  - P.Hòa Hưng
+  - Phường 12 (Quận 10)
+  - P. 12 (Quận 10)
+  - P.12 (Quận 10)
+  - Phường 13 (Quận 10)
+  - P. 13 (Quận 10)
+  - P.13 (Quận 10)
+  - Phường 15 (Quận 10)
+  - P. 15 (Quận 10)
+  - P.15 (Quận 10)
+  old_names:
+  - Phường 12 (Quận 10)
+  - Phường 13 (Quận 10)
+  - Phường 15 (Quận 10)
+  - Phường 14 (Quận 10)
+- code: '27169'
+  name: Phường Diên Hồng
+  aliases:
+  - P. Diên Hồng
+  - P.Diên Hồng
+  - Phường 6 (Quận 10)
+  - P. 6 (Quận 10)
+  - P.6 (Quận 10)
+  - Phường 8 (Quận 10)
+  - P. 8 (Quận 10)
+  - P.8 (Quận 10)
+  old_names:
+  - Phường 6 (Quận 10)
+  - Phường 8 (Quận 10)
+  - Phường 14 (Quận 10)
+- code: '27190'
+  name: Phường Vườn Lài
+  aliases:
+  - P. Vườn Lài
+  - P.Vườn Lài
+  - Phường 1 (Quận 10)
+  - P. 1 (Quận 10)
+  - P.1 (Quận 10)
+  - Phường 2 (Quận 10)
+  - P. 2 (Quận 10)
+  - P.2 (Quận 10)
+  - Phường 4 (Quận 10)
+  - P. 4 (Quận 10)
+  - P.4 (Quận 10)
+  - Phường 9 (Quận 10)
+  - P. 9 (Quận 10)
+  - P.9 (Quận 10)
+  - Phường 10 (Quận 10)
+  - P. 10 (Quận 10)
+  - P.10 (Quận 10)
+  old_names:
+  - Phường 1 (Quận 10)
+  - Phường 2 (Quận 10)
+  - Phường 4 (Quận 10)
+  - Phường 9 (Quận 10)
+  - Phường 10 (Quận 10)
+- code: '27211'
+  name: Phường Hòa Bình
+  aliases:
+  - P. Hòa Bình
+  - P.Hòa Bình
+  - Phường 5 (Quận 11)
+  - P. 5 (Quận 11)
+  - P.5 (Quận 11)
+  - Phường 14 (Quận 11)
+  - P. 14 (Quận 11)
+  - P.14 (Quận 11)
+  old_names:
+  - Phường 5 (Quận 11)
+  - Phường 14 (Quận 11)
+- code: '27226'
+  name: Phường Phú Thọ
+  aliases:
+  - P. Phú Thọ
+  - P.Phú Thọ
+  - Phường 11 (Quận 11)
+  - P. 11 (Quận 11)
+  - P.11 (Quận 11)
+  - Phường 15 (Quận 11)
+  - P. 15 (Quận 11)
+  - P.15 (Quận 11)
+  old_names:
+  - Phường 11 (Quận 11)
+  - Phường 15 (Quận 11)
+  - Phường 8 (Quận 11)
+- code: '27232'
+  name: Phường Bình Thới
+  aliases:
+  - P. Bình Thới
+  - P.Bình Thới
+  - Phường 3 (Quận 11)
+  - P. 3 (Quận 11)
+  - P.3 (Quận 11)
+  - Phường 10 (Quận 11)
+  - P. 10 (Quận 11)
+  - P.10 (Quận 11)
+  old_names:
+  - Phường 3 (Quận 11)
+  - Phường 10 (Quận 11)
+  - Phường 8 (Quận 11)
+- code: '27238'
+  name: Phường Minh Phụng
+  aliases:
+  - P. Minh Phụng
+  - P.Minh Phụng
+  - Phường 1 (Quận 11)
+  - P. 1 (Quận 11)
+  - P.1 (Quận 11)
+  - Phường 7 (Quận 11)
+  - P. 7 (Quận 11)
+  - P.7 (Quận 11)
+  - Phường 16 (Quận 11)
+  - P. 16 (Quận 11)
+  - P.16 (Quận 11)
+  old_names:
+  - Phường 1 (Quận 11)
+  - Phường 7 (Quận 11)
+  - Phường 16 (Quận 11)
+- code: '27259'
+  name: Phường Xóm Chiếu
+  aliases:
+  - P. Xóm Chiếu
+  - P.Xóm Chiếu
+  old_names:
+  - Phường 13
+  - Phường 16
+  - Phường 18
+  - Phường 15 (Quận 4)
+- code: '27265'
+  name: Phường Khánh Hội
+  aliases:
+  - P. Khánh Hội
+  - P.Khánh Hội
+  - Phường 8 (Quận 4)
+  - P. 8 (Quận 4)
+  - P.8 (Quận 4)
+  - Phường 9 (Quận 4)
+  - P. 9 (Quận 4)
+  - P.9 (Quận 4)
+  old_names:
+  - Phường 8 (Quận 4)
+  - Phường 9 (Quận 4)
+  - Phường 2 (Quận 4)
+  - Phường 4 (Quận 4)
+  - Phường 15 (Quận 4)
+- code: '27286'
+  name: Phường Vĩnh Hội
+  aliases:
+  - P. Vĩnh Hội
+  - P.Vĩnh Hội
+  - Phường 1 (Quận 4)
+  - P. 1 (Quận 4)
+  - P.1 (Quận 4)
+  - Phường 3 (Quận 4)
+  - P. 3 (Quận 4)
+  - P.3 (Quận 4)
+  old_names:
+  - Phường 1 (Quận 4)
+  - Phường 3 (Quận 4)
+  - Phường 2 (Quận 4)
+  - Phường 4 (Quận 4)
+- code: '27301'
+  name: Phường Chợ Quán
+  aliases:
+  - P. Chợ Quán
+  - P.Chợ Quán
+  - Phường 1 (Quận 5)
+  - P. 1 (Quận 5)
+  - P.1 (Quận 5)
+  - Phường 2 (Quận 5)
+  - P. 2 (Quận 5)
+  - P.2 (Quận 5)
+  - Phường 4 (Quận 5)
+  - P. 4 (Quận 5)
+  - P.4 (Quận 5)
+  old_names:
+  - Phường 1 (Quận 5)
+  - Phường 2 (Quận 5)
+  - Phường 4 (Quận 5)
+- code: '27316'
+  name: Phường An Đông
+  aliases:
+  - P. An Đông
+  - P.An Đông
+  - Phường 5 (Quận 5)
+  - P. 5 (Quận 5)
+  - P.5 (Quận 5)
+  - Phường 7 (Quận 5)
+  - P. 7 (Quận 5)
+  - P.7 (Quận 5)
+  - Phường 9 (Quận 5)
+  - P. 9 (Quận 5)
+  - P.9 (Quận 5)
+  old_names:
+  - Phường 5 (Quận 5)
+  - Phường 7 (Quận 5)
+  - Phường 9 (Quận 5)
+- code: '27343'
+  name: Phường Chợ Lớn
+  aliases:
+  - P. Chợ Lớn
+  - P.Chợ Lớn
+  - Phường 11 (Quận 5)
+  - P. 11 (Quận 5)
+  - P.11 (Quận 5)
+  - Phường 12 (Quận 5)
+  - P. 12 (Quận 5)
+  - P.12 (Quận 5)
+  - Phường 13 (Quận 5)
+  - P. 13 (Quận 5)
+  - P.13 (Quận 5)
+  - Phường 14 (Quận 5)
+  - P. 14 (Quận 5)
+  - P.14 (Quận 5)
+  old_names:
+  - Phường 11 (Quận 5)
+  - Phường 12 (Quận 5)
+  - Phường 13 (Quận 5)
+  - Phường 14 (Quận 5)
+- code: '27349'
+  name: Phường Phú Lâm
+  aliases:
+  - P. Phú Lâm
+  - P.Phú Lâm
+  - Phường 12 (Quận 6)
+  - P. 12 (Quận 6)
+  - P.12 (Quận 6)
+  - Phường 13 (Quận 6)
+  - P. 13 (Quận 6)
+  - P.13 (Quận 6)
+  - Phường 14 (Quận 6)
+  - P. 14 (Quận 6)
+  - P.14 (Quận 6)
+  old_names:
+  - Phường 12 (Quận 6)
+  - Phường 13 (Quận 6)
+  - Phường 14 (Quận 6)
+- code: '27364'
+  name: Phường Bình Phú
+  aliases:
+  - P. Bình Phú
+  - P.Bình Phú
+  - Phường 10 (Quận 6)
+  - P. 10 (Quận 6)
+  - P.10 (Quận 6)
+  - Phường 11 (Quận 6)
+  - P. 11 (Quận 6)
+  - P.11 (Quận 6)
+  old_names:
+  - Phường 10 (Quận 6)
+  - Phường 11 (Quận 6)
+  - Phường 16 (Quận 8)
+- code: '27367'
+  name: Phường Bình Tây
+  aliases:
+  - P. Bình Tây
+  - P.Bình Tây
+  - Phường 2 (Quận 6)
+  - P. 2 (Quận 6)
+  - P.2 (Quận 6)
+  - Phường 9 (Quận 6)
+  - P. 9 (Quận 6)
+  - P.9 (Quận 6)
+  old_names:
+  - Phường 2 (Quận 6)
+  - Phường 9 (Quận 6)
+- code: '27373'
+  name: Phường Bình Tiên
+  aliases:
+  - P. Bình Tiên
+  - P.Bình Tiên
+  - Phường 1 (Quận 6)
+  - P. 1 (Quận 6)
+  - P.1 (Quận 6)
+  - Phường 7 (Quận 6)
+  - P. 7 (Quận 6)
+  - P.7 (Quận 6)
+  - Phường 8 (Quận 6)
+  - P. 8 (Quận 6)
+  - P.8 (Quận 6)
+  old_names:
+  - Phường 1 (Quận 6)
+  - Phường 7 (Quận 6)
+  - Phường 8 (Quận 6)
+- code: '27418'
+  name: Phường Chánh Hưng
+  aliases:
+  - P. Chánh Hưng
+  - P.Chánh Hưng
+  - Phường 4 (Quận 8)
+  - P. 4 (Quận 8)
+  - P.4 (Quận 8)
+  - Phường Rạch Ông
+  - P. Rạch Ông
+  - P.Rạch Ông
+  - Phường Hưng Phú
+  - P. Hưng Phú
+  - P.Hưng Phú
+  old_names:
+  - Phường 4 (Quận 8)
+  - Phường Rạch Ông
+  - Phường Hưng Phú
+  - Phường 5 (Quận 8)
+- code: '27424'
+  name: Phường Bình Đông
+  aliases:
+  - P. Bình Đông
+  - P.Bình Đông
+  - Phường 6 (Quận 8)
+  - P. 6 (Quận 8)
+  - P.6 (Quận 8)
+  old_names:
+  - Phường 6 (Quận 8)
+  - Phường 7 (Quận 8)
+  - Xã An Phú Tây
+  - Phường 5 (Quận 8)
+- code: '27427'
+  name: Phường Phú Định
+  aliases:
+  - P. Phú Định
+  - P.Phú Định
+  - Phường 14 (Quận 8)
+  - P. 14 (Quận 8)
+  - P.14 (Quận 8)
+  - Phường 15 (Quận 8)
+  - P. 15 (Quận 8)
+  - P.15 (Quận 8)
+  - Phường Xóm Củi
+  - P. Xóm Củi
+  - P.Xóm Củi
+  old_names:
+  - Phường 14 (Quận 8)
+  - Phường 15 (Quận 8)
+  - Phường Xóm Củi
+  - Phường 16 (Quận 8)
+- code: '27439'
+  name: Phường Bình Hưng Hòa
+  aliases:
+  - P. Bình Hưng Hòa
+  - P.Bình Hưng Hòa
+  old_names:
+  - Phường Bình Hưng Hòa
+  - Phường Sơn Kỳ
+  - Phường Bình Hưng Hòa A
+- code: '27442'
+  name: Phường Bình Tân
+  aliases:
+  - P. Bình Tân
+  - P.Bình Tân
+  - Phường Bình Hưng Hòa B
+  - P. Bình Hưng Hòa B
+  - P.Bình Hưng Hòa B
+  old_names:
+  - Phường Bình Hưng Hòa B
+  - Phường Bình Trị Đông A
+  - Phường Tân Tạo
+- code: '27448'
+  name: Phường Bình Trị Đông
+  aliases:
+  - P. Bình Trị Đông
+  - P.Bình Trị Đông
+  old_names:
+  - Phường Bình Trị Đông
+  - Phường Bình Hưng Hòa A
+  - Phường Bình Trị Đông A
+- code: '27457'
+  name: Phường Tân Tạo
+  aliases:
+  - P. Tân Tạo
+  - P.Tân Tạo
+  old_names:
+  - Phường Tân Tạo A
+  - Phường Tân Tạo
+  - Xã Tân Kiên
+- code: '27460'
+  name: Phường An Lạc
+  aliases:
+  - P. An Lạc
+  - P.An Lạc
+  - Phường Bình Trị Đông B
+  - P. Bình Trị Đông B
+  - P.Bình Trị Đông B
+  - Phường An Lạc A
+  - P. An Lạc A
+  - P.An Lạc A
+  old_names:
+  - Phường Bình Trị Đông B
+  - Phường An Lạc A
+  - Phường An Lạc
+- code: '27475'
+  name: Phường Tân Hưng
+  aliases:
+  - P. Tân Hưng
+  - P.Tân Hưng
+  - Phường Tân Phong
+  - P. Tân Phong
+  - P.Tân Phong
+  - Phường Tân Kiểng
+  - P. Tân Kiểng
+  - P.Tân Kiểng
+  old_names:
+  - Phường Tân Phong
+  - Phường Tân Quy
+  - Phường Tân Kiểng
+  - Phường Tân Hưng
+- code: '27478'
+  name: Phường Tân Thuận
+  aliases:
+  - P. Tân Thuận
+  - P.Tân Thuận
+  - Phường Bình Thuận
+  - P. Bình Thuận
+  - P.Bình Thuận
+  - Phường Tân Thuận Đông
+  - P. Tân Thuận Đông
+  - P.Tân Thuận Đông
+  - Phường Tân Thuận Tây
+  - P. Tân Thuận Tây
+  - P.Tân Thuận Tây
+  old_names:
+  - Phường Bình Thuận
+  - Phường Tân Thuận Đông
+  - Phường Tân Thuận Tây
+- code: '27484'
+  name: Phường Phú Thuận
+  aliases:
+  - P. Phú Thuận
+  - P.Phú Thuận
+  old_names:
+  - Phường Phú Thuận
+  - Phường Phú Mỹ (Quận 7)
+- code: '27487'
+  name: Phường Tân Mỹ
+  aliases:
+  - P. Tân Mỹ
+  - P.Tân Mỹ
+  - Phường Tân Phú (Quận 7)
+  - P. Tân Phú (Quận 7)
+  - P.Tân Phú (Quận 7)
+  old_names:
+  - Phường Tân Phú (Quận 7)
+  - Phường Phú Mỹ (Quận 7)
+- code: '27496'
+  name: Xã Tân An Hội
+  aliases:
+  - X. Tân An Hội
+  - Thị trấn Củ Chi
+  - Xã Phước Hiệp
+  - X. Phước Hiệp
+  old_names:
+  - Thị trấn Củ Chi
+  - Xã Phước Hiệp
+  - Xã Tân An Hội
+- code: '27508'
+  name: Xã An Nhơn Tây
+  aliases:
+  - X. An Nhơn Tây
+  - Xã Phú Mỹ Hưng
+  - X. Phú Mỹ Hưng
+  old_names:
+  - Xã Phú Mỹ Hưng
+  - Xã An Phú
+  - Xã An Nhơn Tây
+- code: '27511'
+  name: Xã Nhuận Đức
+  aliases:
+  - X. Nhuận Đức
+  - Xã Phạm Văn Cội
+  - X. Phạm Văn Cội
+  - Xã Trung Lập Hạ
+  - X. Trung Lập Hạ
+  old_names:
+  - Xã Phạm Văn Cội
+  - Xã Trung Lập Hạ
+  - Xã Nhuận Đức
+- code: '27526'
+  name: Xã Thái Mỹ
+  aliases:
+  - X. Thái Mỹ
+  - Xã Trung Lập Thượng
+  - X. Trung Lập Thượng
+  old_names:
+  - Xã Trung Lập Thượng
+  - Xã Phước Thạnh
+  - Xã Thái Mỹ
+- code: '27541'
+  name: Xã Phú Hòa Đông
+  aliases:
+  - X. Phú Hòa Đông
+  - Xã Tân Thạnh Tây
+  - X. Tân Thạnh Tây
+  - Xã Tân Thạnh Đông
+  - X. Tân Thạnh Đông
+  old_names:
+  - Xã Tân Thạnh Tây
+  - Xã Tân Thạnh Đông
+  - Xã Phú Hòa Đông
+- code: '27544'
+  name: Xã Bình Mỹ
+  aliases:
+  - X. Bình Mỹ
+  - Xã Bình Mỹ (huyện Củ Chi)
+  - X. Bình Mỹ (huyện Củ Chi)
+  - Xã Trung An
+  - X. Trung An
+  old_names:
+  - Xã Bình Mỹ (huyện Củ Chi)
+  - Xã Hòa Phú
+  - Xã Trung An
+- code: '27553'
+  name: Xã Củ Chi
+  aliases:
+  - X. Củ Chi
+  - Xã Tân Phú Trung
+  - X. Tân Phú Trung
+  - Xã Tân Thông Hội
+  - X. Tân Thông Hội
+  - Xã Phước Vĩnh An
+  - X. Phước Vĩnh An
+  old_names:
+  - Xã Tân Phú Trung
+  - Xã Tân Thông Hội
+  - Xã Phước Vĩnh An
+- code: '27559'
+  name: Xã Hóc Môn
+  aliases:
+  - X. Hóc Môn
+  - Xã Tân Hiệp (huyện Hóc Môn)
+  - X. Tân Hiệp (huyện Hóc Môn)
+  - Xã Tân Xuân
+  - X. Tân Xuân
+  - Thị trấn Hóc Môn
+  old_names:
+  - Xã Tân Hiệp (huyện Hóc Môn)
+  - Xã Tân Xuân
+  - Thị trấn Hóc Môn
+- code: '27568'
+  name: Xã Đông Thạnh
+  aliases:
+  - X. Đông Thạnh
+  - Xã Thới Tam Thôn
+  - X. Thới Tam Thôn
+  - Xã Nhị Bình
+  - X. Nhị Bình
+  old_names:
+  - Xã Thới Tam Thôn
+  - Xã Nhị Bình
+  - Xã Đông Thạnh
+- code: '27577'
+  name: Xã Xuân Thới Sơn
+  aliases:
+  - X. Xuân Thới Sơn
+  - Xã Tân Thới Nhì
+  - X. Tân Thới Nhì
+  - Xã Xuân Thới Đông
+  - X. Xuân Thới Đông
+  old_names:
+  - Xã Tân Thới Nhì
+  - Xã Xuân Thới Đông
+  - Xã Xuân Thới Sơn
+- code: '27592'
+  name: Xã Bà Điểm
+  aliases:
+  - X. Bà Điểm
+  - Xã Xuân Thới Thượng
+  - X. Xuân Thới Thượng
+  - Xã Trung Chánh
+  - X. Trung Chánh
+  old_names:
+  - Xã Xuân Thới Thượng
+  - Xã Trung Chánh
+  - Xã Bà Điểm
+- code: '27595'
+  name: Xã Tân Nhựt
+  aliases:
+  - X. Tân Nhựt
+  - Thị trấn Tân Túc
+  old_names:
+  - Thị trấn Tân Túc
+  - Xã Tân Nhựt
+  - Phường Tân Tạo A
+  - Xã Tân Kiên
+  - Phường 16 (Quận 8)
+- code: '27601'
+  name: Xã Vĩnh Lộc
+  aliases:
+  - X. Vĩnh Lộc
+  - Xã Vĩnh Lộc A
+  - X. Vĩnh Lộc A
+  old_names:
+  - Xã Vĩnh Lộc A
+  - Xã Phạm Văn Hai
+- code: '27604'
+  name: Xã Tân Vĩnh Lộc
+  aliases:
+  - X. Tân Vĩnh Lộc
+  - Xã Vĩnh Lộc B
+  - X. Vĩnh Lộc B
+  old_names:
+  - Xã Vĩnh Lộc B
+  - Xã Phạm Văn Hai
+  - Phường Tân Tạo
+- code: '27610'
+  name: Xã Bình Lợi
+  aliases:
+  - X. Bình Lợi
+  - Xã Lê Minh Xuân
+  - X. Lê Minh Xuân
+  old_names:
+  - Xã Lê Minh Xuân
+  - Xã Bình Lợi
+- code: '27619'
+  name: Xã Bình Hưng
+  aliases:
+  - X. Bình Hưng
+  - Xã Phong Phú
+  - X. Phong Phú
+  old_names:
+  - Xã Phong Phú
+  - Xã Bình Hưng
+  - Phường 7 (Quận 8)
+- code: '27628'
+  name: Xã Hưng Long
+  aliases:
+  - X. Hưng Long
+  - Xã Đa Phước
+  - X. Đa Phước
+  - Xã Qui Đức
+  - X. Qui Đức
+  old_names:
+  - Xã Đa Phước
+  - Xã Qui Đức
+  - Xã Hưng Long
+- code: '27637'
+  name: Xã Bình Chánh
+  aliases:
+  - X. Bình Chánh
+  - Xã Tân Quý Tây
+  - X. Tân Quý Tây
+  old_names:
+  - Xã Tân Quý Tây
+  - Xã Bình Chánh
+  - Xã An Phú Tây
+- code: '27655'
+  name: Xã Nhà Bè
+  aliases:
+  - X. Nhà Bè
+  - Thị trấn Nhà Bè
+  - Xã Phú Xuân
+  - X. Phú Xuân
+  - Xã Phước Kiển
+  - X. Phước Kiển
+  - Xã Phước Lộc
+  - X. Phước Lộc
+  old_names:
+  - Thị trấn Nhà Bè
+  - Xã Phú Xuân
+  - Xã Phước Kiển
+  - Xã Phước Lộc
+- code: '27658'
+  name: Xã Hiệp Phước
+  aliases:
+  - X. Hiệp Phước
+  - Xã Nhơn Đức
+  - X. Nhơn Đức
+  - Xã Long Thới
+  - X. Long Thới
+  old_names:
+  - Xã Nhơn Đức
+  - Xã Long Thới
+  - Xã Hiệp Phước
+- code: '27664'
+  name: Xã Cần Giờ
+  aliases:
+  - X. Cần Giờ
+  - Xã Long Hòa (huyện Cần Giờ)
+  - X. Long Hòa (huyện Cần Giờ)
+  - Thị trấn Cần Thạnh
+  old_names:
+  - Xã Long Hòa (huyện Cần Giờ)
+  - Thị trấn Cần Thạnh
+- code: '27667'
+  name: Xã Bình Khánh
+  aliases:
+  - X. Bình Khánh
+  - Xã Tam Thôn Hiệp
+  - X. Tam Thôn Hiệp
+  old_names:
+  - Xã Tam Thôn Hiệp
+  - Xã Bình Khánh
+  - Xã An Thới Đông
+- code: '27673'
+  name: Xã An Thới Đông
+  aliases:
+  - X. An Thới Đông
+  - Xã Lý Nhơn
+  - X. Lý Nhơn
+  old_names:
+  - Xã Lý Nhơn
+  - Xã An Thới Đông
+- code: '27676'
+  name: Xã Thạnh An
+  aliases: []

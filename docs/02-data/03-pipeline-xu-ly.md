@@ -86,6 +86,43 @@ Biến đoạn chữ thành giá trị theo [từ điển dữ liệu](01-tu-die
 
 Ghi post, listing, các trường, evidence, run vào SQLite theo [cơ sở dữ liệu](../03-system/04-co-so-du-lieu.md). Kết quả xử lý lại tạo **lần chạy mới**, không ghi đè lịch sử.
 
+## Bot duyệt chạy song song (shadow mode)
+
+Bot chỉ quan sát các listing thật hiện hành có `review_status = needs_review`, bỏ qua demo. Sau khi lưu và gộp trùng,
+hệ thống tạo job `bot_review` cho phiên bản bài nếu `REVIEW_BOT_ENABLED=true` và đã cấu hình khóa,
+mô hình Gemini. Bot nhận chữ đã che số điện thoại, giá trị đang lưu và `review_reasons`.
+Pipeline thuần `review_bot.py` trả `approve`, `reject` hoặc `unsure`, độ tự tin, lý do tiếng Việt,
+và bốn kiểm tra: bài cho thuê, một phòng, giá có bằng chứng, vị trí có bằng chứng.
+Mọi trích dẫn phải có nguyên văn trong bài; thiếu trích dẫn được trả về thì kết quả chuyển `unsure`.
+`approve` còn yêu cầu cả bốn kiểm tra đạt, có trích dẫn giá và vị trí không rỗng.
+Khi `parse_rent` đọc được số tiền từ trích dẫn giá, giá trị phải bằng giá đang lưu (`amount_vnd`,
+`min_vnd`, `max_vnd` nếu có); khác hoặc thiếu thì `unsure`. Trích dẫn không đọc được số tiền
+vẫn theo kiểm tra nguyên văn hiện tại, chưa bảo đảm khớp ý nghĩa giá.
+
+Kết quả và chi phí lưu riêng trong `bot_reviews`, gồm phiên bản listing, prompt và mô hình.
+Bot tuyệt đối không sửa listing, không ghi `review_events`, không thay đổi nội dung công khai.
+Chi tiết duyệt của người không trả kết quả bot; API danh sách từng listing của bot chỉ cho admin,
+reviewer chỉ xem summary. Summary loại cả verdict demo đã lưu trước đây.
+Mỗi listing chỉ có một kết quả `ok` cho cùng phiên bản prompt; lỗi vẫn được lưu để kiểm toán.
+Lỗi tạm thời dùng cơ chế thử lại có giãn cách của hàng đợi, tối đa `JOB_MAX_ATTEMPTS`;
+JSON sai và lỗi không thể thử lại được ghi `error` rồi kết thúc lần xử lý.
+
+Job trích xuất và phân tích được lấy trước job bot. Các lượt gọi bot, kể cả lỗi, được cộng vào
+`LLM_DAILY_CALL_LIMIT`; bot có thêm `REVIEW_BOT_DAILY_CALL_LIMIT` riêng. Hết một trong hai hạn mức,
+job bot chờ tới 00:00 ngày Việt Nam kế tiếp, giữ các kết quả đã hoàn thành và không mất lượt retry.
+Hạn mức riêng của bot không áp dụng cho trích xuất hoặc phân tích; phân tích vẫn dùng Regex khi hết
+ngân sách chung theo cơ chế hiện có. Tạo hàng đợi cho dữ liệu cũ bằng
+`python -m app.cli bot-review-backlog [--limit N]` (mặc định xét 1.000 listing, một job cho mỗi phiên bản bài).
+Mỗi claim bot xử lý tối đa một listing rồi đưa job lại hàng đợi nếu còn. Đọc ảnh chụp và đóng giao dịch
+trước khi gọi mô hình; ghi sau trong giao dịch ngắn có kiểm tra lại. Job đến sau có thể chờ một lượt bot
+đang chạy. `REVIEW_BOT_TIMEOUT_SECONDS=20` là timeout mạng theo từng pha HTTP, không phải giới hạn
+tuyệt đối toàn lượt; xem các giới hạn trong ADR-0008.
+
+API summary cho reviewer/admin đo độ đồng thuận với quyết định approve/reject trên đúng phiên bản
+listing; merge/split không tham gia so sánh. Chưa có số đo độ chính xác thực tế.
+Gemini chưa từng được gọi bằng khóa thật trong phần triển khai và kiểm chứng này; các test dùng mô hình giả.
+Quyết định cho phép bot tự duyệt thuộc về chủ hệ thống sau khi xem số đo, xem [ADR-0008](../decisions/ADR-0008-bot-duyet-chay-song-song.md).
+
 ## M7 — Đánh giá
 
 Chạy định kỳ trên tập chuẩn, không chạy trên kho thị trường. Xem [kế hoạch đánh giá](../04-evaluation/01-ke-hoach-danh-gia.md).

@@ -1,6 +1,12 @@
 # Cơ sở dữ liệu
 
-SQLite (chế độ WAL) cho demo. Tên bảng và cột tiếng Anh, khớp [từ điển dữ liệu](../02-data/01-tu-dien-du-lieu.md). Kiểu ghi theo SQLite; khi chuyển PostgreSQL thì đổi kiểu tương ứng.
+SQLite (chế độ WAL) cho phát triển cục bộ; PostgreSQL trên Neon cho môi trường Render cần giữ dữ liệu
+qua lần khởi động lại, theo [ADR-0007](../decisions/ADR-0007-postgres-neon.md).
+`DATABASE_URL` chọn hệ quản trị; các URL PostgreSQL dùng psycopg 3. Migration `0001`–`0005`
+dùng chung hai hệ. Tên bảng và cột tiếng Anh, khớp [từ điển dữ liệu](../02-data/01-tu-dien-du-lieu.md).
+Kiểu dưới đây mô tả theo SQLite; SQLAlchemy ánh xạ sang kiểu PostgreSQL tương ứng.
+Seed và `ensure-admin` chạy lại an toàn, giữ nguyên mật khẩu/vai trò tài khoản đã có.
+Worker thăm dò mỗi giây và health check chạy `SELECT 1`, nên Neon vẫn thức khi Render đang thức.
 
 ## 1. Sơ đồ quan hệ
 
@@ -132,6 +138,30 @@ Worker lấy job bằng một câu UPDATE có điều kiện (`status = 'queued'
 |---|---|
 | `clusters` | `id`, `created_at`, `merge_reason`, `latest_listing_id` |
 | `review_events` | `listing_id`, `user_id`, `action`, `before_json`, `after_json`, `reason`, `created_at` — chỉ thêm, không sửa/xóa |
+
+### `bot_reviews` — kết quả duyệt thử độc lập
+
+Migration `0005` tạo bảng trên cả SQLite và PostgreSQL, không thay đổi trạng thái listing hay sự kiện duyệt.
+
+| Cột | Kiểu / ý nghĩa |
+|---|---|
+| `id` | ULID, khóa chính |
+| `listing_id` | FK `listings.id`, xóa theo listing |
+| `listing_version` | Số phiên bản listing mà bot đã đọc |
+| `model_id`, `prompt_version` | Mô hình và phiên bản prompt để tái lập |
+| `status`, `error_code` | `ok` / `error`; mã lỗi ngắn, null nếu thành công |
+| `verdict`, `confidence` | `approve` / `reject` / `unsure`; độ tự tin 0..1; null khi lỗi |
+| `checks` | JSON: `rental_offer`, `single_room`, `rent_supported`, `location_supported`, mỗi mục gồm `passed` và `quote` |
+| `reason` | Lý do tiếng Việt, tối đa 500 ký tự |
+| `llm_calls`, `tokens_in`, `tokens_out` | Chi phí của lần thử, kể cả lỗi; lượt gọi tính vào hạn mức toàn hệ thống |
+| `created_at` | UTC; dùng thống kê chi phí theo ngày Việt Nam |
+
+Chỉ mục trên listing và thời điểm tạo. Chỉ mục duy nhất có điều kiện `uq_bot_reviews_ok` bảo đảm mỗi
+`(listing_id, prompt_version)` chỉ có một hàng `ok`; nhiều lần lỗi vẫn được lưu. Job `bot_review` dùng
+`jobs.post_version_id`, chỉ xử lý listing hiện hành đang chờ và chưa có kết quả thành công của prompt hiện tại.
+Sự kiện duyệt của người lưu `before_json.version` để ghép đúng phiên bản; bot không ghi `review_events`.
+Khi xóa bài, kết quả bot được xóa theo listing. Chưa có số đo độ chính xác; Gemini chưa từng được gọi
+bằng khóa thật trong phần triển khai và kiểm chứng này.
 
 ### Đánh giá: `gold_annotations`, `eval_runs`, `eval_results`
 

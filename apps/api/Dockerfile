@@ -17,7 +17,8 @@ COPY spec spec
 COPY eval eval
 COPY data/README.md data/
 
-# /srv/data is the persistent disk: the SQLite DB lives in /srv/data/db.
+# Local SQLite fallback lives in /srv/data/db; Render Free has no persistent disk.
+# Production overrides DATABASE_URL with PostgreSQL so data survives container restarts.
 ENV DATABASE_URL=sqlite:////srv/data/db/rener.sqlite
 EXPOSE 8000
 WORKDIR /srv/apps/api

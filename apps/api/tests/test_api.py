@@ -312,7 +312,7 @@ def test_unparsable_body_is_422(api):
 
 def test_unknown_ward_goes_to_review(api):
     c = api.client("renter")
-    aid = c.post(f"{V1}/analyses", json=post_payload("ward-1", "Cho thuê CCMN 30m2 phường Hòa Bình, giá 5tr/tháng. LH [SĐT]")).json()["analysis_id"]
+    aid = c.post(f"{V1}/analyses", json=post_payload("ward-1", "Cho thuê CCMN 30m2 phường Chưa Xác Minh, giá 5tr/tháng. LH [SĐT]")).json()["analysis_id"]
     api.drain()
     loc = c.get(f"{V1}/analyses/{aid}").json()["listings"][0]["location"]
     assert loc["ward_code"] is None and loc["decision"] == "needs_review" and loc["evidence"]

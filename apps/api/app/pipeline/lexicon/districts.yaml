@@ -1,0 +1,999 @@
+# Sourced subset of D1 districts-hcm.yaml, read 2026-11-13.
+# Relations establish territorial contribution, not complete containment.
+version: 1.0.0
+status: partial
+source: https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-quyet-so-1685-nq-ubtvqh15-sap-xep-cac-dvhc-cap-xa-cua-thanh-pho-ho-chi-minh-nam-2025-119250616211341304.htm
+scope: Quan hệ có quận/huyện/thành phố cũ nêu trực tiếp trong cùng danh sách của Nghị
+  quyết; không khẳng định toàn bộ đơn vị mới nằm trong một quận cũ.
+districts:
+- name: Huyện Bàu Bàng
+  relations:
+  - old_name: Xã Tân Hưng
+    new_ward_code: '25813'
+    new_ward_name: Phường Bến Cát
+    portion: full
+    article: 1
+    clause: 95
+- name: Huyện Bắc Tân Uyên
+  relations:
+  - old_name: Xã Bình Mỹ
+    new_ward_code: '25915'
+    new_ward_name: Phường Bình Cơ
+    portion: full
+    article: 1
+    clause: 98
+- name: Huyện Côn Đảo
+  relations:
+  - old_name: Huyện Côn Đảo
+    new_ward_code: '26732'
+    new_ward_name: Đặc khu Côn Đảo
+    portion: full
+    article: 1
+    clause: 163
+    old_unit_is_district: true
+- name: Huyện Cần Giờ
+  relations:
+  - old_name: Xã Long Hòa
+    new_ward_code: '27664'
+    new_ward_name: Xã Cần Giờ
+    portion: full
+    article: 1
+    clause: 122
+- name: Huyện Củ Chi
+  relations:
+  - old_name: Xã Bình Mỹ
+    new_ward_code: '27544'
+    new_ward_name: Xã Bình Mỹ
+    portion: full
+    article: 1
+    clause: 129
+- name: Huyện Dầu Tiếng
+  relations:
+  - old_name: Xã Long Tân
+    new_ward_code: '25792'
+    new_ward_name: Xã Long Hòa
+    portion: full
+    article: 1
+    clause: 144
+  - old_name: Xã Long Hòa
+    new_ward_code: '25792'
+    new_ward_name: Xã Long Hòa
+    portion: full
+    article: 1
+    clause: 144
+- name: Huyện Hóc Môn
+  relations:
+  - old_name: Xã Tân Hiệp
+    new_ward_code: '27559'
+    new_ward_name: Xã Hóc Môn
+    portion: full
+    article: 1
+    clause: 131
+- name: Huyện Long Đất
+  relations:
+  - old_name: Xã Long Tân
+    new_ward_code: '26680'
+    new_ward_name: Xã Đất Đỏ
+    portion: full
+    article: 1
+    clause: 152
+- name: Huyện Phú Giáo
+  relations:
+  - old_name: Xã Tân Hiệp
+    new_ward_code: '25864'
+    new_ward_name: Xã Phước Thành
+    portion: full
+    article: 1
+    clause: 140
+- name: Quận 1
+  relations:
+  - old_name: Phường Tân Định
+    new_ward_code: '26737'
+    new_ward_name: Phường Tân Định
+    portion: full
+    article: 1
+    clause: 2
+- name: Quận 10
+  relations:
+  - old_name: Phường 6
+    new_ward_code: '27169'
+    new_ward_name: Phường Diên Hồng
+    portion: full
+    article: 1
+    clause: 25
+  - old_name: Phường 8
+    new_ward_code: '27169'
+    new_ward_name: Phường Diên Hồng
+    portion: full
+    article: 1
+    clause: 25
+  - old_name: Phường 14
+    new_ward_code: '27169'
+    new_ward_name: Phường Diên Hồng
+    portion: part
+    article: 1
+    clause: 25
+  - old_name: Phường 1
+    new_ward_code: '27190'
+    new_ward_name: Phường Vườn Lài
+    portion: full
+    article: 1
+    clause: 26
+  - old_name: Phường 2
+    new_ward_code: '27190'
+    new_ward_name: Phường Vườn Lài
+    portion: full
+    article: 1
+    clause: 26
+  - old_name: Phường 4
+    new_ward_code: '27190'
+    new_ward_name: Phường Vườn Lài
+    portion: full
+    article: 1
+    clause: 26
+  - old_name: Phường 9
+    new_ward_code: '27190'
+    new_ward_name: Phường Vườn Lài
+    portion: full
+    article: 1
+    clause: 26
+  - old_name: Phường 10
+    new_ward_code: '27190'
+    new_ward_name: Phường Vườn Lài
+    portion: full
+    article: 1
+    clause: 26
+  - old_name: Phường 12
+    new_ward_code: '27163'
+    new_ward_name: Phường Hòa Hưng
+    portion: full
+    article: 1
+    clause: 27
+  - old_name: Phường 13
+    new_ward_code: '27163'
+    new_ward_name: Phường Hòa Hưng
+    portion: full
+    article: 1
+    clause: 27
+  - old_name: Phường 15
+    new_ward_code: '27163'
+    new_ward_name: Phường Hòa Hưng
+    portion: full
+    article: 1
+    clause: 27
+  - old_name: Phường 14
+    new_ward_code: '27163'
+    new_ward_name: Phường Hòa Hưng
+    portion: remainder
+    article: 1
+    clause: 27
+- name: Quận 11
+  relations:
+  - old_name: Phường 1
+    new_ward_code: '27238'
+    new_ward_name: Phường Minh Phụng
+    portion: full
+    article: 1
+    clause: 28
+  - old_name: Phường 7
+    new_ward_code: '27238'
+    new_ward_name: Phường Minh Phụng
+    portion: full
+    article: 1
+    clause: 28
+  - old_name: Phường 16
+    new_ward_code: '27238'
+    new_ward_name: Phường Minh Phụng
+    portion: full
+    article: 1
+    clause: 28
+  - old_name: Phường 3
+    new_ward_code: '27232'
+    new_ward_name: Phường Bình Thới
+    portion: full
+    article: 1
+    clause: 29
+  - old_name: Phường 10
+    new_ward_code: '27232'
+    new_ward_name: Phường Bình Thới
+    portion: full
+    article: 1
+    clause: 29
+  - old_name: Phường 8
+    new_ward_code: '27232'
+    new_ward_name: Phường Bình Thới
+    portion: part
+    article: 1
+    clause: 29
+  - old_name: Phường 5
+    new_ward_code: '27211'
+    new_ward_name: Phường Hòa Bình
+    portion: full
+    article: 1
+    clause: 30
+  - old_name: Phường 14
+    new_ward_code: '27211'
+    new_ward_name: Phường Hòa Bình
+    portion: full
+    article: 1
+    clause: 30
+  - old_name: Phường 11
+    new_ward_code: '27226'
+    new_ward_name: Phường Phú Thọ
+    portion: full
+    article: 1
+    clause: 31
+  - old_name: Phường 15
+    new_ward_code: '27226'
+    new_ward_name: Phường Phú Thọ
+    portion: full
+    article: 1
+    clause: 31
+  - old_name: Phường 8
+    new_ward_code: '27226'
+    new_ward_name: Phường Phú Thọ
+    portion: remainder
+    article: 1
+    clause: 31
+- name: Quận 12
+  relations:
+  - old_name: Phường Hiệp Thành
+    new_ward_code: '26782'
+    new_ward_name: Phường Tân Thới Hiệp
+    portion: full
+    article: 1
+    clause: 34
+- name: Quận 3
+  relations:
+  - old_name: Phường 4
+    new_ward_code: '27154'
+    new_ward_name: Phường Bàn Cờ
+    portion: part
+    article: 1
+    clause: 5
+  - old_name: Phường 4
+    new_ward_code: '27139'
+    new_ward_name: Phường Xuân Hòa
+    portion: remainder
+    article: 1
+    clause: 6
+  - old_name: Phường 9
+    new_ward_code: '27142'
+    new_ward_name: Phường Nhiêu Lộc
+    portion: full
+    article: 1
+    clause: 7
+  - old_name: Phường 11
+    new_ward_code: '27142'
+    new_ward_name: Phường Nhiêu Lộc
+    portion: full
+    article: 1
+    clause: 7
+  - old_name: Phường 12
+    new_ward_code: '27142'
+    new_ward_name: Phường Nhiêu Lộc
+    portion: full
+    article: 1
+    clause: 7
+  - old_name: Phường 14
+    new_ward_code: '27142'
+    new_ward_name: Phường Nhiêu Lộc
+    portion: full
+    article: 1
+    clause: 7
+- name: Quận 4
+  relations:
+  - old_name: Phường 15
+    new_ward_code: '27259'
+    new_ward_name: Phường Xóm Chiếu
+    portion: part
+    article: 1
+    clause: 8
+  - old_name: Phường 8
+    new_ward_code: '27265'
+    new_ward_name: Phường Khánh Hội
+    portion: full
+    article: 1
+    clause: 9
+  - old_name: Phường 9
+    new_ward_code: '27265'
+    new_ward_name: Phường Khánh Hội
+    portion: full
+    article: 1
+    clause: 9
+  - old_name: Phường 2
+    new_ward_code: '27265'
+    new_ward_name: Phường Khánh Hội
+    portion: part
+    article: 1
+    clause: 9
+  - old_name: Phường 4
+    new_ward_code: '27265'
+    new_ward_name: Phường Khánh Hội
+    portion: part
+    article: 1
+    clause: 9
+  - old_name: Phường 15
+    new_ward_code: '27265'
+    new_ward_name: Phường Khánh Hội
+    portion: remainder
+    article: 1
+    clause: 9
+  - old_name: Phường 1
+    new_ward_code: '27286'
+    new_ward_name: Phường Vĩnh Hội
+    portion: full
+    article: 1
+    clause: 10
+  - old_name: Phường 3
+    new_ward_code: '27286'
+    new_ward_name: Phường Vĩnh Hội
+    portion: full
+    article: 1
+    clause: 10
+  - old_name: Phường 2
+    new_ward_code: '27286'
+    new_ward_name: Phường Vĩnh Hội
+    portion: remainder
+    article: 1
+    clause: 10
+  - old_name: Phường 4
+    new_ward_code: '27286'
+    new_ward_name: Phường Vĩnh Hội
+    portion: remainder
+    article: 1
+    clause: 10
+- name: Quận 5
+  relations:
+  - old_name: Phường 1
+    new_ward_code: '27301'
+    new_ward_name: Phường Chợ Quán
+    portion: full
+    article: 1
+    clause: 11
+  - old_name: Phường 2
+    new_ward_code: '27301'
+    new_ward_name: Phường Chợ Quán
+    portion: full
+    article: 1
+    clause: 11
+  - old_name: Phường 4
+    new_ward_code: '27301'
+    new_ward_name: Phường Chợ Quán
+    portion: full
+    article: 1
+    clause: 11
+  - old_name: Phường 5
+    new_ward_code: '27316'
+    new_ward_name: Phường An Đông
+    portion: full
+    article: 1
+    clause: 12
+  - old_name: Phường 7
+    new_ward_code: '27316'
+    new_ward_name: Phường An Đông
+    portion: full
+    article: 1
+    clause: 12
+  - old_name: Phường 9
+    new_ward_code: '27316'
+    new_ward_name: Phường An Đông
+    portion: full
+    article: 1
+    clause: 12
+  - old_name: Phường 11
+    new_ward_code: '27343'
+    new_ward_name: Phường Chợ Lớn
+    portion: full
+    article: 1
+    clause: 13
+  - old_name: Phường 12
+    new_ward_code: '27343'
+    new_ward_name: Phường Chợ Lớn
+    portion: full
+    article: 1
+    clause: 13
+  - old_name: Phường 13
+    new_ward_code: '27343'
+    new_ward_name: Phường Chợ Lớn
+    portion: full
+    article: 1
+    clause: 13
+  - old_name: Phường 14
+    new_ward_code: '27343'
+    new_ward_name: Phường Chợ Lớn
+    portion: full
+    article: 1
+    clause: 13
+- name: Quận 6
+  relations:
+  - old_name: Phường 2
+    new_ward_code: '27367'
+    new_ward_name: Phường Bình Tây
+    portion: full
+    article: 1
+    clause: 14
+  - old_name: Phường 9
+    new_ward_code: '27367'
+    new_ward_name: Phường Bình Tây
+    portion: full
+    article: 1
+    clause: 14
+  - old_name: Phường 1
+    new_ward_code: '27373'
+    new_ward_name: Phường Bình Tiên
+    portion: full
+    article: 1
+    clause: 15
+  - old_name: Phường 7
+    new_ward_code: '27373'
+    new_ward_name: Phường Bình Tiên
+    portion: full
+    article: 1
+    clause: 15
+  - old_name: Phường 8
+    new_ward_code: '27373'
+    new_ward_name: Phường Bình Tiên
+    portion: full
+    article: 1
+    clause: 15
+  - old_name: Phường 10
+    new_ward_code: '27364'
+    new_ward_name: Phường Bình Phú
+    portion: full
+    article: 1
+    clause: 16
+  - old_name: Phường 11
+    new_ward_code: '27364'
+    new_ward_name: Phường Bình Phú
+    portion: full
+    article: 1
+    clause: 16
+  - old_name: Phường 12
+    new_ward_code: '27349'
+    new_ward_name: Phường Phú Lâm
+    portion: full
+    article: 1
+    clause: 17
+  - old_name: Phường 13
+    new_ward_code: '27349'
+    new_ward_name: Phường Phú Lâm
+    portion: full
+    article: 1
+    clause: 17
+  - old_name: Phường 14
+    new_ward_code: '27349'
+    new_ward_name: Phường Phú Lâm
+    portion: full
+    article: 1
+    clause: 17
+- name: Quận 7
+  relations:
+  - old_name: Phường Phú Mỹ
+    new_ward_code: '27484'
+    new_ward_name: Phường Phú Thuận
+    portion: part
+    article: 1
+    clause: 19
+  - old_name: Phường Tân Phú
+    new_ward_code: '27487'
+    new_ward_name: Phường Tân Mỹ
+    portion: full
+    article: 1
+    clause: 20
+  - old_name: Phường Phú Mỹ
+    new_ward_code: '27487'
+    new_ward_name: Phường Tân Mỹ
+    portion: remainder
+    article: 1
+    clause: 20
+- name: Quận 8
+  relations:
+  - old_name: Phường 16
+    new_ward_code: '27364'
+    new_ward_name: Phường Bình Phú
+    portion: part
+    article: 1
+    clause: 16
+  - old_name: Phường 4
+    new_ward_code: '27418'
+    new_ward_name: Phường Chánh Hưng
+    portion: full
+    article: 1
+    clause: 22
+  - old_name: Phường 5
+    new_ward_code: '27418'
+    new_ward_name: Phường Chánh Hưng
+    portion: part
+    article: 1
+    clause: 22
+  - old_name: Phường 14
+    new_ward_code: '27427'
+    new_ward_name: Phường Phú Định
+    portion: full
+    article: 1
+    clause: 23
+  - old_name: Phường 15
+    new_ward_code: '27427'
+    new_ward_name: Phường Phú Định
+    portion: full
+    article: 1
+    clause: 23
+  - old_name: Phường 16
+    new_ward_code: '27427'
+    new_ward_name: Phường Phú Định
+    portion: part
+    article: 1
+    clause: 23
+  - old_name: Phường 6
+    new_ward_code: '27424'
+    new_ward_name: Phường Bình Đông
+    portion: full
+    article: 1
+    clause: 24
+  - old_name: Phường 7
+    new_ward_code: '27424'
+    new_ward_name: Phường Bình Đông
+    portion: part
+    article: 1
+    clause: 24
+  - old_name: Phường 5
+    new_ward_code: '27424'
+    new_ward_name: Phường Bình Đông
+    portion: remainder
+    article: 1
+    clause: 24
+  - old_name: Phường 16
+    new_ward_code: '27595'
+    new_ward_name: Xã Tân Nhựt
+    portion: remainder
+    article: 1
+    clause: 116
+  - old_name: Phường 7
+    new_ward_code: '27619'
+    new_ward_name: Xã Bình Hưng
+    portion: remainder
+    article: 1
+    clause: 119
+- name: Quận Bình Thạnh
+  relations:
+  - old_name: Phường 1
+    new_ward_code: '26944'
+    new_ward_name: Phường Gia Định
+    portion: full
+    article: 1
+    clause: 42
+  - old_name: Phường 2
+    new_ward_code: '26944'
+    new_ward_name: Phường Gia Định
+    portion: full
+    article: 1
+    clause: 42
+  - old_name: Phường 7
+    new_ward_code: '26944'
+    new_ward_name: Phường Gia Định
+    portion: full
+    article: 1
+    clause: 42
+  - old_name: Phường 17
+    new_ward_code: '26944'
+    new_ward_name: Phường Gia Định
+    portion: full
+    article: 1
+    clause: 42
+  - old_name: Phường 12
+    new_ward_code: '26929'
+    new_ward_name: Phường Bình Thạnh
+    portion: full
+    article: 1
+    clause: 43
+  - old_name: Phường 14
+    new_ward_code: '26929'
+    new_ward_name: Phường Bình Thạnh
+    portion: full
+    article: 1
+    clause: 43
+  - old_name: Phường 5
+    new_ward_code: '26905'
+    new_ward_name: Phường Bình Lợi Trung
+    portion: full
+    article: 1
+    clause: 44
+  - old_name: Phường 11
+    new_ward_code: '26905'
+    new_ward_name: Phường Bình Lợi Trung
+    portion: full
+    article: 1
+    clause: 44
+  - old_name: Phường 13
+    new_ward_code: '26905'
+    new_ward_name: Phường Bình Lợi Trung
+    portion: full
+    article: 1
+    clause: 44
+- name: Quận Gò Vấp
+  relations:
+  - old_name: Phường 1
+    new_ward_code: '26890'
+    new_ward_name: Phường Hạnh Thông
+    portion: full
+    article: 1
+    clause: 47
+  - old_name: Phường 3
+    new_ward_code: '26890'
+    new_ward_name: Phường Hạnh Thông
+    portion: full
+    article: 1
+    clause: 47
+  - old_name: Phường 5
+    new_ward_code: '26876'
+    new_ward_name: Phường An Nhơn
+    portion: full
+    article: 1
+    clause: 48
+  - old_name: Phường 6
+    new_ward_code: '26876'
+    new_ward_name: Phường An Nhơn
+    portion: full
+    article: 1
+    clause: 48
+  - old_name: Phường 10
+    new_ward_code: '26884'
+    new_ward_name: Phường Gò Vấp
+    portion: full
+    article: 1
+    clause: 49
+  - old_name: Phường 17
+    new_ward_code: '26884'
+    new_ward_name: Phường Gò Vấp
+    portion: full
+    article: 1
+    clause: 49
+  - old_name: Phường 15
+    new_ward_code: '26878'
+    new_ward_name: Phường An Hội Đông
+    portion: full
+    article: 1
+    clause: 50
+  - old_name: Phường 16
+    new_ward_code: '26878'
+    new_ward_name: Phường An Hội Đông
+    portion: full
+    article: 1
+    clause: 50
+  - old_name: Phường 8
+    new_ward_code: '26898'
+    new_ward_name: Phường Thông Tây Hội
+    portion: full
+    article: 1
+    clause: 51
+  - old_name: Phường 11
+    new_ward_code: '26898'
+    new_ward_name: Phường Thông Tây Hội
+    portion: full
+    article: 1
+    clause: 51
+  - old_name: Phường 12
+    new_ward_code: '26882'
+    new_ward_name: Phường An Hội Tây
+    portion: full
+    article: 1
+    clause: 52
+  - old_name: Phường 14
+    new_ward_code: '26882'
+    new_ward_name: Phường An Hội Tây
+    portion: full
+    article: 1
+    clause: 52
+- name: Quận Phú Nhuận
+  relations:
+  - old_name: Phường 4
+    new_ward_code: '27043'
+    new_ward_name: Phường Đức Nhuận
+    portion: full
+    article: 1
+    clause: 53
+  - old_name: Phường 5
+    new_ward_code: '27043'
+    new_ward_name: Phường Đức Nhuận
+    portion: full
+    article: 1
+    clause: 53
+  - old_name: Phường 9
+    new_ward_code: '27043'
+    new_ward_name: Phường Đức Nhuận
+    portion: full
+    article: 1
+    clause: 53
+  - old_name: Phường 1
+    new_ward_code: '27058'
+    new_ward_name: Phường Cầu Kiệu
+    portion: full
+    article: 1
+    clause: 54
+  - old_name: Phường 2
+    new_ward_code: '27058'
+    new_ward_name: Phường Cầu Kiệu
+    portion: full
+    article: 1
+    clause: 54
+  - old_name: Phường 7
+    new_ward_code: '27058'
+    new_ward_name: Phường Cầu Kiệu
+    portion: full
+    article: 1
+    clause: 54
+  - old_name: Phường 15
+    new_ward_code: '27058'
+    new_ward_name: Phường Cầu Kiệu
+    portion: part
+    article: 1
+    clause: 54
+  - old_name: Phường 8
+    new_ward_code: '27073'
+    new_ward_name: Phường Phú Nhuận
+    portion: full
+    article: 1
+    clause: 55
+  - old_name: Phường 10
+    new_ward_code: '27073'
+    new_ward_name: Phường Phú Nhuận
+    portion: full
+    article: 1
+    clause: 55
+  - old_name: Phường 11
+    new_ward_code: '27073'
+    new_ward_name: Phường Phú Nhuận
+    portion: full
+    article: 1
+    clause: 55
+  - old_name: Phường 13
+    new_ward_code: '27073'
+    new_ward_name: Phường Phú Nhuận
+    portion: full
+    article: 1
+    clause: 55
+  - old_name: Phường 15
+    new_ward_code: '27073'
+    new_ward_name: Phường Phú Nhuận
+    portion: remainder
+    article: 1
+    clause: 55
+- name: Quận Tân Bình
+  relations:
+  - old_name: Phường 1
+    new_ward_code: '26977'
+    new_ward_name: Phường Tân Sơn Hòa
+    portion: full
+    article: 1
+    clause: 56
+  - old_name: Phường 2
+    new_ward_code: '26977'
+    new_ward_name: Phường Tân Sơn Hòa
+    portion: full
+    article: 1
+    clause: 56
+  - old_name: Phường 3
+    new_ward_code: '26977'
+    new_ward_name: Phường Tân Sơn Hòa
+    portion: full
+    article: 1
+    clause: 56
+  - old_name: Phường 4
+    new_ward_code: '26968'
+    new_ward_name: Phường Tân Sơn Nhất
+    portion: full
+    article: 1
+    clause: 57
+  - old_name: Phường 5
+    new_ward_code: '26968'
+    new_ward_name: Phường Tân Sơn Nhất
+    portion: full
+    article: 1
+    clause: 57
+  - old_name: Phường 7
+    new_ward_code: '26968'
+    new_ward_name: Phường Tân Sơn Nhất
+    portion: full
+    article: 1
+    clause: 57
+  - old_name: Phường 6
+    new_ward_code: '26995'
+    new_ward_name: Phường Tân Hòa
+    portion: full
+    article: 1
+    clause: 58
+  - old_name: Phường 8
+    new_ward_code: '26995'
+    new_ward_name: Phường Tân Hòa
+    portion: full
+    article: 1
+    clause: 58
+  - old_name: Phường 9
+    new_ward_code: '26995'
+    new_ward_name: Phường Tân Hòa
+    portion: full
+    article: 1
+    clause: 58
+  - old_name: Phường 10
+    new_ward_code: '26983'
+    new_ward_name: Phường Bảy Hiền
+    portion: full
+    article: 1
+    clause: 59
+  - old_name: Phường 11
+    new_ward_code: '26983'
+    new_ward_name: Phường Bảy Hiền
+    portion: full
+    article: 1
+    clause: 59
+  - old_name: Phường 12
+    new_ward_code: '26983'
+    new_ward_name: Phường Bảy Hiền
+    portion: full
+    article: 1
+    clause: 59
+  - old_name: Phường 13
+    new_ward_code: '27004'
+    new_ward_name: Phường Tân Bình
+    portion: full
+    article: 1
+    clause: 60
+  - old_name: Phường 14
+    new_ward_code: '27004'
+    new_ward_name: Phường Tân Bình
+    portion: full
+    article: 1
+    clause: 60
+  - old_name: Phường 15
+    new_ward_code: '27004'
+    new_ward_name: Phường Tân Bình
+    portion: part
+    article: 1
+    clause: 60
+  - old_name: Phường 15
+    new_ward_code: '27007'
+    new_ward_name: Phường Tân Sơn
+    portion: remainder
+    article: 1
+    clause: 61
+- name: Thành phố Bà Rịa
+  relations:
+  - old_name: Xã Tân Hưng
+    new_ward_code: '26566'
+    new_ward_name: Phường Long Hương
+    portion: full
+    article: 1
+    clause: 106
+- name: Thành phố Bến Cát
+  relations:
+  - old_name: Phường Tân Định
+    new_ward_code: '25849'
+    new_ward_name: Phường Hòa Lợi
+    portion: full
+    article: 1
+    clause: 91
+- name: Thành phố Phú Mỹ
+  relations:
+  - old_name: Phường Phú Mỹ
+    new_ward_code: '26704'
+    new_ward_name: Phường Phú Mỹ
+    portion: full
+    article: 1
+    clause: 111
+- name: Thành phố Thuận An
+  relations:
+  - old_name: Phường An Phú
+    new_ward_code: '25975'
+    new_ward_name: Phường An Phú
+    portion: full
+    article: 1
+    clause: 82
+- name: Thành phố Thủ Dầu Một
+  relations:
+  - old_name: Phường Hiệp Thành
+    new_ward_code: '25747'
+    new_ward_name: Phường Thủ Dầu Một
+    portion: part
+    article: 1
+    clause: 87
+  - old_name: Phường Hiệp Thành
+    new_ward_code: '25750'
+    new_ward_name: Phường Phú Lợi
+    portion: remainder
+    article: 1
+    clause: 88
+  - old_name: Phường Phú Mỹ
+    new_ward_code: '25760'
+    new_ward_name: Phường Bình Dương
+    portion: full
+    article: 1
+    clause: 90
+- name: Thành phố Thủ Đức
+  relations:
+  - old_name: Phường Tân Phú
+    new_ward_code: '26842'
+    new_ward_name: Phường Tăng Nhơn Phú
+    portion: full
+    article: 1
+    clause: 71
+  - old_name: Phường An Phú
+    new_ward_code: '27097'
+    new_ward_name: Phường Bình Trưng
+    portion: part
+    article: 1
+    clause: 76
+  - old_name: Phường An Phú
+    new_ward_code: '27094'
+    new_ward_name: Phường An Khánh
+    portion: remainder
+    article: 1
+    clause: 78
+- name: Thành phố Vũng Tàu
+  relations:
+  - old_name: Phường 1
+    new_ward_code: '26506'
+    new_ward_name: Phường Vũng Tàu
+    portion: full
+    article: 1
+    clause: 102
+  - old_name: Phường 2
+    new_ward_code: '26506'
+    new_ward_name: Phường Vũng Tàu
+    portion: full
+    article: 1
+    clause: 102
+  - old_name: Phường 3
+    new_ward_code: '26506'
+    new_ward_name: Phường Vũng Tàu
+    portion: full
+    article: 1
+    clause: 102
+  - old_name: Phường 4
+    new_ward_code: '26506'
+    new_ward_name: Phường Vũng Tàu
+    portion: full
+    article: 1
+    clause: 102
+  - old_name: Phường 5
+    new_ward_code: '26506'
+    new_ward_name: Phường Vũng Tàu
+    portion: full
+    article: 1
+    clause: 102
+  - old_name: Phường 7
+    new_ward_code: '26526'
+    new_ward_name: Phường Tam Thắng
+    portion: full
+    article: 1
+    clause: 103
+  - old_name: Phường 8
+    new_ward_code: '26526'
+    new_ward_name: Phường Tam Thắng
+    portion: full
+    article: 1
+    clause: 103
+  - old_name: Phường 9
+    new_ward_code: '26526'
+    new_ward_name: Phường Tam Thắng
+    portion: full
+    article: 1
+    clause: 103
+  - old_name: Phường 10
+    new_ward_code: '26536'
+    new_ward_name: Phường Rạch Dừa
+    portion: full
+    article: 1
+    clause: 104
+  - old_name: Phường 11
+    new_ward_code: '26542'
+    new_ward_name: Phường Phước Thắng
+    portion: full
+    article: 1
+    clause: 105
+  - old_name: Phường 12
+    new_ward_code: '26542'
+    new_ward_name: Phường Phước Thắng
+    portion: full
+    article: 1
+    clause: 105

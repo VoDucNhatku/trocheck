@@ -43,9 +43,37 @@ def fixture_doc():
 PASSWORD = "test-pass"
 
 
+def test_database_url() -> str | None:
+    """PostgreSQL URL from TEST_DATABASE_URL, or None to use a throw-away SQLite file."""
+    return os.environ.get("TEST_DATABASE_URL") or None
+
+
+def reset_postgres_schema(url: str) -> None:
+    """Empty the database: every test starts from nothing, whatever an earlier test left behind."""
+    from sqlalchemy import text
+
+    from app.core.db import make_engine
+
+    engine = make_engine(url)
+    with engine.begin() as conn:
+        conn.execute(text("DROP SCHEMA IF EXISTS public CASCADE"))
+        conn.execute(text("CREATE SCHEMA public"))
+    engine.dispose()
+
+
 @pytest.fixture
-def api(tmp_path, monkeypatch):
-    """Fresh SQLite DB + TestClient + one user per role. Returns a small helper object."""
+def database_url(tmp_path):
+    url = test_database_url()
+    if url:
+        reset_postgres_schema(url)
+        return url
+    return f"sqlite:///{(tmp_path / 'test.sqlite').as_posix()}"
+
+
+@pytest.fixture
+def api(tmp_path, monkeypatch, database_url):
+    """Fresh DB (SQLite file, or PostgreSQL when TEST_DATABASE_URL is set) + TestClient + one user
+    per role. Returns a small helper object."""
     from fastapi.testclient import TestClient
 
     from app.core import config, db
@@ -53,7 +81,7 @@ def api(tmp_path, monkeypatch):
     import app.models  # noqa: F401
     from app.services import users
 
-    monkeypatch.setenv("DATABASE_URL", f"sqlite:///{(tmp_path / 'test.sqlite').as_posix()}")
+    monkeypatch.setenv("DATABASE_URL", database_url)
     monkeypatch.setenv("DEMO_MODE", "false")
     monkeypatch.setenv("EVAL_RUNS_DIR", str(tmp_path / "runs"))
     config.get_settings.cache_clear()

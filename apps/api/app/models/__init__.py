@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from sqlalchemy import (JSON, Boolean, DateTime, Float, ForeignKey, Index, Integer, String, Text,
-                        UniqueConstraint)
+                        UniqueConstraint, text)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base
@@ -118,7 +118,7 @@ class Job(Base):
     __tablename__ = "jobs"
     __table_args__ = (Index("ix_jobs_pick", "status", "run_after"),)
     id: Mapped[str] = _id()
-    kind: Mapped[str] = mapped_column(String(20))  # extract | reprocess | recompute_market
+    kind: Mapped[str] = mapped_column(String(20))  # extract | reprocess | recompute_market | bot_review
     post_version_id: Mapped[str | None] = mapped_column(ForeignKey("post_versions.id", ondelete="CASCADE"),
                                                         index=True)
     requested_by: Mapped[str | None] = mapped_column(String(26))
@@ -253,6 +253,30 @@ class ReviewEvent(Base):
     after_json: Mapped[dict | None] = mapped_column(JSON)
     reason: Mapped[str | None] = mapped_column(String(500))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
+class BotReview(Base):
+    """Append-only shadow verdicts, independent of human review events."""
+    __tablename__ = "bot_reviews"
+    __table_args__ = (
+        Index("uq_bot_reviews_ok", "listing_id", "prompt_version", unique=True,
+              sqlite_where=text("status = 'ok'"), postgresql_where=text("status = 'ok'")),
+    )
+    id: Mapped[str] = _id()
+    listing_id: Mapped[str] = mapped_column(ForeignKey("listings.id", ondelete="CASCADE"), index=True)
+    listing_version: Mapped[int] = mapped_column(Integer)
+    model_id: Mapped[str] = mapped_column(String(100))
+    prompt_version: Mapped[str] = mapped_column(String(40))
+    status: Mapped[str] = mapped_column(String(10))
+    verdict: Mapped[str | None] = mapped_column(String(10))
+    confidence: Mapped[float | None] = mapped_column(Float)
+    checks: Mapped[dict] = mapped_column(JSON, default=dict)
+    reason: Mapped[str] = mapped_column(String(500))
+    error_code: Mapped[str | None] = mapped_column(String(50))
+    llm_calls: Mapped[int] = mapped_column(Integer, default=0)
+    tokens_in: Mapped[int] = mapped_column(Integer, default=0)
+    tokens_out: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, index=True)
 
 
 class GoldAnnotation(Base):
