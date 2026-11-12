@@ -1,13 +1,13 @@
-/* Sends saved posts to the TrọCheck store through POST /ingest/batch. Nothing is sent until the user clicks. */
+/* Sends masked posts and photos automatically after connection, unless disabled in Settings. */
 (function (global) {
   "use strict";
 
   const DEFAULT_API_URL = "https://trocheck-api.onrender.com/api/v1";
   const BATCH_SIZE = 20;
   const STATUS_MESSAGES = {
-    401: "Token sai hoặc đã hết hạn. Tạo token mới trong trang Tài khoản trên web.",
-    403: "Tài khoản này chưa có quyền thu dữ liệu.",
-    429: "Đã gửi quá nhiều bài trong một giờ. Hãy thử lại sau.",
+    401: "Mã kết nối sai, đã bị thu hồi hoặc hết hạn. Kết nối lại trong trang Tài khoản.",
+    403: "Tài khoản chưa có quyền thu dữ liệu (collector). Liên hệ quản trị viên để cấp quyền rồi kết nối lại.",
+    429: "Máy chủ đang giới hạn số bài nhận mỗi phút.",
   };
 
   /** Only addresses covered by host_permissions in manifest.json. */
@@ -38,12 +38,13 @@
   }
 
   async function call({ apiUrl, token, path, method = "GET", body, fetcher = global.fetch.bind(global) }) {
-    if (!String(token ?? "").trim()) throw new Error("Chưa có token. Nhập token trong phần Cài đặt.");
+    if (!String(token ?? "").trim()) throw new Error("Chưa kết nối. Mở trang Tài khoản để kết nối extension.");
     let response;
     try {
       response = await fetcher(`${normalizeApiUrl(apiUrl)}${path}`, {
         method,
         credentials: "omit",
+        ...(global.AbortSignal?.timeout ? { signal: global.AbortSignal.timeout(25000) } : {}),
         headers: { Authorization: `Bearer ${token.trim()}`, ...(body ? { "Content-Type": "application/json" } : {}) },
         ...(body ? { body: JSON.stringify(body) } : {}),
       });
@@ -73,6 +74,7 @@
       try {
         response = await fetcher(`${base}/ingest/images?idempotency_key=${encodeURIComponent(key)}`, {
           method: "PUT", credentials: "omit",
+          ...(global.AbortSignal?.timeout ? { signal: global.AbortSignal.timeout(25000) } : {}),
           headers: { Authorization: `Bearer ${token.trim()}`, "Content-Type": image.data.type || "application/octet-stream" },
           body: image.data,
         });
@@ -86,12 +88,14 @@
       } else if ([409, 413, 415].includes(response.status)) {
         totals.skipped += 1;
         await storage.markImageUploaded(image.id, "skipped");
-      } else if (response.status === 503) {
-        throw new Error("Máy chủ TrọCheck chưa bật lưu ảnh. Bài đã gửi, ảnh sẽ gửi ở lần sau.");
-      } else if (STATUS_MESSAGES[response.status]) {
-        throw new Error(STATUS_MESSAGES[response.status]);
+      } else if (response.status >= 500 || STATUS_MESSAGES[response.status]) {
+        const error = new Error(STATUS_MESSAGES[response.status] ?? (response.status === 503
+          ? "Máy chủ TrọCheck chưa bật lưu ảnh. Bài đã gửi, ảnh sẽ gửi ở lần sau."
+          : `Không gửi được ảnh (HTTP ${response.status}). Ảnh được giữ lại để gửi sau.`));
+        error.status = response.status;
+        throw error;
       } else {
-        totals.skipped += 1; // 404 and other answers: leave unmarked so a later send can retry
+        totals.skipped += 1; // Leave unmarked so a later send can retry.
       }
       onProgress?.(totals);
     }

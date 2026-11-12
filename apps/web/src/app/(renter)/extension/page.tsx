@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { ExtensionFlow } from '@/features/landing/ExtensionFlow';
 import styles from './page.module.css';
 
-export const metadata: Metadata = { title: 'Extension · Tiện ích Chrome' };
+export const metadata: Metadata = { title: 'Extension · Chrome và Microsoft Edge' };
 
 const DOWNLOAD_URL = '/downloads/trocheck-collector.zip';
 
@@ -11,21 +11,16 @@ export default function ExtensionPage() {
   return <div className={`container ${styles.page}`}>
     <div className={styles.intro}>
       <header>
-        <p className={styles.eyebrow}>Tiện ích Chrome</p>
+        <p className={styles.eyebrow}>Tiện ích Chrome và Microsoft Edge</p>
         <h1>Lưu bài trọ ngay khi lướt Facebook.</h1>
-        <p className={styles.lead}>TrọCheck Collector lưu các bài bạn cuộn qua trong nhóm Facebook, ngay trên máy bạn. Số điện thoại được che trước khi lưu.</p>
-        <ol className={styles.steps}>
-          <li>Mở một nhóm Facebook hoặc trang tìm kiếm rồi cuộn như bình thường.</li>
-          <li>Mở bảng dữ liệu của extension để xem bài đã lưu, lọc bài cho thuê và tách thông tin.</li>
-          <li>Khi muốn, bấm gửi về kho TrọCheck để nhóm duyệt và so giá.</li>
-        </ol>
+        <p className={styles.lead}>TrọCheck Collector lưu bài bạn cuộn qua trong nhóm và tìm kiếm bài viết Facebook. Sau khi kết nối, bài và ảnh được tự động gửi về kho TrọCheck, chữ được che số điện thoại trước. Bạn có thể tắt tự động gửi trong Cài đặt.</p>
       </header>
       <aside className={styles.panel} aria-labelledby="install-title">
         <h2 id="install-title">Cách cài</h2>
         <ol className={styles.steps}>
-          <li>Bấm nút tải bên dưới rồi giải nén file vừa tải.</li>
-          <li><span>Mở <code>chrome://extensions</code> và bật Developer mode.</span></li>
-          <li><span>Chọn Load unpacked rồi chọn thư mục <code>trocheck-collector</code>.</span></li>
+          <li><span>Tải và giải nén file. Mở <code>chrome://extensions</code> trên Chrome hoặc <code>edge://extensions</code> trên Microsoft Edge, bật Developer mode, chọn Load unpacked và chọn thư mục <code>trocheck-collector</code>. Hai trình duyệt dùng cùng các bước cài.</span></li>
+          <li><span>Vào <Link href="/tai-khoan">Tài khoản</Link>, đăng nhập và bấm “Kết nối extension trên trình duyệt này”. Không cần sao chép mã.</span></li>
+          <li><span>Mở một nhóm Facebook hoặc tìm kiếm bài viết rồi cuộn. Nếu Facebook đã mở trước khi cài, tải lại trang đó một lần.</span></li>
         </ol>
         <div className={styles.actions}>
           <a className={styles.primary} href={DOWNLOAD_URL} download>Tải extension</a>
@@ -37,15 +32,16 @@ export default function ExtensionPage() {
       <ExtensionFlow />
     </section>
     <section className={`${styles.section} ${styles.split}`} aria-labelledby="connect-title">
-      <h2 id="connect-title">Nối với tài khoản TrọCheck.</h2>
+      <h2 id="connect-title">Kết nối tài khoản</h2>
       <div className={styles.stack}>
-        <p>Tạo token trong trang Tài khoản, rồi dán vào phần Cài đặt của extension. Tài khoản cần có quyền thu dữ liệu mới gửi được bài về kho.</p>
-        <Link className={styles.primary} href="/tai-khoan">Tạo token</Link>
+        <p>Kết nối một lần trên trình duyệt đang cài extension. Tài khoản cần có quyền thu dữ liệu (collector); nếu thiếu quyền, extension sẽ giữ bài trên máy và báo cần liên hệ quản trị viên. Tạo mã rồi dán vào Cài đặt vẫn có sẵn để dùng khi cần.</p>
+        <Link className={styles.primary} href="/tai-khoan">Kết nối extension</Link>
       </div>
     </section>
     <section className={`${styles.section} ${styles.split}`} aria-labelledby="limit-title">
       <h2 id="limit-title">Những điều cần biết.</h2>
       <ul className={styles.limits}>
+        <li>Bảng tin trang chủ, trang cá nhân, Pages, Marketplace và Messenger không được lưu. Chỉ nhóm và tìm kiếm bài viết Facebook được thu thập.</li>
         <li>Extension chỉ đọc bài đã hiện trên trang và tự bấm mở “Xem thêm”. Bài chưa mở hết chữ thì không được lưu.</li>
         <li>Bước lọc gửi nội dung tới TypeSafe, bước trích xuất gửi tới Ollama Cloud. Hai bước này cần API key của bạn và có thể mất phí.</li>
         <li>Kết quả lọc và trích xuất do model đưa ra nên có thể sai. Giao diện Facebook đổi thì extension có thể đọc thiếu.</li>

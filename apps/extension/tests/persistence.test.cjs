@@ -211,6 +211,7 @@ test('content script awaits persistence acknowledgment and retries after a faile
   let attempts = 0;
   dom.window.TroCollector = { observePosts(options) { callback = options.onPosts; return { stop() {}, flush() {} }; } };
   dom.window.chrome = { runtime: { sendMessage: async message => {
+    if (message.type === 'COLLECTOR_STATUS') return { ok: true };
     assert.equal(message.type, 'SAVE_RAW_POSTS');
     attempts++;
     return attempts === 1 ? { ok: false, error: 'Write failed' } : { ok: true, saved: 1 };

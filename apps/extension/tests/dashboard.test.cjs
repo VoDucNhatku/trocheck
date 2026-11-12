@@ -168,3 +168,38 @@ test('settings keep Ollama configuration without reusing the old OpenRouter key 
   assert.equal(settings.ollamaExtractionModel, 'gemma:cloud');
   assert.equal(settings.apiKey, 'old-openrouter-key');
 });
+
+test('dashboard forwards manual connection, send, auto-send and disconnect through the worker', async t => {
+  const { dom, settings } = setup(t, []);
+  dom.window.eval(script('trocheck.js'));
+  const messages = [];
+  dom.window.chrome.runtime = { sendMessage: async message => {
+    messages.push(message);
+    if (message.type === 'CONNECT_MANUAL') {
+      Object.assign(settings, { trocheckToken: message.token, trocheckAccount: 'tester', trocheckAutoSend: true });
+      return { ok: true, account: 'tester' };
+    }
+    if (message.type === 'SEND_NOW') return { ok: true, result: { total: 1, created: 1, duplicate: 0, rejected: 0 } };
+    if (message.type === 'AUTO_SEND') settings.trocheckAutoSend = message.enabled;
+    if (message.type === 'DISCONNECT') delete settings.trocheckToken;
+    return { ok: true };
+  } };
+  dom.window.document.querySelector('[data-page="settings"]').click();
+  await until(() => dom.window.document.querySelector('#trocheck-api').value.includes('onrender.com'));
+  dom.window.document.querySelector('#trocheck-token').value = 'fake-token';
+  dom.window.document.querySelector('#trocheck-form').dispatchEvent(new dom.window.Event('submit', { cancelable: true }));
+  await until(() => dom.window.document.querySelector('#trocheck-status').textContent === 'Đã kết nối: tester');
+  assert.equal(messages[0].type, 'CONNECT_MANUAL');
+  assert.equal(dom.window.document.querySelector('#trocheck-token').value, '');
+  const auto = dom.window.document.querySelector('#auto-send');
+  assert.equal(auto.checked, true);
+  auto.checked = false;
+  auto.dispatchEvent(new dom.window.Event('change'));
+  await until(() => settings.trocheckAutoSend === false);
+  dom.window.document.querySelector('#send-trocheck').click();
+  await until(() => dom.window.document.querySelector('#send-status').textContent.includes('Đã gửi 1 bài'));
+  assert.ok(messages.some(message => message.type === 'SEND_NOW'));
+  dom.window.document.querySelector('#disconnect').click();
+  await until(() => dom.window.document.querySelector('#trocheck-status').textContent.includes('Chưa kết nối'));
+  assert.equal(settings.trocheckToken, undefined);
+});

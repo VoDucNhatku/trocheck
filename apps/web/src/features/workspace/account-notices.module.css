@@ -68,6 +68,7 @@
 @media(max-width:480px){.heading h1{font-size:28px}.panel,.profile{padding:20px}.exampleNote{flex-direction:column;padding:16px}.notice{gap:12px;padding:16px 12px}.noticeIcon{width:32px;height:32px}.noticeTitle{font-size:14px}.primary{padding-inline:12px}}
 
 .panel form{display:grid;gap:12px;justify-items:start;margin-bottom:12px}
+.panel > .actions{margin-bottom:16px}
 .panel form label{display:grid;gap:6px;width:100%;font-size:14px;font-weight:600}
 .panel form input{min-height:44px;padding:0 12px;border:1px solid var(--control-edge);border-radius:var(--r-md);background:transparent;color:var(--on-night);font:inherit;font-weight:400}
 .panel [data-sensitive]{display:block;margin-bottom:12px;padding:12px;border:1px solid var(--edge2);border-radius:var(--r-md);font-family:var(--font-mono);font-size:13px;overflow-wrap:anywhere}

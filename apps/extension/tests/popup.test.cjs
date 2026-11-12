@@ -7,11 +7,12 @@ const { JSDOM } = require('jsdom');
 const script = (name) => fs.readFileSync(path.join(__dirname, '../extension', name), 'utf8');
 const settle = () => new Promise(resolve => setImmediate(resolve));
 
-function popup(t, sendMessage) {
+function popup(t, sendMessage, { url = 'https://www.facebook.com/groups/42/', state = {} } = {}) {
   const dom = new JSDOM(script('popup.html'), { runScripts: 'outside-only' });
   t.after(() => dom.window.close());
-  dom.window.chrome = { tabs: {
-    query: async () => [{ id: 12 }],
+  dom.window.chrome = { runtime: { sendMessage: async () => ({ connected: true, saved: sendMessage().posts?.length ?? 0,
+    waiting: 2, sent: 3, account: 'Người thu bài', autoSend: true, ...state }) }, tabs: {
+    query: async () => [{ id: 12, url }],
     sendMessage: async (id, message) => {
       assert.equal(id, 12);
       assert.equal(message.type, 'GET_COLLECTED_POSTS');
@@ -51,7 +52,8 @@ test('popup exports a fresh snapshot as a JSON array without adding download per
 });
 
 test('popup explains how to recover when the active tab has no collector', async (t) => {
-  const win = popup(t, () => { throw new Error('Receiving end does not exist'); });
+  const win = popup(t, () => ({ posts: [] }));
+  win.chrome.tabs.sendMessage = async () => { throw new Error('Receiving end does not exist'); };
   await settle();
   assert.equal(win.document.querySelector('#download').disabled, true);
   assert.match(win.document.querySelector('#status').textContent, /tải lại trang/);
@@ -93,4 +95,41 @@ test('dashboard opens even when the active tab has no collector', async (t) => {
   win.document.querySelector('#dashboard').click();
   await settle();
   assert.equal(opened, 'chrome-extension://test/dashboard.html');
+});
+
+test('popup reports supported tab counts, account and last send error', async t => {
+  const win = popup(t, () => ({ posts: [{ postId: '1' }] }), { state: { sync: { error: 'Tài khoản chưa có quyền thu dữ liệu. Liên hệ quản trị viên.' } } });
+  await settle();
+  assert.match(win.document.querySelector('#status').textContent, /Đã lưu 1 bài trong tab này;.*2 bài chờ gửi và 3 bài đã gửi/);
+  assert.match(win.document.querySelector('#connection').textContent, /Người thu bài.*chưa có quyền thu dữ liệu/);
+});
+
+for (const url of ['https://www.facebook.com/', 'https://www.facebook.com/profile.php?id=123', 'https://www.facebook.com/marketplace/']) {
+  test(`popup explains unsupported Facebook route ${url}`, async t => {
+    const win = popup(t, () => ({ posts: [] }), { url });
+    await settle();
+    assert.match(win.document.querySelector('#status').textContent, /Chỉ lưu nhóm và tìm kiếm bài viết Facebook/);
+    assert.equal(win.document.querySelector('#download').disabled, true);
+  });
+}
+
+test('popup explains a non-Facebook tab and offers one-click connection', async t => {
+  const win = popup(t, () => ({ posts: [] }), { url: 'https://example.org/', state: { connected: false } });
+  let opened;
+  win.chrome.tabs.create = async options => { opened = options.url; };
+  await settle();
+  assert.match(win.document.querySelector('#status').textContent, /Tab này không phải Facebook/);
+  assert.match(win.document.querySelector('#connection').textContent, /Chưa kết nối/);
+  assert.equal(win.document.querySelector('#connect').hidden, false);
+  win.document.querySelector('#connect').click();
+  assert.equal(opened, 'https://trocheck.vercel.app/tai-khoan');
+});
+
+test('popup keeps local collection visible while a supported tab is not connected', async t => {
+  const win = popup(t, () => ({ posts: [{ postId: '1' }] }), { state: { connected: false } });
+  await settle();
+  assert.match(win.document.querySelector('#status').textContent, /Đã lưu 1 bài trong tab này/);
+  assert.match(win.document.querySelector('#connection').textContent, /Chưa kết nối.*Bấm Kết nối/);
+  assert.equal(win.document.querySelector('#connect').hidden, false);
+  assert.equal(win.document.querySelector('#disconnect').hidden, true);
 });

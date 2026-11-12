@@ -32,8 +32,10 @@
         <h2>Kết nối TrọCheck</h2>
         <label>Địa chỉ API<input id="trocheck-api" type="url" autocomplete="off" spellcheck="false"></label>
         <label>Token<input id="trocheck-token" type="password" autocomplete="off" spellcheck="false"></label>
-        <p class="hint">Tạo token trong trang Tài khoản trên web TrọCheck. Bài chỉ được gửi khi bạn bấm nút gửi, và số điện thoại đã được che.</p>
+        <p class="hint">Kết nối một lần tại <a href="https://trocheck.vercel.app/tai-khoan" target="_blank" rel="noopener noreferrer">trang Tài khoản</a>, hoặc dán mã bên dưới. Sau khi kết nối, bài từ nhóm và tìm kiếm bài viết Facebook được che số điện thoại rồi tự động gửi về kho. Có thể tắt tại đây.</p>
+        <label><input id="auto-send" type="checkbox" checked>Tự động gửi bài về kho TrọCheck</label>
         <button type="submit">Lưu và kiểm tra</button>
+        <button id="disconnect" type="button">Ngắt kết nối</button>
         <p id="trocheck-status" role="status"></p>
       </form>
       <form id="settings-form" class="panel">
