@@ -56,6 +56,10 @@ class Settings(BaseSettings):
     llm_max_attempts: int = 3
     # Gemini calls the worker may make per day (Vietnam time), all accounts together. 0 = no cap.
     llm_daily_call_limit: int = Field(default=2000, ge=0)
+    review_bot_enabled: bool = False
+    review_bot_model_id: str = ""
+    review_bot_daily_call_limit: int = Field(default=500, ge=0)
+    review_bot_timeout_seconds: float = Field(default=20, gt=0, allow_inf_nan=False)
     llm_timeout_seconds: float = 45
     llm_temperature: float = 0.0
     job_max_attempts: int = 5

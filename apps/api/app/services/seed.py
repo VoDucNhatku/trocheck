@@ -9,11 +9,14 @@ import json
 import random
 from datetime import timedelta
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import REPO_ROOT
 from app.core.ids import iso, utcnow
-from app.models import IdempotencyKey, Post
+from app.models import Post, PostVersion, User
+from app.pipeline.preprocess import text_hash
+from app.pipeline.privacy import mask_phones
 from app.schemas import IngestPost
 from app.services import ingest, users
 
@@ -33,7 +36,8 @@ EXTRAS = ["thang máy", "ban công", "cửa sổ thoáng", "máy giặt riêng",
 
 def create_demo_users(session: Session, password: str) -> list[str]:
     for name, roles in DEMO_USERS.items():
-        users.create_user(session, name, password, roles)
+        if session.scalar(select(User).where(User.username == name)) is None:
+            users.create_user(session, name, password, roles)
     session.commit()
     return list(DEMO_USERS)
 
@@ -78,24 +82,34 @@ def generated_posts(n_per_cell: int = 14, seed: int = 7) -> list[tuple[str, str,
 
 def seed_demo(session: Session, *, password: str, generated: bool = True) -> dict:
     create_demo_users(session, password)
-    collector = users.authenticate(session, "collector", password)
+    collector = session.scalar(select(User).where(User.username == "collector"))
     now = utcnow()
     created = 0
+    def add(post_in: IngestPost) -> bool:
+        external_id = post_in.external_post_id or f"seed:{post_in.idempotency_key}"
+        existing = session.scalar(select(Post).where(
+            Post.is_demo.is_(True), Post.source_type == post_in.source_type,
+            Post.external_post_id == external_id))
+        if existing is None:
+            # Adopt demo rows created before stable external IDs, even after key retention.
+            existing = session.scalar(select(Post).join(PostVersion, PostVersion.post_id == Post.id).where(
+                Post.is_demo.is_(True), Post.source_type == post_in.source_type,
+                Post.external_post_id.is_(None),
+                PostVersion.text_hash == text_hash(mask_phones(post_in.text))).limit(1))
+        if existing is not None:
+            existing.external_post_id = external_id
+            session.flush()
+            return False
+        post_in = post_in.model_copy(update={"external_post_id": external_id})
+        return ingest.ingest_post(session, collector, post_in, mode="collect",
+                                  contributed=True, is_demo=True).status == "created"
+
     for path in sorted((REPO_ROOT / "spec" / "fixtures").glob("F*.json")):
         doc = json.loads(path.read_text(encoding="utf-8"))
         post_in = IngestPost.model_validate(doc["input"])
-        r = ingest.ingest_post(session, collector, post_in, mode="collect", contributed=True, is_demo=True)
-        created += r.status == "created"
+        created += add(post_in)
     if generated:
         for key, text, days in generated_posts():
-            # Generated dates depend on now. Re-seeding must not reuse a key with a
-            # different timestamp or refresh existing demo posts into the market window.
-            seen = session.get(IdempotencyKey, (key, collector.id))
-            existing = session.get(Post, seen.result_ref) if seen and seen.result_ref else None
-            if existing is not None and existing.is_demo:
-                continue
-            r = ingest.ingest_post(session, collector, _post(text, key, now - timedelta(days=days)), mode="collect",
-                                   contributed=True, is_demo=True)
-            created += r.status == "created"
+            created += add(_post(text, key, now - timedelta(days=days)))
     session.commit()
     return {"users": list(DEMO_USERS), "posts_created": created}

@@ -10,6 +10,8 @@ Mỗi quyết định quan trọng một file, theo mẫu MADR rút gọn: bối
 | [0004](ADR-0004-mo-hinh-gia.md) | Mô hình giá tách visibility / amount_form / basis / period | Đề xuất |
 | [0005](ADR-0005-nhom-so-sanh-n10.md) | Nhóm so sánh và ngưỡng N ≥ 10 | Đề xuất |
 | [0006](ADR-0006-dieu-kien-vao-thong-ke.md) | Tin vào thống kê khi được duyệt hoặc Regex/LLM đồng thuận không cờ | Đề xuất |
+| [0007](ADR-0007-postgres-neon.md) | PostgreSQL trên Neon cho Render, giữ SQLite cục bộ | Đã chốt |
+| [0008](ADR-0008-bot-duyet-chay-song-song.md) | Bot duyệt chạy song song, lưu kết quả độc lập để đo đồng thuận | Đã triển khai quan sát |
 
 "Đề xuất" chuyển thành "Đã chốt" khi cả nhóm đồng ý; ghi ngày và người chốt trong file.
 

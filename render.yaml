@@ -7,15 +7,19 @@ services:
     runtime: docker
     dockerfilePath: ./apps/api/Dockerfile
     dockerContext: .
-    # Free plan (chosen 2026-10-30): no persistent disk, so the SQLite DB is rebuilt and demo data
-    # re-seeded on every start/deploy, and the instance sleeps after ~15 idle minutes.
-    # To keep data: plan: starter and add
-    #   disk: { name: trocheck-data, mountPath: /srv/data, sizeGB: 1 }
+    # Free plan: no persistent disk; data persists when DATABASE_URL points to PostgreSQL.
+    # The instance still sleeps after about 15 idle minutes.
     plan: free
     region: singapore
     healthCheckPath: /api/v1/health
     autoDeploy: true
     envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
       - key: SECRET_KEY
         generateValue: true
       - key: COOKIE_SECURE
@@ -39,3 +43,8 @@ services:
         sync: false
       - key: GOOGLE_REDIRECT_URI
         value: "https://trocheck.vercel.app/api/auth/google/callback"
+
+# Bot duyệt chạy song song (chỉ ghi chú; mặc định tắt trên môi trường triển khai):
+# REVIEW_BOT_ENABLED=false
+# REVIEW_BOT_MODEL_ID=  # Rỗng thì dùng GEMINI_MODEL_ID.
+# REVIEW_BOT_DAILY_CALL_LIMIT=500  # 0 = không có hạn mức riêng, vẫn tính hạn mức chung.

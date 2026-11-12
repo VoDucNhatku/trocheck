@@ -1,6 +1,7 @@
 """Admin commands.
 
     python -m app.cli init-db                      # alembic upgrade head
+    python -m app.cli ensure-admin                 # first admin from ADMIN_USERNAME / ADMIN_PASSWORD
     python -m app.cli create-user NAME --roles reviewer,collector
     python -m app.cli seed [--no-generated]        # demo accounts + DEMO posts, processed
     python -m app.cli import-gold data/gold/gold-v1.jsonl
@@ -17,7 +18,7 @@ import sys
 from pathlib import Path
 
 from app.core.config import get_settings
-from app.core.db import session_scope
+from app.core.db import redact_url, session_scope
 
 
 def init_db() -> None:
@@ -25,9 +26,38 @@ def init_db() -> None:
     from alembic.config import Config
 
     cfg = Config(str(Path(__file__).resolve().parents[1] / "alembic.ini"))
-    cfg.set_main_option("sqlalchemy.url", get_settings().database_url)
+    # "%" must be doubled: Alembic runs the value through ConfigParser interpolation.
+    cfg.set_main_option("sqlalchemy.url", get_settings().database_url.replace("%", "%%"))
     command.upgrade(cfg, "head")
-    print("database ready:", get_settings().database_url)
+    print("Cơ sở dữ liệu sẵn sàng:", redact_url(get_settings().database_url))
+
+
+def ensure_admin(_args) -> None:
+    """Create the first admin on a fresh database. An existing account is never touched, so the
+    command is safe on every start. The password is never printed."""
+    from sqlalchemy import select
+
+    from app.core.security import validate_password
+    from app.models import User
+    from app.services import users
+
+    username = os.environ.get("ADMIN_USERNAME", "").strip()
+    password = os.environ.get("ADMIN_PASSWORD", "")
+    if not username or not password:
+        print("ensure-admin: thiếu ADMIN_USERNAME hoặc ADMIN_PASSWORD, không thay đổi dữ liệu")
+        return
+    with session_scope() as session:
+        if session.scalar(select(User).where(User.username == username)) is not None:
+            print(f"ensure-admin: tài khoản {username} đã tồn tại, giữ nguyên")
+            return
+        try:
+            if len(username) > 80:
+                raise ValueError("ADMIN_USERNAME dài quá 80 ký tự")
+            validate_password(password)
+        except ValueError as exc:
+            raise SystemExit(f"ensure-admin: {exc}") from None
+        users.create_user(session, username, password, ["admin"])
+    print(f"ensure-admin: đã tạo tài khoản quản trị {username}")
 
 
 def create_user(args) -> None:
@@ -48,7 +78,7 @@ def seed(args) -> None:
         raise SystemExit("Set SEED_PASSWORD in the root .env or process environment before seeding.")
     with session_scope() as session:
         result = seed_demo(session, password=password, generated=not args.no_generated)
-    processed = drain(get_settings(), llm=None)
+    processed = drain(get_settings(), llm=None, demo_only=True)
     print(json.dumps({**result, "jobs_processed": processed}, ensure_ascii=False))
     print("Demo data is visible only with DEMO_MODE=true. Demo accounts share the seed password.")
 
@@ -105,10 +135,21 @@ def remove_post(args) -> None:
         print("removed" if run(session, args.post_id) else "not found")
 
 
+def bot_review_backlog(args) -> None:
+    from app.services.bot_reviews import enqueue_backlog
+
+    if args.limit < 1:
+        raise SystemExit("--limit phải là số nguyên dương")
+    with session_scope() as session:
+        count = enqueue_backlog(session, get_settings(), limit=args.limit)
+    print(f"Đã đưa {count} công việc duyệt thử vào hàng đợi.")
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="python -m app.cli")
     sub = parser.add_subparsers(dest="cmd", required=True)
     sub.add_parser("init-db")
+    sub.add_parser("ensure-admin")
     p = sub.add_parser("create-user")
     p.add_argument("username")
     p.add_argument("--roles", required=True)
@@ -121,9 +162,11 @@ def main(argv: list[str] | None = None) -> None:
     sub.add_parser("purge")
     p = sub.add_parser("remove-post")
     p.add_argument("post_id")
+    p = sub.add_parser("bot-review-backlog")
+    p.add_argument("--limit", type=int, default=1000)
     args = parser.parse_args(argv)
-    {"init-db": lambda a: init_db(), "create-user": create_user, "seed": seed, "import-gold": import_gold,
-     "purge": purge, "remove-post": remove_post}[args.cmd](args)
+    {"init-db": lambda a: init_db(), "ensure-admin": ensure_admin, "create-user": create_user, "seed": seed, "import-gold": import_gold,
+     "purge": purge, "remove-post": remove_post, "bot-review-backlog": bot_review_backlog}[args.cmd](args)
 
 
 if __name__ == "__main__":

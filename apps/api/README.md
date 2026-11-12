@@ -19,6 +19,30 @@ Từ gốc repo: `make setup|api|worker|dev|seed|test|lint|eval`, trên Windows 
 
 Biến môi trường: xem [.env.example](../../.env.example). `GEMINI_API_KEY` và `GEMINI_MODEL_ID` chỉ cần cho worker; thiếu thì pipeline chạy Regex và ghi `llm_status = not_run`.
 
+## PostgreSQL và SQLite
+
+Không đặt `DATABASE_URL` thì tiếp tục dùng SQLite WAL. Trên Render, đặt chuỗi kết nối trực tiếp
+Neon vào `DATABASE_URL` sau khi triển khai mã hỗ trợ PostgreSQL; không gửi chuỗi thật vào chat hoặc git.
+Các dạng `postgres://`, `postgresql://`, `postgresql+psycopg://` đều dùng psycopg 3, giữ tham số SSL.
+Xem [hướng dẫn Neon](../../docs/05-delivery/25-host-vercel-render.md#database-trên-neon)
+và [ADR-0007](../../docs/decisions/ADR-0007-postgres-neon.md).
+
+Khởi động chạy `init-db`, `ensure-admin`, rồi `seed` khi có `DEMO_MODE=true` và `SEED_PASSWORD`.
+`ensure-admin` đọc `ADMIN_USERNAME`/`ADMIN_PASSWORD`; thiếu một biến thì thoát thành công,
+tài khoản mới có vai trò `admin` và mật khẩu phải đáp ứng quy tắc hiện có. Tài khoản đã tồn tại
+giữ nguyên mật khẩu và vai trò, kể cả khi chưa có quyền admin. Khi từ chối mật khẩu yếu/không hợp lệ,
+`ensure-admin` trực tiếp vẫn thoát khác 0; `start.sh` ghi một dòng không chứa mật khẩu và tiếp tục chạy API/worker.
+Seed giữ nguyên tài khoản đã có. Mỗi bài demo có `external_post_id` ổn định và ràng buộc duy nhất theo
+loại nguồn/ID, nên purge khóa idempotency không tạo lại bài. Demo cũ chưa có ID được nhận lại bằng
+loại nguồn và hash văn bản đã che số trước khi gán ID. Không còn dùng tệp `/srv/data/.seeded`.
+`SEED_PASSWORD` chỉ đặt mật khẩu tài khoản demo mới: nếu `ADMIN_USERNAME=admin` đã được tạo trước,
+tài khoản `admin` giữ mật khẩu `ADMIN_PASSWORD` của nó. Seed chỉ xử lý job trích xuất demo, giữ nguyên job thật.
+
+Chạy bộ test mặc định bằng SQLite; đặt `TEST_DATABASE_URL` để chạy với PostgreSQL cục bộ
+dành riêng cho test. Bộ test xóa và tạo lại schema `public`; tuyệt đối không dùng database thật.
+Hai kiểm tra migration và tranh chấp job chỉ chạy khi có PostgreSQL. Worker thăm dò mỗi giây
+và health check chạy `SELECT 1`, nên Neon vẫn thức khi phiên Render đang thức.
+
 ## Kiến trúc trong code
 
 ```mermaid
@@ -84,7 +108,7 @@ flowchart LR
 
 API/worker/CLI đọc `.env` ở repo root. Khởi tạo an toàn bằng `python scripts/init-local-env.py`; file có sẵn được giữ nguyên. Dùng đường dẫn SQLite tuyệt đối, ví dụ `sqlite:///F:/TMG Final Project/rener-vn-latest/data/db/web-api-dev.sqlite`; đường dẫn tương đối được tính theo cwd, có thể dẫn tới nhiều DB ngoài ý muốn. Không ghi đè/xóa DB có sẵn. Default của `Settings` khi không đặt DATABASE_URL cũng là đường dẫn tuyệt đối dưới repo.
 
-`SEED_PASSWORD` nay đọc qua Settings, vì vậy `.env` root có hiệu lực cho CLI; đối số hoặc biến môi trường tiến trình được ưu tiên. Thiếu mật khẩu thì seed dừng với thông báo, không dùng mật khẩu mặc định. Script khởi tạo sinh secret/mật khẩu mà không in ra log. Seed idempotent nạp demo và gọi worker `drain` với Regex; worker nền chạy riêng bằng `python -m app.worker.run`.
+`SEED_PASSWORD` nay đọc qua Settings, vì vậy `.env` root có hiệu lực cho CLI; đối số hoặc biến môi trường tiến trình được ưu tiên. Thiếu mật khẩu thì seed dừng với thông báo, không dùng mật khẩu mặc định. Script khởi tạo sinh secret/mật khẩu mà không in ra log. Seed nạp demo và gọi worker `drain` với Regex chỉ cho job trích xuất của bài demo; worker nền xử lý bài thật riêng bằng `python -m app.worker.run`.
 
 `app/schemas/public.py` khai báo response DTO cho listings/detail/comparison/stats, bảo toàn nullable và các khóa serializer. `/listings` thêm `is_demo` ở envelope để xác định dataset ngay cả khi kho rỗng; các trường cũ vẫn giữ. Không thay ngưỡng, phân loại hay luật thống kê. Mảng query dùng key lặp: `ward=A&ward=B&type=ccmn&type=phong_tro`.
 

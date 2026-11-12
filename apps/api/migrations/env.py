@@ -2,10 +2,10 @@ from alembic import context
 
 import app.models  # noqa: F401 - registers tables on Base.metadata
 from app.core.config import get_settings
-from app.core.db import Base, make_engine
+from app.core.db import Base, make_engine, normalize_url
 
 config = context.config
-url = config.get_main_option("sqlalchemy.url") or get_settings().database_url
+url = normalize_url(config.get_main_option("sqlalchemy.url") or get_settings().database_url)
 
 
 def run_offline() -> None:
@@ -20,6 +20,7 @@ def run_online() -> None:
         context.configure(connection=connection, target_metadata=Base.metadata, render_as_batch=True)
         with context.begin_transaction():
             context.run_migrations()
+    engine.dispose()
 
 
 if context.is_offline_mode():

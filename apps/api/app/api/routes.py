@@ -20,7 +20,7 @@ from app.models import User
 from app.schemas import IngestBatch, IngestPost, LabRunRequest, LoginRequest, RegisterRequest, ReviewDecision, TokenCreate
 from app.schemas.public import Comparison, ErrorResponse, ListingDetail, ListingsResponse, StatsOverview
 from app.schemas import workspace as dto
-from app.services import analyses, evaluation, images, ingest, lab, listings, market, reviews, team, users
+from app.services import analyses, bot_reviews, evaluation, images, ingest, lab, listings, market, reviews, team, users
 
 router = APIRouter(prefix="/api/v1")
 
@@ -188,6 +188,18 @@ def export(format: Literal["csv", "json"] = "csv", include_demo: bool = False,
     content, media = team.export(session, fmt=format, include_demo=include_demo)
     return Response(content, media_type=media,
                     headers={"Content-Disposition": f'attachment; filename="rener-listings.{format}"'})
+
+
+@router.get("/team/bot-reviews/summary", tags=["team"])
+def bot_review_summary(user: User = Depends(require_roles("reviewer")), session: Session = Depends(get_session),
+                       settings: Settings = Depends(settings_dep)):
+    return bot_reviews.summary(session, settings)
+
+
+@router.get("/team/bot-reviews", tags=["team"])
+def bot_review_page(page: int = Query(1, ge=1), page_size: int = Query(50, ge=1, le=200),
+                    user: User = Depends(require_roles("admin")), session: Session = Depends(get_session)):
+    return bot_reviews.page(session, page=page, page_size=page_size)
 
 
 @router.get("/team/reviews", tags=["team"], response_model=dto.ReviewQueue)

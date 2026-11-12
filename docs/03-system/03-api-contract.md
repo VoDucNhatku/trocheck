@@ -173,6 +173,44 @@ Khi `status ≠ ok` thì `median`, `p25`, `p75`, `delta_percent`, `verdict` là 
 
 ## 5. Giới hạn mặc định (cấu hình được)
 
+### API kết quả bot duyệt thử
+
+Endpoint tổng hợp dành cho `reviewer` hoặc `admin`; danh sách từng listing chỉ dành cho `admin`.
+Chưa đăng nhập: 401; vai trò không được phép: 403 (kể cả reviewer gọi danh sách từng listing).
+Bot chạy song song, không tự duyệt. Endpoint chi tiết `GET /team/reviews/{listing_id}` không trả kết quả bot.
+
+| Endpoint (tiền tố `/api/v1`) | Dữ liệu trả về |
+|---|---|
+| `GET /team/bot-reviews/summary` | `enabled`, `by_status` (`ok`, `error`), `by_verdict` (`approve`, `reject`, `unsure`), `compared`, `agreed`, `agreement_rate`, `bot_approve_human_reject`, `bot_reject_human_approve`, `unsure_share` |
+| `GET /team/bot-reviews?page=1&page_size=50` | `items`, `total`, `page`, `page_size`; mỗi hàng có `id`, `listing_id`, `listing_version`, `model_id`, `prompt_version`, `status`, `verdict`, `confidence`, `reason`, `error_code`, `created_at`, `human_decision` |
+
+`page >= 1`, `1 <= page_size <= 200`. Sắp xếp mới nhất trước; một hàng cho mỗi lần thử đã lưu,
+kể cả lỗi (`verdict`, `confidence` có thể null). `human_decision` là approve/reject của đúng phiên bản
+listing mà bot đã đọc, null nếu chưa có, nếu chỉ có merge/split hoặc nếu lần bot đó bị lỗi.
+Lịch sử mới ghi số phiên bản vào `review_events.before_json.version`; lịch sử cũ suy ra từ thứ tự sự kiện.
+
+Thống kê loại toàn bộ listing demo, kể cả kết quả demo đã lưu trước đây. `by_status` đếm mọi lần thử
+của dữ liệu thật; `by_verdict` chỉ đếm kết quả `ok`. So sánh lấy kết quả `ok` mới nhất của mỗi
+listing và quyết định người trên đúng phiên bản, được ghi từ lúc bot chạy trở đi. `compared` bao gồm
+`unsure` nếu đã có quyết định người; `agreed` chỉ tăng khi hai bên cùng approve hoặc cùng reject.
+`agreement_rate = agreed / compared`, null khi chưa có cặp; `unsure_share = số unsure / số ok`,
+null khi chưa có kết quả thành công. Các chỉ số này chưa phải độ chính xác so với nhãn chuẩn.
+Chưa đo độ chính xác thực tế; Gemini chưa từng được gọi bằng khóa thật trong phần triển khai này.
+
+| Biến môi trường | Mặc định | Ý nghĩa |
+|---|---|---|
+| `REVIEW_BOT_ENABLED` | `false` | Bật job duyệt thử; thiếu khóa Gemini thì không tạo job hoặc gọi bot |
+| `REVIEW_BOT_MODEL_ID` | rỗng | Rỗng thì dùng `GEMINI_MODEL_ID` |
+| `REVIEW_BOT_DAILY_CALL_LIMIT` | `500` | Hạn mức riêng theo ngày Việt Nam, 0 là không có hạn mức riêng; vẫn tính vào hạn mức chung |
+| `REVIEW_BOT_TIMEOUT_SECONDS` | `20` | Số giây timeout chờ mạng cho mỗi pha HTTP của bot, phải hữu hạn và lớn hơn 0; độc lập với timeout trích xuất |
+
+Hết hạn mức chung hoặc riêng thì bot chờ tới 00:00 Việt Nam hôm sau. Job phân tích/trích xuất được ưu tiên
+trước bot ở lần claim tiếp theo. Mỗi claim bot xử lý tối đa một listing và đưa job lại hàng đợi nếu còn;
+job mới đến có thể chờ một lượt gọi bot đang chạy, cộng xử lý cục bộ và giao dịch DB. Timeout HTTP là
+theo pha, không phải giới hạn tuyệt đối 20 giây cho toàn lượt. Bot mặc định tắt trên môi trường triển khai.
+
+### Các giới hạn chung
+
 | Mục | Giá trị khởi đầu |
 |---|---|
 | Độ dài `text` | ≤ 20.000 ký tự |

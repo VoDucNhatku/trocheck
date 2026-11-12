@@ -12,7 +12,10 @@ def upgrade() -> None:
     # Add columns in place: rebuilding users would conflict with existing foreign keys.
     op.add_column("users", sa.Column("email", sa.String(254), nullable=True))
     op.add_column("users", sa.Column("auth_version", sa.Integer(), nullable=False, server_default="0"))
-    op.create_index("uq_users_email", "users", ["email"], unique=True)
+    if op.get_bind().dialect.name == "postgresql":
+        op.create_unique_constraint("uq_users_email", "users", ["email"])
+    else:
+        op.create_index("uq_users_email", "users", ["email"], unique=True)
     op.create_table("password_reset_tokens",
         sa.Column("id", sa.String(26), primary_key=True),
         sa.Column("user_id", sa.String(26), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
@@ -25,6 +28,9 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table("password_reset_tokens")
-    op.drop_index("uq_users_email", table_name="users")
+    if op.get_bind().dialect.name == "postgresql":
+        op.drop_constraint("uq_users_email", "users", type_="unique")
+    else:
+        op.drop_index("uq_users_email", table_name="users")
     op.drop_column("users", "auth_version")
     op.drop_column("users", "email")

@@ -18,9 +18,9 @@ from datetime import timedelta
 from app.core.config import Settings, get_settings
 from app.core.db import session_factory
 from app.core.ids import vn_day_start
-from app.models import Post, PostVersion
+from app.models import Job, Post, PostVersion
 from app.pipeline.llm_extractor import LlmBudgetExceeded, LlmClient
-from app.services import jobs
+from app.services import bot_reviews, jobs
 from app.services.processing import llm_calls_today, process_job
 
 log = logging.getLogger("rener.worker")
@@ -55,18 +55,34 @@ def client_for(session, job, llm: LlmClient | None, settings: Settings) -> LlmCl
     return SpentBudget(llm.model_id)
 
 
-def run_one(settings: Settings, llm: LlmClient | None, worker_id: str) -> bool:
+def bot_client(settings: Settings, llm: LlmClient | None) -> LlmClient | None:
+    if not bot_reviews.enabled(settings):
+        return None
+    model_id = settings.review_bot_model_id or settings.gemini_model_id
+    from app.pipeline.llm_client import GeminiClient
+
+    if llm is not None and not isinstance(llm, GeminiClient) and (not settings.review_bot_model_id or llm.model_id == model_id):
+        return llm
+    return make_llm(settings.model_copy(update={"gemini_model_id": model_id,
+                                                "llm_timeout_seconds": settings.review_bot_timeout_seconds}))
+
+
+def run_one(settings: Settings, llm: LlmClient | None, worker_id: str, *, demo_only: bool = False) -> bool:
     """Process one due job. Returns False when the queue is empty."""
     factory = session_factory()
     with factory() as session:
-        job = jobs.claim(session, worker_id, settings.job_lock_seconds)
+        job = jobs.claim(session, worker_id, settings.job_lock_seconds, demo_only=demo_only)
         if job is None:
             return False
         job_id = job.id
         try:
-            process_job(session, job, llm=client_for(session, job, llm, settings), settings=settings)
+            if job.kind == "bot_review":
+                bot_reviews.process_job(session, job, llm=bot_client(settings, llm), settings=settings)
+            else:
+                process_job(session, job, llm=client_for(session, job, llm, settings), settings=settings)
             session.commit()
-            log.info("job %s succeeded", job_id)
+            completed = session.get(Job, job_id, populate_existing=True)
+            log.info("job %s: %s", job_id, completed.status if completed else "removed")
         except LlmBudgetExceeded:
             session.rollback()
             jobs.defer(session, job_id, until=vn_day_start() + timedelta(days=1), code="llm_daily_limit")
@@ -78,7 +94,7 @@ def run_one(settings: Settings, llm: LlmClient | None, worker_id: str) -> bool:
             log.warning("job %s failed: %s", job_id, type(exc).__name__)
             job = jobs.mark_failed(session, job_id, code=type(exc).__name__, message=str(exc)[:200],
                                    max_attempts=settings.job_max_attempts)
-            if job.status == "failed" and job.post_version_id:
+            if job.status == "failed" and job.post_version_id and job.kind != "bot_review":
                 version = session.get(PostVersion, job.post_version_id)
                 post = session.get(Post, version.post_id) if version else None
                 if post is not None:
@@ -87,11 +103,12 @@ def run_one(settings: Settings, llm: LlmClient | None, worker_id: str) -> bool:
     return True
 
 
-def drain(settings: Settings | None = None, llm: LlmClient | None = None, *, limit: int = 10_000) -> int:
+def drain(settings: Settings | None = None, llm: LlmClient | None = None, *, limit: int = 10_000,
+          demo_only: bool = False) -> int:
     settings = settings or get_settings()
     worker_id = f"{socket.gethostname()}:{os.getpid()}"
     done = 0
-    while done < limit and run_one(settings, llm, worker_id):
+    while done < limit and run_one(settings, llm, worker_id, demo_only=demo_only):
         done += 1
     return done
 

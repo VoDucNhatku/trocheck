@@ -102,7 +102,7 @@ Quy tắc: `basis` chỉ là `per_unit` khi bài nói rõ (`/phòng`, `/căn`, `
 |---|---|---|
 | `landmark` | string | Mốc nguyên văn: "gần ĐH FPT" |
 | `street` | string | Tên đường nếu có |
-| `ward_code`, `ward_name` | string | Phường chuẩn hệ mới; rỗng nếu không xác định chắc chắn |
+| `ward_code`, `ward_name` | string | Đơn vị cấp xã hệ mới; mã chính thức 5 chữ số theo QĐ 19/2025/QĐ-TTg (demo: `DEMO-`); rỗng nếu tên mơ hồ, tên có dấu không khớp, chưa xác nhận được ngữ cảnh cấp huyện cũ hoặc bài nhắc tỉnh ngoài TP.HCM; xem quy tắc chuẩn hóa §5 |
 | `old_ward_name`, `old_district_name` | string | Tên cũ ghi trong bài, giữ lại để tra |
 | `resolution` | enum | `exact` ghi rõ phường · `from_street` suy từ tên đường có trong từ điển · `from_landmark` suy từ mốc có trong từ điển · `unresolved` |
 

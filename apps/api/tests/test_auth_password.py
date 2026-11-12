@@ -141,15 +141,15 @@ def test_duplicate_email_is_normalized_and_rejected(api):
     assert "email" in response.json()["error"]["field_errors"]
 
 
-def test_migration_preserves_existing_accounts_and_foreign_keys(tmp_path):
+def test_migration_preserves_existing_accounts_and_foreign_keys(database_url):
     from pathlib import Path
     from alembic import command
     from alembic.config import Config
     from sqlalchemy import MetaData, Table, inspect
     from app.core.db import make_engine
     config = Config(str(Path(__file__).resolve().parents[1] / "alembic.ini"))
-    url = f"sqlite:///{(tmp_path / 'migration.sqlite').as_posix()}"
-    config.set_main_option("sqlalchemy.url", url)
+    url = database_url
+    config.set_main_option("sqlalchemy.url", url.replace("%", "%%"))
     command.upgrade(config, "0001")
     engine = make_engine(url)
     metadata = MetaData()

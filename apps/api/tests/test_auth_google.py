@@ -157,7 +157,7 @@ def test_identity_only_trusts_google_userinfo(google, monkeypatch, kind):
         assert "private-access-token" not in str(error.value)
 
 
-def test_google_migration_preserves_existing_password_user(tmp_path):
+def test_google_migration_preserves_existing_password_user(database_url):
     from pathlib import Path
     from alembic import command
     from alembic.config import Config
@@ -165,8 +165,8 @@ def test_google_migration_preserves_existing_password_user(tmp_path):
     from app.core.db import make_engine
     from app.core.ids import utcnow
     config = Config(str(Path(__file__).resolve().parents[1] / "alembic.ini"))
-    url = f"sqlite:///{(tmp_path / 'google-migration.sqlite').as_posix()}"
-    config.set_main_option("sqlalchemy.url", url)
+    url = database_url
+    config.set_main_option("sqlalchemy.url", url.replace("%", "%%"))
     command.upgrade(config, "0002")
     engine = make_engine(url)
     users = Table("users", MetaData(), autoload_with=engine)

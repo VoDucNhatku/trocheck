@@ -134,7 +134,7 @@ def decide(session: Session, user: User, listing_id: str, body, settings: Settin
     if bumped.rowcount != 1:
         session.rollback()
         raise conflict(f"Tin đã được sửa (phiên bản {listing.version}), tải lại trước khi duyệt")
-    before = {"review_status": listing.review_status, "cluster_id": listing.cluster_id,
+    before = {"version": body.expected_version, "review_status": listing.review_status, "cluster_id": listing.cluster_id,
               "listing": serialize.listing_dict(listing)}
     old_cluster = listing.cluster_id
     if body.action == "approve":

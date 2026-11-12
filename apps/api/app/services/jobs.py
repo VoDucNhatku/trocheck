@@ -12,7 +12,7 @@ from sqlalchemy import and_, or_, select, update
 from sqlalchemy.orm import Session
 
 from app.core.ids import utcnow
-from app.models import Job
+from app.models import Job, Post, PostVersion
 
 
 def enqueue(session: Session, *, kind: str, post_version_id: str, requested_by: str | None = None) -> Job:
@@ -27,9 +27,14 @@ def _due(now):
                and_(Job.status == "running", Job.locked_until < now))
 
 
-def claim(session: Session, worker_id: str, lock_seconds: int) -> Job | None:
+def claim(session: Session, worker_id: str, lock_seconds: int, *, demo_only: bool = False) -> Job | None:
     now = utcnow()
-    candidate = session.scalar(select(Job.id).where(_due(now)).order_by(Job.created_at).limit(1))
+    query = select(Job.id).where(_due(now))
+    if demo_only:
+        query = query.where(Job.kind == "extract", Job.post_version_id.in_(
+            select(PostVersion.id).join(Post, PostVersion.post_id == Post.id).where(Post.is_demo.is_(True))))
+    candidate = session.scalar(query
+                               .order_by(Job.kind == "bot_review", Job.created_at, Job.id).limit(1))
     if candidate is None:
         return None
     result = session.execute(

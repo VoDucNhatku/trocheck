@@ -101,7 +101,9 @@ def _build_location(spans: list[Span], places: Places) -> dict:
     for sp in spans:
         kind = n.location_kind(sp.quote)
         if kind == "ward" and loc["ward_code"] is None:
-            ward = places.ward(n.strip_location_prefix(sp.quote))
+            ward = places.ward(sp.quote)
+            if ward is None and n.location_key(sp.quote) not in places.ambiguous_keys:
+                ward = places.ward(n.strip_location_prefix(sp.quote), original=sp.quote)
             if ward:
                 loc.update(ward_code=ward.code, ward_name=ward.name, resolution="exact")
         elif kind == "district" and loc["old_district_name"] is None:
