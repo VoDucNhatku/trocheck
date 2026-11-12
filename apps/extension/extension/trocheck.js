@@ -37,6 +37,16 @@
     };
   }
 
+  /** Error for a refused request. A daily cap carries the store's own wording and how long to wait. */
+  async function refusal(response, fallback) {
+    const detail = response.status === 429 ? await Promise.resolve().then(() => response.json()).catch(() => null) : null;
+    const daily = detail?.error?.code === "daily_limit";
+    const error = new Error(daily ? String(detail.error.message) : STATUS_MESSAGES[response.status] ?? fallback);
+    error.status = response.status;
+    if (daily) error.retryAfter = Math.max(60, Number(response.headers?.get?.("Retry-After")) || 3600);
+    return error;
+  }
+
   async function call({ apiUrl, token, path, method = "GET", body, fetcher = global.fetch.bind(global) }) {
     if (!String(token ?? "").trim()) throw new Error("Chưa kết nối. Mở trang Tài khoản để kết nối extension.");
     let response;
@@ -51,11 +61,7 @@
     } catch {
       throw new Error("Không kết nối được máy chủ TrọCheck.");
     }
-    if (!response.ok) {
-      const error = new Error(STATUS_MESSAGES[response.status] ?? `Máy chủ TrọCheck báo lỗi (HTTP ${response.status}).`);
-      error.status = response.status;
-      throw error;
-    }
+    if (!response.ok) throw await refusal(response, `Máy chủ TrọCheck báo lỗi (HTTP ${response.status}).`);
     return response.json();
   }
 
@@ -89,11 +95,9 @@
         totals.skipped += 1;
         await storage.markImageUploaded(image.id, "skipped");
       } else if (response.status >= 500 || STATUS_MESSAGES[response.status]) {
-        const error = new Error(STATUS_MESSAGES[response.status] ?? (response.status === 503
+        throw await refusal(response, response.status === 503
           ? "Máy chủ TrọCheck chưa bật lưu ảnh. Bài đã gửi, ảnh sẽ gửi ở lần sau."
-          : `Không gửi được ảnh (HTTP ${response.status}). Ảnh được giữ lại để gửi sau.`));
-        error.status = response.status;
-        throw error;
+          : `Không gửi được ảnh (HTTP ${response.status}). Ảnh được giữ lại để gửi sau.`);
       } else {
         totals.skipped += 1; // Leave unmarked so a later send can retry.
       }
@@ -107,11 +111,20 @@
     const unsent = (await storage.readUnsent()).filter(record => String(record.text ?? "").trim());
     const totals = { created: 0, duplicate: 0, rejected: 0 };
     const sessionId = `s-${new Date().toISOString().replace(/[^0-9]/gu, "").slice(0, 14)}`;
+    let capped = null;
     for (let start = 0; start < unsent.length; start += BATCH_SIZE) {
       const records = unsent.slice(start, start + BATCH_SIZE);
       const posts = records.map(toIngestPost);
-      const answer = await call({ apiUrl, token, fetcher, path: "/ingest/batch", method: "POST",
-        body: { client: { extension_version: version, session_id: sessionId }, posts } });
+      let answer;
+      try {
+        answer = await call({ apiUrl, token, fetcher, path: "/ingest/batch", method: "POST",
+          body: { client: { extension_version: version, session_id: sessionId }, posts } });
+      } catch (error) {
+        // Today's post allowance is used up. Photos of posts already in the store still go; then report the cap.
+        if (!error.retryAfter) throw error;
+        capped = error;
+        break;
+      }
       const byKey = new Map(answer.results.map(result => [result.idempotency_key, result.status]));
       await storage.markSent(records.flatMap((record, index) => {
         const status = byKey.get(posts[index].idempotency_key);
@@ -121,6 +134,7 @@
       onProgress?.({ ...totals, total: unsent.length });
     }
     const images = await sendImages({ storage, apiUrl, token, fetcher });
+    if (capped) throw capped;
     return { ...totals, total: unsent.length, images };
   }
 

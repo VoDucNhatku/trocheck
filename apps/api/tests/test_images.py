@@ -64,9 +64,9 @@ def test_bad_files_and_other_people_are_refused(api, monkeypatch):
     c.post(f"{V1}/ingest/batch", json=batch(post_payload("img-2", CCMN)))
     assert c.put(f"{V1}/ingest/images", params={"idempotency_key": "img-2"}, content=b"not an image").status_code == 415
     assert c.put(f"{V1}/ingest/images", params={"idempotency_key": "img-2"}, content=b"").status_code == 413
-    # Another collector cannot attach photos to this post; renters cannot upload at all.
+    # Nobody else can attach photos to this post: the key belongs to the account that sent it.
     assert api.client("reviewer").put(f"{V1}/ingest/images", params={"idempotency_key": "img-2"}, content=JPEG).status_code == 404
-    assert api.client("renter").put(f"{V1}/ingest/images", params={"idempotency_key": "img-2"}, content=JPEG).status_code == 403
+    assert api.client("renter").put(f"{V1}/ingest/images", params={"idempotency_key": "img-2"}, content=JPEG).status_code == 404
     monkeypatch.setenv("POST_IMAGE_MAX_BYTES", "100")
     from app.core import config
     config.get_settings.cache_clear()

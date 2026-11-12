@@ -70,7 +70,7 @@ export function ExtensionTokens() {
   const active = items?.filter(item => !item.revoked_at) ?? [];
   return <section className={s.panel} aria-labelledby="account-extension-title">
     <h2 id="account-extension-title">Các kết nối của bạn</h2>
-    <p className={s.note}>Kết nối một lần để tự động gửi bài và ảnh từ nhóm, tìm kiếm bài viết Facebook về kho; chữ được che số điện thoại trước. Có thể tắt tự động gửi trong Cài đặt của extension. Tài khoản cần có quyền thu dữ liệu (collector).</p>
+    <p className={s.note}>Kết nối một lần để tự động gửi bài và ảnh từ nhóm, tìm kiếm bài viết Facebook về kho; chữ được che số điện thoại trước. Có thể tắt tự động gửi trong Cài đặt của extension. Mỗi tài khoản có giới hạn số bài mới mỗi ngày; phần vượt giới hạn tự gửi tiếp vào hôm sau.</p>
     <div className={s.actions}><Button type="button" busy={busy} onClick={connect}>Kết nối extension trên trình duyệt này</Button></div>
     {missingExtension && <p className={s.note}><Link href="/extension">Xem cách cài extension trên Chrome hoặc Microsoft Edge</Link></p>}
     <form onSubmit={create}>

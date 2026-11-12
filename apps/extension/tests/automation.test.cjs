@@ -24,7 +24,7 @@ function worker({ config = {}, fetcher, factory = new IDBFactory(), session = {}
   const tab = { id: 1, url: 'https://www.facebook.com/groups/42/' };
   const context = vm.createContext({ indexedDB: factory, IDBKeyRange, URL, Blob, AbortController, setTimeout, clearTimeout,
     console: { error() {} }, fetch: fetcher || (async () => { throw new Error('No network expected'); }),
-    chrome: { runtime: { id: 'extension', getURL: path => `chrome-extension://extension/${path}`, getManifest: () => ({ version: '0.3.0' }),
+    chrome: { runtime: { id: 'extension', getURL: path => `chrome-extension://extension/${path}`, getManifest: () => ({ version: '0.3.1' }),
       onMessage: { addListener(fn) { listener = fn; } } },
       storage: { local: localStore(config), session: localStore(session) },
       tabs: { get: async () => tab, query: async () => [tab], onUpdated: { addListener(fn) { onUpdated = fn; } } },
@@ -243,6 +243,26 @@ for (const status of [503, 429, 'network']) {
     assert.match(config.trocheckSync.error, /vẫn ở trên máy/);
   });
 }
+
+test('a daily cap waits until the store says, keeps the rest local and still sends photos', async () => {
+  const config = connected();
+  const paths = [];
+  const capped = { ok: false, status: 429, headers: { get: name => name === 'Retry-After' ? '7200' : null },
+    json: async () => ({ error: { code: 'daily_limit', message: 'Hôm nay tài khoản này đã gửi đủ 200 bài mới.' } }) };
+  const bg = worker({ config, fetcher: async url => { paths.push(new URL(url).pathname.split('/').pop()); return capped; } });
+  bg.context.TroStorage.readImagesToUpload = async () => [{ image: { id: 'i1', data: new Blob(['x'], { type: 'image/jpeg' }) }, record: rawPost('900') }];
+  await bg.save(); bg.alarm('send-to-trocheck');
+  await until(() => config.trocheckSync?.nextAttempt);
+  assert.deepEqual(paths, ['batch', 'images']);
+  assert.equal(config.trocheckSync.blocked, false);
+  assert.equal(config.trocheckSync.daily, true);
+  assert.equal((await bg.context.TroStorage.readUnsent()).length, 1);
+  const wait = config.trocheckSync.nextAttempt - Date.now();
+  assert.ok(wait > 7200 * 1000 && wait < 7200 * 1000 + 70000, String(wait));
+  assert.equal(bg.alarms.get('send-to-trocheck').when, config.trocheckSync.nextAttempt);
+  assert.match(config.trocheckSync.error, /^Hôm nay tài khoản này đã gửi đủ 200 bài mới\. Phần còn lại vẫn ở trên máy và sẽ tự gửi tiếp sau 0 giờ\.$/);
+  assert.match((await bg.save([rawPost('901')])).note, /sau 0 giờ/);
+});
 
 test('auto-send off and disconnect keep local data, while manual send remains available', async () => {
   let calls = 0;

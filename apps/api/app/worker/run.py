@@ -13,13 +13,15 @@ import logging
 import os
 import socket
 import time
+from datetime import timedelta
 
 from app.core.config import Settings, get_settings
 from app.core.db import session_factory
+from app.core.ids import vn_day_start
 from app.models import Post, PostVersion
-from app.pipeline.llm_extractor import LlmClient
+from app.pipeline.llm_extractor import LlmBudgetExceeded, LlmClient
 from app.services import jobs
-from app.services.processing import process_job
+from app.services.processing import llm_calls_today, process_job
 
 log = logging.getLogger("rener.worker")
 
@@ -32,6 +34,27 @@ def make_llm(settings: Settings) -> LlmClient | None:
                         temperature=settings.llm_temperature, timeout=settings.llm_timeout_seconds)
 
 
+class SpentBudget:
+    """Stands in for the Gemini client once today's call budget is used up. Posts that Regex or the
+    cache can finish still go through; the first one that needs a call raises LlmBudgetExceeded."""
+
+    def __init__(self, model_id: str):
+        self.model_id = model_id
+
+    def generate(self, prompt: str):
+        raise LlmBudgetExceeded()
+
+
+def client_for(session, job, llm: LlmClient | None, settings: Settings) -> LlmClient | None:
+    if llm is None or not settings.llm_daily_call_limit or llm_calls_today(session) < settings.llm_daily_call_limit:
+        return llm
+    version = session.get(PostVersion, job.post_version_id) if job.post_version_id else None
+    # Someone is waiting for an analysis: answer now with Regex only. Collected posts can wait a day.
+    if version is not None and version.post.mode == "assess":
+        return None
+    return SpentBudget(llm.model_id)
+
+
 def run_one(settings: Settings, llm: LlmClient | None, worker_id: str) -> bool:
     """Process one due job. Returns False when the queue is empty."""
     factory = session_factory()
@@ -41,9 +64,14 @@ def run_one(settings: Settings, llm: LlmClient | None, worker_id: str) -> bool:
             return False
         job_id = job.id
         try:
-            process_job(session, job, llm=llm, settings=settings)
+            process_job(session, job, llm=client_for(session, job, llm, settings), settings=settings)
             session.commit()
             log.info("job %s succeeded", job_id)
+        except LlmBudgetExceeded:
+            session.rollback()
+            jobs.defer(session, job_id, until=vn_day_start() + timedelta(days=1), code="llm_daily_limit")
+            session.commit()
+            log.info("job %s waits for tomorrow: daily LLM budget used up", job_id)
         except Exception as exc:  # noqa: BLE001 - every failure is recorded on the job
             session.rollback()
             # Never log post text or keys: type and short message only.

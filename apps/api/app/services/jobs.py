@@ -51,6 +51,17 @@ def mark_succeeded(job: Job) -> None:
     job.error_code = job.error_message = None
 
 
+def defer(session: Session, job_id: str, *, until, code: str) -> Job:
+    """Back to queued until `until`. The job did not fail, so the attempt it just used is given back."""
+    job = session.get(Job, job_id, populate_existing=True)
+    job.status = "queued"
+    job.run_after = until
+    job.locked_until = None
+    job.attempt = max(0, job.attempt - 1)
+    job.error_code, job.error_message = code[:50], None
+    return job
+
+
 def mark_failed(session: Session, job_id: str, *, code: str, message: str, max_attempts: int) -> Job:
     """Temporary failure -> back to queued with backoff; out of attempts -> failed."""
     job = session.get(Job, job_id, populate_existing=True)

@@ -3,10 +3,11 @@ then M8 dedup. Re-processing never overwrites history: older listings become non
 """
 from __future__ import annotations
 
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.config import Settings
+from app.core.ids import vn_day_start
 from app.models import Cluster, ExtractionRun, Job, Listing, LlmCache, Post, PostVersion
 from app.pipeline import dedup
 from app.pipeline.engine import PipelineResult, run_pipeline
@@ -19,6 +20,12 @@ from app.services.serialize import field_rows, lookup_columns
 
 def cache_key(text_hash: str, model_id: str) -> str:
     return f"{text_hash}:{prompt_version()}:{model_id}"
+
+
+def llm_calls_today(session: Session) -> int:
+    """Gemini calls recorded on today's extraction runs (Vietnam day), retries included."""
+    return session.scalar(select(func.coalesce(func.sum(ExtractionRun.llm_calls), 0))
+                          .where(ExtractionRun.created_at >= vn_day_start()))
 
 
 def run_for_version(session: Session, version: PostVersion, *, llm: LlmClient | None, settings: Settings,

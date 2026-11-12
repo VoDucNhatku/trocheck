@@ -44,7 +44,8 @@ async function updateBadge(tabId, url) {
 async function sendNote() {
   const config = await settings();
   if (!config.trocheckToken) return "Chưa kết nối tài khoản nên bài chỉ lưu trên máy. Bấm biểu tượng TrọCheck để kết nối.";
-  return config.trocheckSync?.blocked ? config.trocheckSync.error : "";
+  const sync = config.trocheckSync;
+  return sync?.blocked || (sync?.daily && sync.nextAttempt > Date.now()) ? sync.error : "";
 }
 
 async function refreshBadges() {
@@ -83,14 +84,18 @@ function sendStored(manual = false) {
       const blocked = [401, 403].includes(error.status);
       // The store takes a fixed number of posts per minute, so 429 is a pause, not a failure to back off from.
       const limited = error.status === 429;
+      // A daily cap says how long until the store takes posts again: wait for that, not for a minute.
+      const daily = limited && Boolean(error.retryAfter);
       const attempts = (config.trocheckSync?.attempts || 0) + (limited ? 0 : 1);
-      const delay = limited ? 70000 : Math.min(60 * 60 * 1000, 60000 * 2 ** Math.min(attempts - 1, 6));
+      const delay = daily ? Math.min(error.retryAfter * 1000 + 60000, 25 * 60 * 60 * 1000)
+        : limited ? 70000 : Math.min(60 * 60 * 1000, 60000 * 2 ** Math.min(attempts - 1, 6));
       const nextAttempt = Date.now() + delay;
       const reason = blocked ? error.message
+        : daily ? `${error.message} Phần còn lại vẫn ở trên máy và sẽ tự gửi tiếp sau 0 giờ.`
         : limited ? `${error.message} Phần còn lại vẫn ở trên máy và sẽ tự gửi tiếp sau khoảng một phút.`
           : `${error.message} Dữ liệu vẫn ở trên máy; sẽ tự gửi lại sau ${Math.ceil(delay / 60000)} phút.`;
       if ((await settings()).trocheckToken === config.trocheckToken) {
-        await saveSettings({ trocheckSync: { blocked, error: reason, attempts, nextAttempt: blocked ? 0 : nextAttempt } });
+        await saveSettings({ trocheckSync: { blocked, daily, error: reason, attempts, nextAttempt: blocked ? 0 : nextAttempt } });
         if (blocked) await chrome.alarms?.clear?.(SEND_ALARM);
         else if (config.trocheckAutoSend !== false) await chrome.alarms?.create(SEND_ALARM, { when: nextAttempt });
       }
