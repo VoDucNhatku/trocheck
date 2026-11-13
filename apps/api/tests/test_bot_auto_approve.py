@@ -247,3 +247,14 @@ def test_publication_and_bot_result_roll_back_together_on_decision_failure(api, 
         assert session.scalar(select(func.count()).select_from(ReviewEvent)) == 0
         assert session.scalar(select(func.count()).select_from(BotReview)) == 0
         assert session.scalar(select(Job.status).where(Job.kind == "bot_review")) == "queued"
+
+
+def test_bot_approved_listing_is_published_in_my_posts(api, monkeypatch):
+    ids = ready(api, monkeypatch)
+    sender = api.client("collector")
+    assert sender.get(f"{V1}/me/posts").json()["items"][0]["status"] == "needs_review"
+    run(api)
+    with api.session() as session:
+        assert session.get(Listing, ids[0]).review_status == "approved"
+    body = sender.get(f"{V1}/me/posts", params={"group": "published"}).json()
+    assert body["total"] == 1 and body["items"][0]["status"] == "published"
