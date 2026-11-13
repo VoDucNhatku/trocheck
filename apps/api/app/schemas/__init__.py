@@ -83,7 +83,7 @@ class TokenCreate(BaseModel):
 
 class ReviewDecision(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    action: Literal["approve", "reject", "split", "merge"]
+    action: Literal["approve", "reject", "split", "merge", "undo"]
     expected_version: int
     fields: dict[str, Any] | None = None
     reason: str | None = Field(default=None, max_length=500)

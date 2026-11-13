@@ -108,6 +108,7 @@ class Reprocessed(BaseModel):
     status: str
 
 class ReviewQueueItem(BaseModel):
+    bot_approved: bool = False
     listing_id: str
     reasons: list[str]
     reason: str
@@ -143,6 +144,7 @@ class DuplicateCandidate(BaseModel):
     area_m2: float | None
 
 class ReviewHistory(BaseModel):
+    source: Literal["human", "bot"] = "human"
     action: str
     user_id: str
     reason: str | None
