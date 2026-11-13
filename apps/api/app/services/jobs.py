@@ -49,26 +49,29 @@ def _due(now):
 
 
 def claim(session: Session, worker_id: str, lock_seconds: int, *, demo_only: bool = False) -> Job | None:
-    now = utcnow()
-    query = select(Job.id).where(_due(now))
+    query_base = select(Job.id)
     if demo_only:
-        query = query.where(Job.kind == "extract", Job.post_version_id.in_(
+        query_base = query_base.where(Job.kind == "extract", Job.post_version_id.in_(
             select(PostVersion.id).join(Post, PostVersion.post_id == Post.id).where(Post.is_demo.is_(True))))
-    candidate = session.scalar(query
-                               .order_by(Job.kind == "bot_review", Job.created_at, Job.id).limit(1))
-    if candidate is None:
-        return None
-    result = session.execute(
-        update(Job)
-        .where(Job.id == candidate, _due(now))
-        .values(status="running", locked_by=worker_id, locked_until=now + timedelta(seconds=lock_seconds),
-                attempt=Job.attempt + 1, updated_at=now)
-        .execution_options(synchronize_session=False)
-    )
-    session.commit()
-    if result.rowcount != 1:
-        return None
-    return session.get(Job, candidate, populate_existing=True)
+    # Two workers can pick the same candidate; the loser must look at the next due job instead of
+    # reporting an empty queue. Each lost round means another worker took a job, so this ends.
+    for _ in range(20):
+        now = utcnow()
+        candidate = session.scalar(query_base.where(_due(now))
+                                   .order_by(Job.kind == "bot_review", Job.created_at, Job.id).limit(1))
+        if candidate is None:
+            return None
+        result = session.execute(
+            update(Job)
+            .where(Job.id == candidate, _due(now))
+            .values(status="running", locked_by=worker_id, locked_until=now + timedelta(seconds=lock_seconds),
+                    attempt=Job.attempt + 1, updated_at=now)
+            .execution_options(synchronize_session=False)
+        )
+        session.commit()
+        if result.rowcount == 1:
+            return session.get(Job, candidate, populate_existing=True)
+    return None
 
 
 def mark_succeeded(job: Job) -> None:
