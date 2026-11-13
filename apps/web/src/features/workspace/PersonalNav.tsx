@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import s from './account-notices.module.css';
 
-export function PersonalNav({ current }: { current: 'account' | 'notifications' }) {
+export function PersonalNav({ current }: { current: 'account' | 'notifications' | 'posts' }) {
   const [theme, setTheme] = useState('light');
   useEffect(() => {
     const requested = new URLSearchParams(location.search).get('theme');
