@@ -46,18 +46,26 @@ test('extension guide and Account connection work in an offline browser fixture'
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.end('<!doctype html><html lang="vi"><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/fixture.css"></head><body><div id="root"></div><script src="/fixture.js"></script></body></html>');
   });
-  await new Promise((resolve, reject) => { server.once('error', reject); server.listen(3000, '127.0.0.1', resolve); });
+  await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
+  const origin = `http://127.0.0.1:${server.address().port}`;
   t.after(() => new Promise(resolve => server.close(resolve)));
   const browser = await chromium.launch({ channel: process.env.PW_CHANNEL || 'chrome', headless: true });
   t.after(() => browser.close());
   const page = await browser.newPage();
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.route('**/*', route => new URL(route.request().url()).origin === 'http://127.0.0.1:3000' ? route.continue() : route.abort());
+  // Keep the extension's trusted origin, forwarding only this fixture's traffic to its free port.
+  const browserOrigin = 'http://127.0.0.1:3000';
+  await page.route('**/*', async route => {
+    const url = new URL(route.request().url());
+    if (url.origin !== browserOrigin) return route.abort();
+    const response = await route.fetch({ url: origin + url.pathname + url.search });
+    return route.fulfill({ response });
+  });
   for (const theme of ['light', 'dark']) {
     for (const width of [390, 1280]) {
       await page.setViewportSize({ width, height: 1000 });
-      await page.goto('http://127.0.0.1:3000/extension');
+      await page.goto(browserOrigin + '/extension');
       await page.evaluate(theme => { document.documentElement.dataset.theme = theme; }, theme);
       await page.getByRole('heading', { name: 'Cách cài' }).waitFor();
       await page.evaluate(() => document.fonts.ready);
@@ -67,7 +75,7 @@ test('extension guide and Account connection work in an offline browser fixture'
       await page.screenshot({ path: path.join(output, `guide-${theme}-${width}.png`), fullPage: true });
     }
   }
-  await page.goto('http://127.0.0.1:3000/tai-khoan');
+  await page.goto(browserOrigin + '/tai-khoan');
   await page.getByRole('button', { name: 'Kết nối extension trên trình duyệt này' }).click();
   await page.getByRole('alert').filter({ hasText: 'Chưa tìm thấy extension' }).waitFor();
   assert.equal(created, 0, 'a missing extension must not create a token');
