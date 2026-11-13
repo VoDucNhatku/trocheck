@@ -54,7 +54,7 @@ def start(settings: Settings, return_path: str) -> tuple[str, str]:
     challenge = base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest()).rstrip(b"=").decode()
     url = AUTHORIZE_URL + "?" + urlencode({
         "client_id": settings.google_client_id, "redirect_uri": settings.google_redirect_uri,
-        "response_type": "code", "scope": "openid email", "state": state,
+        "response_type": "code", "scope": "openid email profile", "state": state,
         "code_challenge": challenge, "code_challenge_method": "S256", "prompt": "select_account",
     })
     return url, cookie
@@ -81,7 +81,7 @@ def read_transaction(cookie: str, state: str, settings: Settings) -> dict:
                        message="Yêu cầu đăng nhập đã hết hạn hoặc không hợp lệ. Hãy thử lại.") from None
 
 
-async def identity(code: str, verifier: str, settings: Settings) -> tuple[str, str]:
+async def identity(code: str, verifier: str, settings: Settings) -> tuple[str, str, str | None]:
     try:
         async with httpx.AsyncClient(timeout=15, follow_redirects=False) as client:
             token_response = await client.post(TOKEN_URL, data={
@@ -105,22 +105,31 @@ async def identity(code: str, verifier: str, settings: Settings) -> tuple[str, s
                     or not isinstance(profile.get("sub"), str) or not 1 <= len(profile["sub"]) <= 255
                     or not isinstance(profile.get("email"), str)):
                 raise ApiError(401, code="google_denied", message="Google chưa xác minh email của tài khoản này.")
-            return profile["sub"], security.normalize_email(profile["email"])
+            name = profile.get("name")
+            name = name.strip()[:200] if isinstance(name, str) and name.strip() else None
+            return profile["sub"], security.normalize_email(profile["email"]), name
     except (httpx.HTTPError, ValueError, TypeError):
         raise ApiError(503, code="google_unavailable",
                        message="Chưa kết nối được Google. Hãy thử lại sau.") from None
 
 
-def resolve_user(session: Session, subject: str, email: str) -> User:
+def resolve_user(session: Session, subject: str, email: str, display_name: str | None = None) -> User:
     existing = session.scalar(select(User).where(User.google_subject == subject))
     if existing is not None:
+        # Refresh verified profile data on login, including accounts created before profile scope.
+        conflict = session.scalar(select(User.id).where(User.email == email, User.id != existing.id))
+        if conflict is None:
+            existing.email = email
+        if display_name is not None:
+            existing.display_name = display_name
+        session.commit()
         return existing
     # Local emails are not verified. Never merge identities merely because their emails match.
     if session.scalar(select(User).where(User.email == email)) is not None:
         raise ApiError(409, code="google_account_conflict",
                        message="Email này đã có tài khoản TrọCheck. Hãy đăng nhập bằng tên tài khoản và mật khẩu đã tạo.")
     user = User(username="google_" + secrets.token_hex(10), email=email,
-                google_subject=subject, password_hash="", roles=["renter"])
+                google_subject=subject, display_name=display_name, password_hash="", roles=["renter"])
     session.add(user)
     try:
         session.commit()

@@ -1617,6 +1617,20 @@ export interface components {
             user_id: string;
             /** Username */
             username: string;
+            /** Email */
+            email?: string | null;
+            /** Display Name */
+            display_name?: string | null;
+            /**
+             * Google Connected
+             * @default false
+             */
+            google_connected?: boolean;
+            /**
+             * Local Login Enabled
+             * @default true
+             */
+            local_login_enabled?: boolean;
             /** Roles */
             roles: ("renter" | "collector" | "reviewer" | "researcher" | "admin")[];
         };

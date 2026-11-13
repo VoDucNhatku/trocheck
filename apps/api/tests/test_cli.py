@@ -7,6 +7,31 @@ from app.models import Job, Post, User
 from app.services import seed, users
 
 
+@pytest.mark.parametrize("admin_username", ["owner", "admin", "collector"])
+def test_seed_never_grants_demo_admin_when_owner_is_configured(api, monkeypatch, admin_username):
+    from sqlalchemy import delete
+    monkeypatch.setenv("ADMIN_USERNAME", admin_username)
+    monkeypatch.delenv("ADMIN_PASSWORD", raising=False)
+    with api.session() as session:
+        # Fresh account namespace; no production database is involved.
+        session.execute(delete(User))
+        session.commit()
+        seed.create_demo_users(session, "SharedDemo123")
+        assert session.scalar(select(User).where(User.username == admin_username)) is None
+        assert all("admin" not in row.roles for row in session.scalars(select(User)))
+        cli.ensure_admin(None)  # No ADMIN_PASSWORD: must not silently elevate a demo user.
+
+
+def test_seed_preserves_existing_admin_even_with_configured_owner(api, monkeypatch):
+    monkeypatch.setenv("ADMIN_USERNAME", "owner")
+    with api.session() as session:
+        admin = session.scalar(select(User).where(User.username == "admin"))
+        original = admin.password_hash
+        seed.create_demo_users(session, "SharedDemo123")
+        session.refresh(admin)
+        assert admin.password_hash == original and admin.roles == ["admin"]
+
+
 def test_init_db_escapes_percent_and_hides_password(monkeypatch, capsys):
     from types import SimpleNamespace
     from alembic import command

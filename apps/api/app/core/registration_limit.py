@@ -12,7 +12,8 @@ class RegistrationLimit:
         self._attempts: dict[str, deque[float]] = {}
         self._lock = Lock()
 
-    def check(self, ip: str, limit: int, window: int) -> None:
+    def check(self, ip: str, limit: int, window: int,
+              message: str = "Bạn đã thử tạo tài khoản nhiều lần. Hãy thử lại sau.") -> None:
         now = monotonic()
         with self._lock:
             for key in list(self._attempts):
@@ -22,9 +23,9 @@ class RegistrationLimit:
                 if not queue:
                     del self._attempts[key]
             if ip not in self._attempts and len(self._attempts) >= 10000:
-                raise ApiError(429, message="Hãy thử tạo tài khoản sau", headers={"Retry-After": str(window)})
+                raise ApiError(429, message=message, headers={"Retry-After": str(window)})
             queue = self._attempts.setdefault(ip, deque())
             if len(queue) >= limit:
-                raise ApiError(429, message="Bạn đã thử tạo tài khoản nhiều lần. Hãy thử lại sau.",
+                raise ApiError(429, message=message,
                                headers={"Retry-After": str(max(1, ceil(queue[0] + window - now)))})
             queue.append(now)

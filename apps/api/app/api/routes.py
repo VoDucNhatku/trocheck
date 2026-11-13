@@ -37,8 +37,9 @@ def health(session: Session = Depends(get_session), settings: Settings = Depends
 
 
 @router.post("/auth/login", tags=["auth"], response_model=dto.SessionUser)
-def login(body: LoginRequest, response: Response, session: Session = Depends(get_session),
+def login(body: LoginRequest, request: Request, response: Response, session: Session = Depends(get_session),
           settings: Settings = Depends(settings_dep)):
+    authentication_limit(request, "password", body.username)
     user = users.authenticate(session, body.username, body.password)
     if user is None:
         raise ApiError(401, message="Sai tên đăng nhập hoặc mật khẩu")
@@ -47,6 +48,16 @@ def login(body: LoginRequest, response: Response, session: Session = Depends(get
                         max_age=settings.session_max_age_seconds, httponly=True, samesite="lax",
                         secure=settings.cookie_secure)
     return users.me(user)
+
+
+def authentication_limit(request: Request, provider: str, username: str | None = None) -> None:
+    # shortcut: process-local limits suit one API process; use shared storage before scaling out.
+    limiter = request.app.state.auth_limit
+    message = "Bạn đã thử đăng nhập nhiều lần. Hãy thử lại sau ít phút."
+    ip = request.client.host if request.client else "unknown"
+    limiter.check(f"{provider}:ip:{ip}", 30, 300, message)
+    if username is not None:
+        limiter.check(f"{provider}:user:{username.strip().casefold()}", 5, 300, message)
 
 
 @router.post("/auth/logout", tags=["auth"], response_model=dto.LoggedOut)

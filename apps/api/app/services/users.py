@@ -81,7 +81,9 @@ def user_from_token(session: Session, token: str) -> User | None:
 
 
 def me(user: User) -> dict:
-    return {"user_id": user.id, "username": user.username, "roles": user.roles}
+    return {"user_id": user.id, "username": user.username, "roles": user.roles,
+            "email": user.email, "display_name": user.display_name,
+            "google_connected": bool(user.google_subject), "local_login_enabled": bool(user.password_hash)}
 
 
 def create_token(session: Session, user: User, name: str | None, settings: Settings) -> dict:

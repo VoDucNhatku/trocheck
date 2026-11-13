@@ -6,6 +6,10 @@ from app.schemas.public import Evidence, Listing, PropertyType, ReviewStatus
 class SessionUser(BaseModel):
     user_id: str
     username: str
+    email: str | None = None
+    display_name: str | None = None
+    google_connected: bool = False
+    local_login_enabled: bool = True
     roles: list[Literal["renter", "collector", "reviewer", "researcher", "admin"]]
 
 class AnalysisCreated(BaseModel):

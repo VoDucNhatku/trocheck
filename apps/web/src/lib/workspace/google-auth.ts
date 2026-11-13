@@ -5,6 +5,7 @@ import { safeReturnPath } from './safe-path';
 const oauthCookie = 'rener_google_oauth';
 const cookiePath = '/api/auth/google';
 const errors: Record<string, string> = {
+  rate_limited: 'Bạn đã thử đăng nhập nhiều lần. Hãy thử lại sau ít phút.',
   google_not_configured: 'Đăng nhập Google chưa được cấu hình. Bạn vẫn có thể dùng tên tài khoản và mật khẩu.',
   google_state_invalid: 'Yêu cầu đăng nhập đã hết hạn hoặc không hợp lệ. Hãy thử lại.',
   google_denied: 'Chưa hoàn tất đăng nhập Google. Hãy thử lại khi bạn sẵn sàng.',

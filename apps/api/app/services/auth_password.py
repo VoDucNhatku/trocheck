@@ -25,7 +25,7 @@ def forgot(session: Session, email: str, settings: Settings) -> None:
     except ValueError:
         return
     user = session.scalar(select(User).where(User.email == email))
-    if user is None:
+    if user is None or not user.password_hash:
         return
     base = settings.password_reset_base_url.rstrip("/")
     parsed = urlsplit(base)
