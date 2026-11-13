@@ -9,9 +9,10 @@ import styles from '@/features/workspace/Market.module.css';
 export const metadata = { title: 'Thị trường' };
 export default async function Page({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const filters = marketFilters(await searchParams);
-  const query = marketQuery(filters);
   const user = await sessionUser();
-  const catalog = await getCatalog(filters.demo === 'true').catch(() => null);
+  const catalog = await getCatalog(filters.demo ? filters.demo === 'true' : undefined).catch(() => null);
+  if (catalog) filters.demo = String(catalog.is_demo) as 'true' | 'false';
+  const query = marketQuery(filters);
   const content = <Market query={query} filters={filters} wards={catalog?.wards ?? []} showThemeToggle={!!user} />;
   return user ? content : <><Suspense><SiteHeader /></Suspense><main id="main" tabIndex={-1} className={`container ${styles.publicPage}`}>{content}</main><Suspense><SiteFooter /></Suspense></>;
 }

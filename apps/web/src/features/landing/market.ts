@@ -9,7 +9,7 @@ export async function getHomeMarket(demo?: boolean) {
   const client = createClient<paths>({ baseUrl });
   try {
     const { data, response } = await client.GET('/api/v1/market/summary', {
-      params: { query: { basis: 'per_unit', demo } }, cache: 'no-store',
+      params: { query: { basis: 'per_unit', demo } }, next: { revalidate: 60 },
       signal: AbortSignal.timeout(Number(process.env.API_TIMEOUT_MS) || 8000),
     });
     if (!response.ok || !data) throw new ApiError(response.status, 'market_unavailable', 'Chưa tải được giá tham khảo. Hãy thử tải lại trang.');
@@ -17,5 +17,19 @@ export async function getHomeMarket(demo?: boolean) {
   } catch (error) {
     if (error instanceof ApiError) throw error;
     throw new ApiError(503, 'market_unavailable', 'Không kết nối được API thị trường. Hãy thử tải lại trang.');
+  }
+}
+
+export async function getHomeOverview(demo?: boolean) {
+  const baseUrl = (process.env.API_BASE_URL ?? 'http://127.0.0.1:8000/api/v1').replace(/\/api\/v1\/?$/, '');
+  const client = createClient<paths>({ baseUrl });
+  try {
+    const { data, response } = await client.GET('/api/v1/stats/overview', {
+      params: { query: { demo } }, next: { revalidate: 60 },
+      signal: AbortSignal.timeout(Number(process.env.API_TIMEOUT_MS) || 8000),
+    });
+    return response.ok && data ? data : null;
+  } catch {
+    return null;
   }
 }

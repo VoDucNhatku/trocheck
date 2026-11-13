@@ -18,7 +18,7 @@ export function ListingCard({ card, comparison }: { card: Card; comparison?: Com
     <div className={styles.media}>
       <span className={styles.badge}>{card.is_demo?'Ví dụ tự tạo':'Đã che liên hệ'}</span>
       <ImageOff size={30} strokeWidth={1.25} aria-hidden="true" />
-      <span>{card.is_demo?'Ảnh phòng (ví dụ)':'Tin chưa có ảnh'}</span>
+      <span>{card.is_demo?'Ảnh phòng (ví dụ)':'Chưa có ảnh hiển thị'}</span>
     </div>
     <div className={styles.content}>
       <p className={styles.type}>{PROPERTY_LABEL[card.property_type]}</p>

@@ -27,7 +27,7 @@ test('market filters normalize one supported basis/dataset and preserve Unicode 
   assert.equal(params.get('ward'), 'Cầu Giấy');
   assert.equal(params.get('basis'), 'per_person');
   assert.equal(params.get('demo'), 'false');
-  assert.deepEqual(marketFilters({ type: 'studio', basis: 'unknown', demo: 'invalid' }), { ward: '', type: '', basis: 'per_unit', demo: 'true' });
+  assert.deepEqual(marketFilters({ type: 'studio', basis: 'unknown', demo: 'invalid' }), { ward: '', type: '', basis: 'per_unit', demo: '' });
 });
 
 test('ward groups stay separate and search links use the public route supported filters', () => {

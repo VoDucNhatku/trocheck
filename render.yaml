@@ -25,7 +25,9 @@ services:
       - key: COOKIE_SECURE
         value: "true"
       - key: DEMO_MODE
-        value: "true"
+        # Existing Blueprint updates ignore sync:false, preserving the dashboard value.
+        # Manage this switch in the dashboard so a sync cannot re-enable demo data.
+        sync: false
       - key: SEED_PASSWORD
         sync: false
       - key: ALLOWED_ORIGINS
