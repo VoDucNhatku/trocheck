@@ -7,12 +7,33 @@ transaction; a crash rolls everything back and the lock expiry hands the job to 
 from __future__ import annotations
 
 from datetime import timedelta
+from threading import Event
 
-from sqlalchemy import and_, or_, select, update
+from sqlalchemy import and_, event, or_, select, update
 from sqlalchemy.orm import Session
 
 from app.core.ids import utcnow
 from app.models import Job, Post, PostVersion
+
+# Same-process wake-up only. Separate worker processes discover work at the next poll.
+queue_changed = Event()
+
+
+@event.listens_for(Session, "after_flush")
+def _track_enqueued_jobs(session, _context) -> None:
+    if any(isinstance(row, Job) and row.status == "queued" for row in session.new):
+        session.info["jobs_enqueued"] = True
+
+
+@event.listens_for(Session, "after_commit")
+def _wake_after_commit(session) -> None:
+    if session.info.pop("jobs_enqueued", False):
+        queue_changed.set()
+
+
+@event.listens_for(Session, "after_rollback")
+def _discard_wakeup(session) -> None:
+    session.info.pop("jobs_enqueued", None)
 
 
 def enqueue(session: Session, *, kind: str, post_version_id: str, requested_by: str | None = None) -> Job:
