@@ -12,6 +12,9 @@ const retryUnknownButton = document.querySelector("#retry-unknown");
 const extractButton = document.querySelector("#extract");
 const settingsStatus = document.querySelector("#settings-status");
 const clearStatus = document.querySelector("#clear-status");
+// Same web base as the popup (popup.js is not loaded on this page).
+const WEB_BASE_URL = "https://trocheck.vercel.app";
+document.querySelector("#my-posts-link").href = WEB_BASE_URL + "/bai-cua-toi";
 let nextKey = null;
 let activePage = "all";
 let processing = false;
@@ -259,7 +262,22 @@ async function runProcessing(kind) {
   }
 }
 
+// Legacy "Xử lý bài" tools (own Jev/Ollama keys) stay hidden unless this stored flag is on.
+async function experimentalOn() {
+  try { return Boolean((await chrome.storage.local.get(["experimentalTools"])).experimentalTools); }
+  catch (_) { return false; }
+}
+
+async function applyExperimental() {
+  const on = await experimentalOn();
+  for (const node of document.querySelectorAll("[data-experimental]")) node.hidden = !on;
+  document.querySelector("#experimental-tools").checked = on;
+  if (!on && activePage === "process") await showPage("all");
+  return on;
+}
+
 async function showPage(page) {
+  if (page === "process" && !(await experimentalOn())) page = "all";
   activePage = page;
   for (const name of ["all", "process", "settings"]) {
     document.querySelector(`#${name}-page`).hidden = name !== page;
@@ -269,7 +287,7 @@ async function showPage(page) {
   }
   if (page === "all") await loadPage();
   if (page === "process") { try { await loadProcessed(); } catch (_) {} }
-  if (page === "settings") await loadSettings();
+  if (page === "settings") { await applyExperimental(); await loadSettings(); }
 }
 
 for (const tab of document.querySelectorAll("[data-page]")) tab.addEventListener("click", () => showPage(tab.dataset.page));
@@ -278,6 +296,11 @@ next.addEventListener("click", () => loadPage(nextKey));
 classifyButton.addEventListener("click", () => runProcessing("classify"));
 retryUnknownButton.addEventListener("click", () => runProcessing("unknown"));
 extractButton.addEventListener("click", () => runProcessing("extract"));
+document.querySelector("#experimental-tools").addEventListener("change", async event => {
+  try { await chrome.storage.local.set({ experimentalTools: event.target.checked }); }
+  catch (_) { event.target.checked = !event.target.checked; }
+  await applyExperimental();
+});
 document.querySelector("#reset-prompts").addEventListener("click", () => {
   for (const [id, , fallback] of promptFields) document.querySelector(id).value = TroProcessing.defaults[fallback];
   settingsStatus.textContent = "Đã khôi phục prompt mặc định. Bấm Lưu cài đặt để áp dụng.";
@@ -377,6 +400,6 @@ document.querySelector("#disconnect").addEventListener("click", async () => {
   await loadConnection();
 });
 
-if (globalThis.chrome?.storage?.local) { updateSendCount(); loadConnection().catch(() => {}); }
+if (globalThis.chrome?.storage?.local) { updateSendCount(); loadConnection().catch(() => {}); applyExperimental().catch(() => {}); }
 window.addEventListener("unload", releaseImages);
 loadPage();

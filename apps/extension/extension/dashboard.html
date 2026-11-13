@@ -11,10 +11,11 @@
     <header><div><h1>TrọCheck Collector</h1><p>Các bài đã lưu trong trình duyệt này</p></div><button id="refresh">Tải lại</button></header>
     <nav aria-label="Bảng dữ liệu">
       <button type="button" data-page="all" aria-current="page">Tất cả bài</button>
-      <button type="button" data-page="process">Xử lý bài</button>
+      <button type="button" data-page="process" data-experimental hidden>Xử lý bài</button>
       <button type="button" data-page="settings">Cài đặt</button>
     </nav>
     <section id="all-page">
+      <p id="my-posts-note">Bài tự gửi về TrọCheck. Xem kết quả và lọc phòng ở trang <a id="my-posts-link" href="https://trocheck.vercel.app/bai-cua-toi" target="_blank" rel="noopener noreferrer">Bài của tôi</a>.</p>
       <div class="actions"><p id="send-count">Đang đếm bài chưa gửi…</p><button id="send-trocheck" type="button">Gửi về kho TrọCheck</button></div>
       <p id="send-status" role="status"></p>
       <p id="status" role="status">Đang đọc dữ liệu…</p>
@@ -38,7 +39,8 @@
         <button id="disconnect" type="button">Ngắt kết nối</button>
         <p id="trocheck-status" role="status"></p>
       </form>
-      <form id="settings-form" class="panel">
+      <div class="panel"><label><input id="experimental-tools" type="checkbox">Hiện công cụ thử nghiệm</label><p class="hint">Dành cho người thử nghiệm: hiện tab Xử lý bài (Lọc, Lọc lại, Trích xuất) và khóa API Jev/Ollama của riêng bạn. Người dùng bình thường không cần bật. Kết quả lọc phòng nằm ở trang Bài của tôi.</p></div>
+      <form id="settings-form" class="panel" data-experimental hidden>
         <label>TypeSafe API key<input id="typesafe-api-key" type="password" autocomplete="off" spellcheck="false"></label>
         <label>Ollama Cloud API key<input id="ollama-api-key" type="password" autocomplete="off" spellcheck="false"></label>
         <label>Model trích xuất<input id="extraction-model" type="text" placeholder="Tên model" autocomplete="off" required></label>

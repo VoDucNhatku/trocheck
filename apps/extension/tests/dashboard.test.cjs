@@ -16,10 +16,10 @@ async function until(check) {
   throw new Error('Dashboard did not reach the expected state');
 }
 
-function setup(t, posts) {
+function setup(t, posts, { experimental = true } = {}) {
   const dom = new JSDOM(script('dashboard.html'), { runScripts: 'outside-only', url: 'https://extension.invalid/' });
   t.after(() => dom.window.close());
-  const settings = { typesafeApiKey: 'private-key', ollamaApiKey: 'ollama-key', ollamaExtractionModel: 'model' };
+  const settings = { typesafeApiKey: 'private-key', ollamaApiKey: 'ollama-key', ollamaExtractionModel: 'model', experimentalTools: experimental };
   let generation = 0;
   dom.window.chrome = { storage: { local: {
     get: async () => ({ ...settings }),
@@ -119,7 +119,7 @@ test('dashboard connects TypeSafe and Ollama responses to persistent classificat
   t.after(() => dom.window.close());
   Object.defineProperty(dom.window, 'indexedDB', { value: new IDBFactory() });
   dom.window.IDBKeyRange = IDBKeyRange;
-  dom.window.chrome = { storage: { local: { get: async () => ({ typesafeApiKey: 'key', ollamaApiKey: 'ollama-key', ollamaExtractionModel: 'extraction' }) } } };
+  dom.window.chrome = { storage: { local: { get: async () => ({ typesafeApiKey: 'key', ollamaApiKey: 'ollama-key', ollamaExtractionModel: 'extraction', experimentalTools: true }) } } };
   let calls = 0;
   dom.window.fetch = async () => {
     calls++;
@@ -202,4 +202,52 @@ test('dashboard forwards manual connection, send, auto-send and disconnect throu
   dom.window.document.querySelector('#disconnect').click();
   await until(() => dom.window.document.querySelector('#trocheck-status').textContent.includes('Chưa kết nối'));
   assert.equal(settings.trocheckToken, undefined);
+});
+
+test('the Xử lý bài tab and API-key settings are hidden by default and shown by the experimental checkbox', async t => {
+  const { dom, settings } = setup(t, [], { experimental: false });
+  const doc = dom.window.document;
+  delete settings.experimentalTools;
+  const tab = doc.querySelector('[data-page="process"]');
+  assert.equal(tab.hidden, true);
+  assert.equal(doc.querySelector('#settings-form').hidden, true);
+  assert.equal(doc.querySelector('#experimental-tools').checked, false);
+  assert.match(doc.querySelector('#experimental-tools').closest('label').textContent, /Hiện công cụ thử nghiệm/);
+  // Even a direct click cannot open the legacy page while the flag is off.
+  tab.click();
+  await tick(); await tick();
+  assert.equal(doc.querySelector('#process-page').hidden, true);
+  assert.equal(doc.querySelector('#all-page').hidden, false);
+  doc.querySelector('[data-page="settings"]').click();
+  await until(() => !doc.querySelector('#settings-page').hidden);
+  assert.equal(doc.querySelector('#settings-form').hidden, true);
+  const box = doc.querySelector('#experimental-tools');
+  box.checked = true;
+  box.dispatchEvent(new dom.window.Event('change'));
+  await until(() => settings.experimentalTools === true);
+  await until(() => tab.hidden === false);
+  assert.equal(doc.querySelector('#settings-form').hidden, false);
+  tab.click();
+  await until(() => !doc.querySelector('#process-page').hidden);
+  box.checked = false;
+  box.dispatchEvent(new dom.window.Event('change'));
+  await until(() => tab.hidden === true);
+  assert.equal(settings.experimentalTools, false);
+  await until(() => doc.querySelector('#process-page').hidden);
+  assert.equal(doc.querySelector('#settings-form').hidden, true);
+  assert.equal(settings.typesafeApiKey, 'private-key');
+});
+
+test('the saved flag shows the tab again on the next dashboard open', async t => {
+  const { dom } = setup(t, []);
+  await until(() => dom.window.document.querySelector('[data-page="process"]').hidden === false);
+  assert.equal(dom.window.document.querySelector('#experimental-tools').checked, true);
+});
+
+test('the all-posts page points to Bài của tôi on the web base URL', async t => {
+  const { dom } = setup(t, []);
+  const note = dom.window.document.querySelector('#all-page #my-posts-note');
+  assert.equal(note.textContent, 'Bài tự gửi về TrọCheck. Xem kết quả và lọc phòng ở trang Bài của tôi.');
+  assert.equal(note.querySelector('a').href, 'https://trocheck.vercel.app/bai-cua-toi');
+  assert.equal(note.querySelector('a').textContent, 'Bài của tôi');
 });
