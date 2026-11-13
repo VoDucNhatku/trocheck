@@ -8,7 +8,7 @@ import { chromium } from '@playwright/test';
 import { auditPage, parseOptions, runGate } from '../scripts/qa-gate.mjs';
 
 let browser;
-before(async () => { browser = await chromium.launch({ channel: 'chrome', headless: true }); });
+before(async () => { browser = await chromium.launch({ channel: process.env.PW_CHANNEL || 'chrome', headless: true }); });
 after(async () => { await browser?.close(); });
 const logo = '<img alt="TrọCheck" src="https://qa.invalid/brand/trocheck-icon.png" width="24" height="24">';
 const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><rect width="24" height="24" fill="teal"/></svg>';

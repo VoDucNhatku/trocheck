@@ -9,7 +9,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "generate:api": "node scripts/generate-api.mjs",
-    "test:integration": "tsx --test tests/*.test.ts",
+    "test:integration": "tsx --test tests/*.test.ts tests/*.test.mjs src/features/workspace/*.test.ts",
     "test:e2e": "playwright test"
   },
   "dependencies": {

@@ -264,7 +264,7 @@ export async function runGate(options) {
   const report = { label: options.label, at: new Date().toISOString(), base: options.base, pages: options.pages, widths: options.widths, themes: options.themes, authenticated: Boolean(options.storageState), rules: RULES, results: [], global: [] };
   let browser;
   try {
-    browser = await chromium.launch({ channel: 'chrome', headless: true });
+    browser = await chromium.launch({ channel: process.env.PW_CHANNEL || 'chrome', headless: true });
     if (options.shots) await mkdir(options.shots, { recursive: true });
     for (const route of options.pages) for (const theme of options.themes) for (const width of options.widths) {
       const result = { page: route, theme, width, issues: [] };
