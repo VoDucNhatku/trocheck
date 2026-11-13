@@ -102,6 +102,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/posts/filters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Posts Filters */
+        get: operations["my_posts_filters_api_v1_me_posts_filters_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me/posts": {
         parameters: {
             query?: never;
@@ -721,6 +738,17 @@ export interface components {
              */
             from_dimensions?: boolean;
         };
+        /** AreaOption */
+        AreaOption: {
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+            /** Listing Count */
+            listing_count: number;
+            /** Post Count */
+            post_count: number;
+        };
         /** CardRent */
         CardRent: {
             /**
@@ -1024,6 +1052,8 @@ export interface components {
             ward_name: string | null;
             /** Resolution */
             resolution: string | null;
+            /** Old Districts */
+            old_districts: components["schemas"]["OldDistrictRef"][];
             comparison: components["schemas"]["Comparison"];
         };
         /** Fee */
@@ -1414,6 +1444,8 @@ export interface components {
             reason_codes: string[];
             /** Photo Count */
             photo_count: number;
+            /** Listing Total */
+            listing_total: number;
             /** Listings */
             listings: components["schemas"]["ExtractedListing"][];
         };
@@ -1433,11 +1465,41 @@ export interface components {
              * @constant
              */
             comparison_baseline?: "real_accepted";
+            /** Matched Listings */
+            matched_listings: number;
+            /** Total Sent */
+            total_sent: number;
+        };
+        /** MyPostsFilters */
+        MyPostsFilters: {
+            /** Areas */
+            areas: components["schemas"]["AreaOption"][];
+            /** Wards */
+            wards: components["schemas"]["WardOption"][];
+            /** Types */
+            types: components["schemas"]["TypeOption"][];
+            /** Price Min Vnd */
+            price_min_vnd: number | null;
+            /** Price Max Vnd */
+            price_max_vnd: number | null;
+            /** Area Min M2 */
+            area_min_m2: number | null;
+            /** Area Max M2 */
+            area_max_m2: number | null;
+            /** Total Listings */
+            total_listings: number;
         };
         /** MyPostsSummary */
         MyPostsSummary: {
             counts: components["schemas"]["StatusCounts"];
             quota: components["schemas"]["DailyQuota"];
+        };
+        /** OldDistrictRef */
+        OldDistrictRef: {
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
         };
         /** PostJob */
         PostJob: {
@@ -1861,6 +1923,13 @@ export interface components {
             /** Name */
             name?: string | null;
         };
+        /** TypeOption */
+        TypeOption: {
+            /** Type */
+            type: string;
+            /** Listing Count */
+            listing_count: number;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -1873,6 +1942,17 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** WardOption */
+        WardOption: {
+            /** Code */
+            code: string;
+            /** Name */
+            name: string | null;
+            /** Listing Count */
+            listing_count: number;
+            /** Post Count */
+            post_count: number;
         };
     };
     responses: never;
@@ -2056,12 +2136,52 @@ export interface operations {
             };
         };
     };
+    my_posts_filters_api_v1_me_posts_filters_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyPostsFilters"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     my_submitted_posts_api_v1_me_posts_get: {
         parameters: {
             query?: {
                 group?: "all" | "published" | "waiting" | "other";
                 page?: number;
                 limit?: number;
+                /** @description Old-district keys, e.g. quan-1. */
+                area?: string[];
+                /** @description New ward codes. */
+                ward?: string[];
+                type?: ("phong_tro" | "ccmn" | "can_ho_dich_vu" | "nha_nguyen_can" | "unknown")[];
+                price_min?: number | null;
+                price_max?: number | null;
+                area_min?: number | null;
+                area_max?: number | null;
+                rental_only?: boolean;
+                sort?: "newest" | "price_asc" | "price_desc" | "area_desc";
             };
             header?: never;
             path?: never;
@@ -2087,13 +2207,13 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
-            /** @description Validation Error */
+            /** @description Unprocessable Entity */
             422: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };

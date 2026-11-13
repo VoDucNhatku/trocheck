@@ -118,6 +118,43 @@ không sinh giá hoặc phần trăm giả. Web ghi rõ nguồn so sánh và tí
 Bài trùng của người khác không dùng thêm lượt, dù có trong danh sách cá nhân. Không đổi chính sách ingest.
 `limit`/`remaining` là null khi `INGEST_DAILY_LIMIT=0` hoặc có quyền collector (gồm admin theo quy tắc hiện hữu).
 
+#### Lọc bài của tôi (14/11/2026)
+
+`GET /api/v1/me/posts` nhận thêm các tham số tùy chọn, kết hợp bằng AND (giá trị lặp của `area`, `ward`, `type` là OR trong
+chính bộ lọc đó). Các bộ lọc tin áp lên **từng tin** (listing hiện hành); bài khớp khi có ít nhất một tin khớp **toàn bộ**
+điều kiện, và `listings` chỉ trả các tin khớp, kèm `listing_total` là tổng số tin của bài.
+
+| Tham số | Ý nghĩa |
+|---|---|
+| `area` (lặp) | Khóa quận/huyện **cũ**: `quan-1`, `quan-3`, `quan-7`, `binh-thanh`, `thu-duc`... Tin khớp nếu phường mới của nó nằm trong quận cũ đó **hoặc** pipeline đã đọc thấy tên quận cũ trong bài (bảng `listing_districts`, xem dưới). Khóa lạ trả 422. |
+| `ward` (lặp) | Mã phường/xã **mới** đúng 5 chữ số. |
+| `price_min`, `price_max` | VND/tháng, `>= 0`, `price_min <= price_max`. So trên giá tháng của tin: giá chính xác, nếu là khoảng hoặc "từ" thì lấy đầu thấp (`rent_amount_vnd`, rồi `rent_min_vnd`). Tin giá theo ngày (`rent_period=day`) không khớp bộ lọc giá; kỳ hạn chưa rõ vẫn được giữ vì đa số bài không ghi "/tháng". Tin không công khai giá ("giá inbox") không có giá nên không bao giờ khớp bộ lọc giá, nhưng vẫn hiện khi không đặt bộ lọc giá. |
+| `area_min`, `area_max` | m², `area_min <= area_max`. |
+| `type` (lặp) | `phong_tro`, `ccmn`, `can_ho_dich_vu`, `nha_nguyen_can`, `unknown` (giá trị đã lưu). |
+| `rental_only` | Mặc định `true`: ẩn bài `not_rental` và `failed`. `false` hiện tất cả. Không đổi `summary`. |
+| `sort` | `newest` (mặc định, như cũ), `price_asc`, `price_desc`, `area_desc`. Bài xếp theo tin khớp thấp nhất (`price_asc`) hoặc cao nhất (`price_desc`, `area_desc`); bài không có giá/diện tích xếp cuối; hòa thì theo lượt gửi mới nhất rồi `post_id`. Tin trong từng bài cũng xếp theo khóa đó. |
+
+Ánh xạ `area` -> phường mới được dựng một lần từ `former_wards.yaml` (không viết tay): với mỗi phường cũ, mọi
+`new_ward_code` trong `relations` (nhận trọn hoặc một phần) thuộc quận/huyện cũ đó. Một phường mới có thể nhận phần của hai
+quận cũ (ví dụ `27364` thuộc cả `quan-6` và `quan-8`), khi đó khớp **cả hai** khóa; vì vậy lọc theo quận cũ là gần đúng ở ranh giới,
+không khẳng định toàn bộ phường mới nằm trong quận cũ. Phần lớn bài thật chỉ ghi quận cũ (Q10, quận 9 cũ, Gò Vấp...) mà không có phường, nên `area` còn khớp theo **tên quận cũ
+đã đọc được trong bài**: bảng `listing_districts(listing_id, district_key)` (migration `0008`) lưu các khóa mà bộ khớp quận
+hiện hữu `Places.unconfirmed_districts` tìm thấy trong văn bản (gồm viết tắt Q1, Q.1, quận 1, không dấu; thêm Quận 2 và
+Quận 9 vốn không có phường cũ trong từ điển). Ghi một lần lúc trích xuất (`services/processing.store_run`) và migration
+`0008` tự điền cho dữ liệu cũ khi chạy `init-db` (không gọi LLM, bỏ qua bài demo). Tin gắn cờ `outside_hcm_province`
+không có dòng nào nên không khớp quận nào. `ward` vẫn chỉ khớp theo mã phường: tin chưa rõ phường không khớp `ward`.
+Bài chưa có phường và chưa nêu quận không khớp `area`/`ward`, nhưng vẫn hiện khi không đặt bộ lọc tin nào.
+Mỗi tin trả thêm `old_districts: [{key, name}]` (quận cũ đã đọc được) để web ghi nguồn vị trí.
+
+Phân trang và `total` tính **sau** lọc, lọc và sắp xếp thực hiện trong SQL; `limit <= 50`. Thêm vào phản hồi:
+`matched_listings` (số tin khớp trên toàn bộ kết quả, không chỉ trang hiện tại) và `total_sent` (mọi bài đã gửi, không phụ thuộc lọc).
+
+`GET /api/v1/me/posts/filters`: cùng xác thực và phạm vi sở hữu (chỉ dữ liệu của chính tài khoản, bỏ bài demo,
+`not_rental`, `failed`), trả `{areas: [{key, name, listing_count, post_count}], wards: [{code, name, listing_count,
+post_count}], types: [{type, listing_count}], price_min_vnd, price_max_vnd, area_min_m2, area_max_m2, total_listings}`.
+`areas` suy từ phường của từng tin theo ánh xạ trên và từ quận cũ đã đọc được trong bài, mỗi tin tính một lần cho mỗi quận (một phường chung hai quận cũ được đếm ở cả hai); sắp xếp theo
+số bài giảm dần. Giá/diện tích là biên trên các tin đó, null khi không có số liệu.
+
 Migration `0007` thêm khóa chính `(post_id,user_id)` trong `post_submissions`, với `first_sent_at`,
 khóa ngoại cascade và chỉ mục `(user_id,first_sent_at)`; INSERT SELECT dùng kiểu SQLAlchemy tương thích
 SQLite/PostgreSQL, không dựng lại posts. Backfill từ `collector_id`/`first_seen_at`, giữ nguyên collector.

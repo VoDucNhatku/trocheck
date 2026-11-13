@@ -81,11 +81,11 @@ def test_status_mapping_and_filters(api, state, expected, group):
             lst.review_status = state
             lst.review_reasons = ["former_ward_split", "outside_hcm_province"]
             s.commit()
-    item = read(c)["items"][0]
+    item = read(c, rental_only="false")["items"][0]
     assert item["status"] == expected
-    assert read(c, group=group)["total"] == 1
+    assert read(c, group=group, rental_only="false")["total"] == 1
     for other in {"published", "waiting", "other"} - {group}:
-        assert read(c, group=other)["total"] == 0
+        assert read(c, group=other, rental_only="false")["total"] == 0
     summary = c.get(V1 + "/me/posts/summary").json()["counts"]
     assert summary == {"all": 1, "published": int(group == "published"),
                        "waiting": int(group == "waiting"), "other": int(group == "other")}
@@ -219,7 +219,7 @@ def test_pipeline_missing_ward_and_non_rental_states_without_manual_status_edits
     send(c, "missing", "Cho thuê phòng trọ 22m2 giá 3tr/tháng/phòng. Bài thử nghiệm.")
     send(c, "sale", "Sang nhượng quán cafe giá 50tr. Bài thử nghiệm.")
     assert api.drain() == 2
-    items = read(c)["items"]
+    items = read(c, rental_only="false")["items"]
     assert sorted(p["status"] for p in items) == ["needs_review", "not_rental"]
     waiting = next(p for p in items if p["status"] == "needs_review")
     assert waiting["listings"][0]["ward_code"] is None
@@ -236,7 +236,7 @@ def test_stored_failed_status_and_excerpt_limit_and_private_cache_headers(api):
         job.status = "succeeded"
         s.get(Post, pid).status = "failed"
         s.commit()
-    response = c.get(V1 + "/me/posts")
+    response = c.get(V1 + "/me/posts", params={"rental_only": "false"})
     item = response.json()["items"][0]
     assert item["status"] == "failed" and len(item["excerpt"]) == 200
     assert response.headers["cache-control"] == "private, no-store"

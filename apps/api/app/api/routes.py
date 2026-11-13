@@ -103,14 +103,36 @@ def my_posts_summary(response: Response, user: User = Depends(current_user), ses
     return my_posts.summary(session, user, settings)
 
 
-@router.get("/me/posts", tags=["account"], response_model=mine.MyPosts,
+@router.get("/me/posts/filters", tags=["account"], response_model=mine.MyPostsFilters,
             responses={401: {"model": ErrorResponse}})
+def my_posts_filters(response: Response, user: User = Depends(current_user), session: Session = Depends(get_session)):
+    response.headers["Cache-Control"] = "private, no-store"
+    response.headers["Vary"] = "Cookie, Authorization"
+    return my_posts.filter_options(session, user)
+
+
+@router.get("/me/posts", tags=["account"], response_model=mine.MyPosts,
+            responses={401: {"model": ErrorResponse}, 422: {"model": ErrorResponse}})
 def my_submitted_posts(response: Response, group: mine.StatusGroup = "all", page: int = Query(1, ge=1),
-                       limit: int = Query(20, ge=1, le=50), user: User = Depends(current_user),
+                       limit: int = Query(20, ge=1, le=50),
+                       area: list[str] = Query(default=[], max_length=40, description="Old-district keys, e.g. quan-1."),
+                       ward: list[str] = Query(default=[], max_length=40, description="New ward codes."),
+                       type: list[mine.PropertyType] = Query(default=[], max_length=5),
+                       price_min: int | None = Query(None, ge=0, le=10_000_000_000),
+                       price_max: int | None = Query(None, ge=0, le=10_000_000_000),
+                       area_min: float | None = Query(None, ge=0, le=100_000),
+                       area_max: float | None = Query(None, ge=0, le=100_000),
+                       rental_only: bool = True, sort: mine.SortKey = "newest",
+                       user: User = Depends(current_user),
                        session: Session = Depends(get_session), settings: Settings = Depends(settings_dep)):
     response.headers["Cache-Control"] = "private, no-store"
     response.headers["Vary"] = "Cookie, Authorization"
-    return my_posts.search(session, user, settings, group=group, page=page, limit=limit)
+    filters = my_posts.Filters(areas=tuple(dict.fromkeys(area)), wards=tuple(dict.fromkeys(ward)),
+                               types=tuple(dict.fromkeys(type)), price_min=price_min, price_max=price_max,
+                               area_min=area_min, area_max=area_max, rental_only=rental_only, sort=sort)
+    my_posts.validate(filters)
+    return my_posts.search(session, user, settings, group=group, page=page, limit=limit, filters=filters)
+
 
 @router.post("/ingest/batch", tags=["extension"])
 def ingest_batch(body: IngestBatch, user: User = Depends(current_user),

@@ -321,3 +321,16 @@ class EvalResult(Base):
     metric: Mapped[str] = mapped_column(String(40))
     value: Mapped[float | None] = mapped_column(Float)
     support: Mapped[int | None] = mapped_column(Integer)
+
+
+class ListingDistrict(Base):
+    """Old-district keys (quan-1, binh-thanh...) the pipeline found in the post text for a listing.
+
+    Many posts name only an old district, not a ward; this makes "Quận 1" filterable for them.
+    Absent for listings flagged outside_hcm_province. Written at extraction (services.processing)
+    and backfilled for older rows by migration 0008.
+    """
+    __tablename__ = "listing_districts"
+    __table_args__ = (Index("ix_listing_districts_key", "district_key"),)
+    listing_id: Mapped[str] = mapped_column(ForeignKey("listings.id", ondelete="CASCADE"), primary_key=True)
+    district_key: Mapped[str] = mapped_column(String(40), primary_key=True)
