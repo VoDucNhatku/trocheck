@@ -2,17 +2,18 @@ import type { MarketSummary } from '@/lib/workspace/types';
 import { PROPERTY_LABEL } from '@/lib/format';
 
 export type MarketCell = MarketSummary['cells'][number];
-export type MarketFilters = { ward: string; type: string; basis: 'per_unit' | 'per_person'; demo: 'true' | 'false' };
+export type MarketFilters = { ward: string; type: string; basis: 'per_unit' | 'per_person'; demo: 'true' | 'false' | '' };
 export const MARKET_TYPES = ['phong_tro', 'ccmn', 'can_ho_dich_vu', 'nha_nguyen_can'] as const;
 
 export function marketFilters(query: Record<string, string | string[] | undefined>): MarketFilters {
   const first = (key: string) => { const value = query[key]; return (Array.isArray(value) ? value[0] : value) ?? ''; };
   const type = first('type');
-  return { ward: first('ward').trim(), type: Object.hasOwn(PROPERTY_LABEL, type) ? type : '', basis: first('basis') === 'per_person' ? 'per_person' : 'per_unit', demo: first('demo') === 'false' ? 'false' : 'true' };
+  return { ward: first('ward').trim(), type: Object.hasOwn(PROPERTY_LABEL, type) ? type : '', basis: first('basis') === 'per_person' ? 'per_person' : 'per_unit', demo: first('demo') === 'false' ? 'false' : first('demo') === 'true' ? 'true' : '' };
 }
 
 export function marketQuery(filters: MarketFilters): string {
-  const params = new URLSearchParams({ basis: filters.basis, demo: filters.demo });
+  const params = new URLSearchParams({ basis: filters.basis });
+  if (filters.demo) params.set('demo', filters.demo);
   if (filters.ward) params.set('ward', filters.ward);
   if (filters.type) params.set('type', filters.type);
   return params.toString();

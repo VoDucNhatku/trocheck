@@ -37,7 +37,7 @@ export default async function SearchPage({searchParams}:{searchParams:Promise<Se
     }
   }
   return <div className={`container ${styles.page}`}>
-    <header className={styles.head}><div><p className={styles.eyebrow}>Phòng nào cũng có điều cần đọc kỹ</p><h1>Tìm trọ, <em>đọc rõ giá.</em></h1><p className={styles.lead}>{data?.data_as_of?`Dữ liệu cập nhật ${formatDate(data.data_as_of)}. `:''}Bắt đầu bằng khu vực và mức thuê phù hợp với bạn.</p></div><div className={styles.dataset}><span>{demo===true?'Dữ liệu demo · Ví dụ tự tạo':demo===false?'Kho dữ liệu thật':'Đang xác định bộ dữ liệu'}</span>{demo!==undefined&&<Link href={searchUrl({demo:String(!demo)})}>{demo?'Xem kho thật':'Xem bộ demo'}</Link>}</div></header>
+    <header className={styles.head}><div><p className={styles.eyebrow}>Phòng nào cũng có điều cần đọc kỹ</p><h1>Tìm trọ, <em>đọc rõ giá.</em></h1><p className={styles.lead}>{data?.data_as_of?`Dữ liệu cập nhật ${formatDate(data.data_as_of)}. `:''}Bắt đầu bằng khu vực và mức thuê phù hợp với bạn.</p></div><div className={styles.dataset}><span>{demo===true?'Dữ liệu demo · Ví dụ tự tạo':demo===false?'Kho dữ liệu thật':'Đang xác định bộ dữ liệu'}</span>{demo===true&&<Link href={searchUrl({demo:'false'})}>Xem kho thật</Link>}</div></header>
     <div className={styles.layout}>
       <Suspense fallback={<p role="status">Đang tải bộ lọc…</p>}><FilterBar wards={catalog?.wards??[]} demo={demo} /></Suspense>
       <section className={styles.results} aria-label="Kết quả tìm trọ">

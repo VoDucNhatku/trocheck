@@ -32,7 +32,7 @@ export function DetailBody({detail,comparison}:{detail:ListingDetail;comparison:
   const permalink=post.permalink&&/^https?:\/\//i.test(post.permalink)?post.permalink:null;
   return <div className={styles.grid}>
     <div className={styles.originalColumn}>
-      <figure className={styles.figure}><div className={styles.media}><ImageOff size={36} strokeWidth={1.25} aria-hidden="true" /><span>Ảnh phòng (ví dụ)</span></div><figcaption>Khối giữ chỗ. Không hiển thị ảnh phòng thật.</figcaption></figure>
+      <figure className={styles.figure}><div className={styles.media}><ImageOff size={36} strokeWidth={1.25} aria-hidden="true" /><span>{detail.is_demo ? 'Ảnh phòng (ví dụ)' : 'Tin chưa có ảnh hiển thị'}</span></div><figcaption>{detail.is_demo ? 'Khối giữ chỗ cho ví dụ tự tạo.' : 'Đối chiếu ảnh phòng và tình trạng hiện tại với người đăng.'}</figcaption></figure>
       <section ref={original} className={styles.original} aria-labelledby="evidence-title">
         <header className={styles.originalHead}><h2 id="evidence-title">Bài đăng gốc</h2><span>Người đăng đã ẩn</span></header>
         <p className={styles.hint}>Bấm vào phiếu giá hoặc đoạn được đánh dấu để đối chiếu.</p>
