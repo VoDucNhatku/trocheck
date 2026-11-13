@@ -48,7 +48,7 @@ test('extension guide and Account connection work in an offline browser fixture'
   });
   await new Promise((resolve, reject) => { server.once('error', reject); server.listen(3000, '127.0.0.1', resolve); });
   t.after(() => new Promise(resolve => server.close(resolve)));
-  const browser = await chromium.launch({ channel: 'chrome', headless: true });
+  const browser = await chromium.launch({ channel: process.env.PW_CHANNEL || 'chrome', headless: true });
   t.after(() => browser.close());
   const page = await browser.newPage();
   const errors = [];

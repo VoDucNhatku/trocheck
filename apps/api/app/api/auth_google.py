@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Query, Request, Response
 from sqlalchemy.orm import Session
 
 from app.api.deps import settings_dep
-from app.api.routes import registration_limit
+from app.api.routes import authentication_limit, registration_limit
 from app.core import security
 from app.core.config import Settings
 from app.core.db import get_session
@@ -27,9 +27,13 @@ def start(response: Response, next: str = Query(default="/phan-tich", max_length
 async def callback(body: GoogleCallback, request: Request, response: Response,
                    session: Session = Depends(get_session), settings: Settings = Depends(settings_dep)):
     auth_google.configured(settings)
+    authentication_limit(request, "google")
     transaction = auth_google.read_transaction(request.cookies.get(auth_google.COOKIE, ""), body.state, settings)
-    subject, email = await auth_google.identity(body.code, transaction["verifier"], settings)
-    user = auth_google.resolve_user(session, subject, email)
+    subject, email, display_name = await auth_google.identity(body.code, transaction["verifier"], settings)
+    # Use only Google's verified subject as the account key, never an untrusted browser email.
+    request.app.state.auth_limit.check(f"google:user:{subject}", 5, 300,
+                                       "Bạn đã thử đăng nhập nhiều lần. Hãy thử lại sau ít phút.")
+    user = auth_google.resolve_user(session, subject, email, display_name)
     response.set_cookie(settings.session_cookie_name,
                         security.sign_session(user.id, settings.secret_key, settings.session_max_age_seconds, user.auth_version),
                         max_age=settings.session_max_age_seconds, httponly=True,

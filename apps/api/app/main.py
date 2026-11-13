@@ -28,6 +28,7 @@ def create_app() -> FastAPI:
                        allow_methods=["GET", "POST", "DELETE"], allow_headers=["Authorization", "Content-Type"])
     errors.install(app)
     app.state.registration_limit = RegistrationLimit()
+    app.state.auth_limit = RegistrationLimit()
     app.include_router(router)
     app.include_router(password_router)
     app.include_router(google_router)

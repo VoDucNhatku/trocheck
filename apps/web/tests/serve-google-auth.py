@@ -27,7 +27,7 @@ db.Base.metadata.create_all(db.engine())
 async def synthetic_identity(code, verifier, settings):
     if code != "synthetic-code":
         raise ApiError(401, code="google_denied", message="Synthetic provider rejected code")
-    return "synthetic-google-subject", "synthetic@example.com"
+    return "synthetic-google-subject", "synthetic@example.com", "Người dùng thử"
 
 
 auth_google.identity = synthetic_identity

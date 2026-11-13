@@ -57,7 +57,7 @@ def test_start_uses_pkce_and_signed_expiring_cookie(google):
     challenge = base64.urlsafe_b64encode(hashlib.sha256(transaction["verifier"].encode()).digest()).rstrip(b"=").decode()
     assert query["code_challenge"] == [challenge]
     assert query["code_challenge_method"] == ["S256"]
-    assert query["scope"] == ["openid email"]
+    assert query["scope"] == ["openid email profile"]
     assert google.settings.google_client_secret not in response.text
     assert query["state"] != parse_qs(urlsplit(response.json()["authorization_url"]).query)["state"]
 
@@ -88,7 +88,7 @@ def test_invalid_transaction_never_contacts_google(google, monkeypatch, kind):
 
 def test_google_creates_renter_and_reuses_subject(google, monkeypatch):
     async def profile(*args):
-        return "google-subject-123", "renter@example.com"
+        return "google-subject-123", "renter@example.com", "Nguyễn An"
     monkeypatch.setattr(auth_google, "identity", profile)
     client, cookie, query = begin(google)
     response = finish(client, cookie, query["state"][0])
@@ -96,6 +96,9 @@ def test_google_creates_renter_and_reuses_subject(google, monkeypatch):
     assert "HttpOnly" in response.headers["set-cookie"]
     me = client.get("/api/v1/auth/me").json()
     assert me["roles"] == ["renter"]
+    assert me["email"] == "renter@example.com" and me["display_name"] == "Nguyễn An"
+    assert me["google_connected"] is True and me["local_login_enabled"] is False
+    assert "google_subject" not in me and "password_hash" not in me
     with google.session() as session:
         user = session.get(User, me["user_id"])
         assert user.google_subject == "google-subject-123" and user.email == "renter@example.com"
@@ -114,7 +117,7 @@ def test_email_match_does_not_link_or_elevate_existing_user(google, monkeypatch)
         admin.email = "admin@example.com"
         session.commit()
     async def profile(*args):
-        return "different-google-subject", "admin@example.com"
+        return "different-google-subject", "admin@example.com", None
     monkeypatch.setattr(auth_google, "identity", profile)
     client, cookie, query = begin(google)
     response = finish(client, cookie, query["state"][0])
@@ -145,11 +148,12 @@ def test_identity_only_trusts_google_userinfo(google, monkeypatch, kind):
         assert request.headers["Authorization"] == "Bearer private-access-token"
         if kind == "invalid-json":
             return httpx.Response(200, text="not-json")
-        return httpx.Response(200, json={"sub": "verified-sub", "email": "Example@Example.com", "email_verified": kind != "unverified"})
+        return httpx.Response(200, json={"sub": "verified-sub", "email": "Example@Example.com",
+                                        "name": " Nguyễn An ", "email_verified": kind != "unverified"})
     monkeypatch.setattr(auth_google.httpx, "AsyncClient", lambda **kwargs: factory(transport=httpx.MockTransport(provider), **kwargs))
     import asyncio
     if kind == "ok":
-        assert asyncio.run(auth_google.identity("code", "verifier", google.settings)) == ("verified-sub", "example@example.com")
+        assert asyncio.run(auth_google.identity("code", "verifier", google.settings)) == ("verified-sub", "example@example.com", "Nguyễn An")
     else:
         with pytest.raises(ApiError) as error:
             asyncio.run(auth_google.identity("code", "verifier", google.settings))
@@ -175,10 +179,83 @@ def test_google_migration_preserves_existing_password_user(database_url):
                                                   roles=["admin"], auth_version=3, created_at=utcnow()))
     command.upgrade(config, "head")
     upgraded = Table("users", MetaData(), autoload_with=engine)
+    reset_tokens = Table("password_reset_tokens", MetaData(), autoload_with=engine)
+    with engine.begin() as connection:
+        connection.execute(reset_tokens.insert().values(id="preserved-token", user_id="existing", token_hash="synthetic-hash",
+                                                        created_at=utcnow(), expires_at=utcnow()))
     with engine.connect() as connection:
         row = connection.execute(select(upgraded)).mappings().one()
         assert row["password_hash"] == "preserved-hash" and row["roles"] == ["admin"]
         assert row["auth_version"] == 3 and row["google_subject"] is None
+        assert row["display_name"] is None
     command.downgrade(config, "0002")
     assert "google_subject" not in {c["name"] for c in inspect(engine).get_columns("users")}
+    assert "display_name" not in {c["name"] for c in inspect(engine).get_columns("users")}
+    with engine.connect() as connection:
+        assert connection.execute(select(reset_tokens.c.id)).scalars().all() == ["preserved-token"]
     engine.dispose()
+
+
+def test_existing_google_profile_is_refreshed_without_changing_roles(google):
+    with google.session() as session:
+        user = auth_google.resolve_user(session, "legacy-sub", "old@example.com")
+        user.roles = ["reviewer"]
+        session.commit()
+        original_id = user.id
+        refreshed = auth_google.resolve_user(session, "legacy-sub", "new@example.com", "Nguyễn Bình")
+        assert refreshed.id == original_id and refreshed.roles == ["reviewer"]
+        assert refreshed.email == "new@example.com" and refreshed.display_name == "Nguyễn Bình"
+        assert refreshed.password_hash == ""
+        # A missing optional name on a later login must not erase the stored name.
+        assert auth_google.resolve_user(session, "legacy-sub", "new@example.com").display_name == "Nguyễn Bình"
+
+
+def test_google_profile_email_conflict_does_not_take_over_local_identity(google):
+    with google.session() as session:
+        local = session.scalar(select(User).where(User.username == "admin"))
+        local.email = "local@example.com"
+        session.commit()
+        google_user = auth_google.resolve_user(session, "separate-sub", "google@example.com")
+        refreshed = auth_google.resolve_user(session, "separate-sub", "local@example.com", "Tên mới")
+        assert refreshed.id == google_user.id and refreshed.email == "google@example.com"
+        assert refreshed.roles == ["renter"] and local.google_subject is None
+
+
+def test_local_session_exposes_only_public_account_fields(api):
+    me = api.client("admin").get("/api/v1/auth/me").json()
+    assert me["google_connected"] is False and me["local_login_enabled"] is True
+    assert me["display_name"] is None and me["email"] is None
+    assert set(me) == {"user_id", "username", "roles", "email", "display_name", "google_connected", "local_login_enabled"}
+
+
+def test_google_only_account_cannot_request_password_reset(google, caplog):
+    from app.models import PasswordResetToken
+    from app.services import auth_password
+    google.settings.password_reset_dev_log = True
+    with google.session() as session:
+        auth_google.resolve_user(session, "passwordless", "google@example.com")
+        auth_password.forgot(session, "google@example.com", google.settings)
+        assert session.scalar(select(PasswordResetToken)) is None
+    assert "password reset link" not in caplog.text
+
+
+def test_google_callback_is_limited_before_contacting_provider(google, monkeypatch):
+    async def unexpected(*args):
+        pytest.fail("Invalid state or blocked callback must not contact Google")
+    monkeypatch.setattr(auth_google, "identity", unexpected)
+    google.settings.register_rate_limit = 1000
+    client = google.client()
+    for _ in range(30):
+        assert finish(client, "", "wrong").status_code == 400
+    response = finish(client, "", "wrong")
+    assert response.status_code == 429 and int(response.headers["Retry-After"]) > 0
+
+
+def test_google_callback_limits_verified_subject(google, monkeypatch):
+    async def profile(*args):
+        return "same-subject", "same@example.com", "Tên thử"
+    monkeypatch.setattr(auth_google, "identity", profile)
+    client, cookie, query = begin(google)
+    for _ in range(5):
+        assert finish(client, cookie, query["state"][0]).status_code == 200
+    assert finish(client, cookie, query["state"][0]).status_code == 429

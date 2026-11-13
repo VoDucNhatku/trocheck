@@ -12,7 +12,6 @@ import argparse
 import logging
 import os
 import socket
-import time
 from datetime import timedelta
 
 from app.core.config import Settings, get_settings
@@ -113,6 +112,21 @@ def drain(settings: Settings | None = None, llm: LlmClient | None = None, *, lim
     return done
 
 
+def run_loop(settings: Settings, llm: LlmClient | None, worker_id: str) -> None:
+    minimum = max(0.1, min(settings.worker_poll_seconds, 60.0))
+    delay = minimum
+    while True:
+        # Clear before claiming so a commit during the query cannot be lost before waiting.
+        jobs.queue_changed.clear()
+        if run_one(settings, llm, worker_id):
+            delay = minimum
+            continue
+        if jobs.queue_changed.wait(delay):
+            delay = minimum
+        else:
+            delay = min(60.0, delay * 2)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="ReNER-VN job worker")
     parser.add_argument("--once", action="store_true", help="drain the queue and exit")
@@ -125,9 +139,7 @@ def main() -> None:
         log.info("processed %d jobs", drain(settings, llm))
         return
     worker_id = f"{socket.gethostname()}:{os.getpid()}"
-    while True:
-        if not run_one(settings, llm, worker_id):
-            time.sleep(settings.worker_poll_seconds)
+    run_loop(settings, llm, worker_id)
 
 
 if __name__ == "__main__":

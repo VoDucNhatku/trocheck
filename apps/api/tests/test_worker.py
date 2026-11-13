@@ -58,3 +58,78 @@ def test_two_workers_never_take_the_same_job(api):
         first = jobs.claim(a, "w1", 60)
         second = jobs.claim(b, "w2", 60)
     assert first is not None and second is None
+
+
+def test_idle_worker_backs_off_caps_and_resets_after_work(monkeypatch):
+    import pytest
+    import app.worker.run as worker
+    from types import SimpleNamespace
+
+    class StopLoop(Exception):
+        pass
+
+    waits = []
+    outcomes = iter([False] * 9 + [True, False])
+    def run(*args):
+        try:
+            return next(outcomes)
+        except StopIteration:
+            raise StopLoop
+    class Wakeup:
+        def clear(self):
+            pass
+        def wait(self, timeout):
+            waits.append(timeout)
+            return False
+    monkeypatch.setattr(worker, "run_one", run)
+    monkeypatch.setattr(jobs, "queue_changed", Wakeup())
+    with pytest.raises(StopLoop):
+        worker.run_loop(SimpleNamespace(worker_poll_seconds=1), None, "test")
+    assert waits == [1, 2, 4, 8, 16, 32, 60, 60, 60, 1]
+
+
+def test_committed_enqueue_wakes_idle_worker_and_rollback_does_not(api):
+    from threading import Thread
+    _ingest(api)
+    with api.session() as session:
+        version_id = session.scalar(select(Job.post_version_id))
+    jobs.queue_changed.clear()
+    observed = []
+    waiter = Thread(target=lambda: observed.append(jobs.queue_changed.wait(2)))
+    waiter.start()
+    with api.session() as session:
+        jobs.enqueue(session, kind="extract", post_version_id=version_id)
+        session.flush()
+        assert not jobs.queue_changed.is_set()
+        session.commit()
+    waiter.join(3)
+    assert observed == [True]
+    jobs.queue_changed.clear()
+    with api.session() as session:
+        jobs.enqueue(session, kind="extract", post_version_id=version_id)
+        session.flush()
+        session.rollback()
+        session.commit()
+    assert not jobs.queue_changed.is_set()
+
+
+def test_enqueue_notification_resets_backoff(monkeypatch):
+    import pytest
+    import app.worker.run as worker
+    from types import SimpleNamespace
+    waits = []
+    class StopLoop(Exception):
+        pass
+    class Wakeup:
+        def clear(self):
+            pass
+        def wait(self, timeout):
+            waits.append(timeout)
+            if len(waits) == 4:
+                raise StopLoop
+            return len(waits) == 3
+    monkeypatch.setattr(worker, "run_one", lambda *args: False)
+    monkeypatch.setattr(jobs, "queue_changed", Wakeup())
+    with pytest.raises(StopLoop):
+        worker.run_loop(SimpleNamespace(worker_poll_seconds=1), None, "test")
+    assert waits == [1, 2, 4, 1]

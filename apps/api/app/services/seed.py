@@ -6,6 +6,7 @@ statistics or evaluation (AT17). Generated posts are invented text in DEMO wards
 from __future__ import annotations
 
 import json
+import os
 import random
 from datetime import timedelta
 
@@ -35,9 +36,13 @@ EXTRAS = ["thang máy", "ban công", "cửa sổ thoáng", "máy giặt riêng",
 
 
 def create_demo_users(session: Session, password: str) -> list[str]:
+    admin_username = os.environ.get("ADMIN_USERNAME", "").strip()
     for name, roles in DEMO_USERS.items():
+        # Never reserve the configured administrator's name with the shared demo password.
+        if admin_username and name == admin_username:
+            continue
         if session.scalar(select(User).where(User.username == name)) is None:
-            users.create_user(session, name, password, roles)
+            users.create_user(session, name, password, ["renter"] if admin_username and "admin" in roles else roles)
     session.commit()
     return list(DEMO_USERS)
 

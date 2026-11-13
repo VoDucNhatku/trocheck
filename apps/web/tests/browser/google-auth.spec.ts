@@ -49,6 +49,25 @@ test('successful callback creates a real renter session and preserves return pat
   const me = await page.request.get('/api/workspace/auth/me');
   expect(me.status()).toBe(200);
   expect((await me.json()).roles).toEqual(['renter']);
+  await expect(page.getByRole('heading', { name: 'Người dùng thử', exact: true })).toBeVisible();
+  await expect(page.getByLabel('Email tài khoản', { exact: true })).toHaveValue('synthetic@example.com');
+  await expect(page.getByText('Đã kết nối', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Đổi mật khẩu' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Yêu cầu đặt lại mật khẩu' })).toHaveCount(0);
+  await expect(page.getByText('Mọi tài khoản đã đăng nhập đều có thể gửi bài bằng tiện ích, trong giới hạn mỗi ngày.')).toBeVisible();
+  await page.getByRole('button', { name: 'Tải lại thông tin', exact: true }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Thông tin tài khoản đã được cập nhật.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Người dùng thử', exact: true })).toBeVisible();
+  await expect(page.getByLabel('Email tài khoản', { exact: true })).toHaveValue('synthetic@example.com');
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const theme of ['light', 'dark']) {
+      await page.evaluate(value => document.documentElement.dataset.theme = value, theme);
+      await page.screenshot({ path: `../../.tmp/account-google-${width}-${theme}.png`, fullPage: true });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await expect(page.getByText('Đã kết nối', { exact: true })).toBeVisible();
+    }
+  }
   const cookies = await page.context().cookies();
   expect(cookies.find(cookie => cookie.name === 'rener_session')?.httpOnly).toBe(true);
   expect(cookies.some(cookie => cookie.name === 'rener_google_oauth')).toBe(false);
