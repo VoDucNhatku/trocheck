@@ -2,6 +2,9 @@
 
 const status = document.querySelector("#status");
 const download = document.querySelector("#download");
+// The popup's existing account connection destination is the configured web base.
+const WEB_BASE_URL = "https://trocheck.vercel.app";
+document.querySelector("#my-posts").href = WEB_BASE_URL + "/bai-cua-toi";
 
 async function readPosts() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -65,7 +68,7 @@ async function loadStatus() {
 }
 loadStatus().catch(() => { status.textContent = "Không đọc được trạng thái extension. Mở bảng dữ liệu để kiểm tra."; });
 
-document.querySelector("#connect").addEventListener("click", () => chrome.tabs.create({ url: "https://trocheck.vercel.app/tai-khoan" }));
+document.querySelector("#connect").addEventListener("click", () => chrome.tabs.create({ url: WEB_BASE_URL + "/tai-khoan" }));
 document.querySelector("#disconnect").addEventListener("click", async () => {
   await chrome.runtime.sendMessage({ type: "DISCONNECT" });
   await loadStatus();

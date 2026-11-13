@@ -5,5 +5,7 @@ h1 { margin: 0 0 12px; font-size: 20px; }
 button { width: 100%; padding: 10px; border: 0; border-radius: 6px; background: var(--accent); color: #15161A; cursor: pointer; font: inherit; }
 button:disabled { opacity: .5; cursor: default; }
 .note { color: var(--muted); font-size: 12px; }
+#my-posts { display: inline-flex; align-items: center; min-height: 44px; color: var(--ink); text-underline-offset: 3px; }
+#my-posts:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
 button + button { margin-top: 8px; }
