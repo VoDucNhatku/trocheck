@@ -9,13 +9,15 @@ from datetime import UTC, timedelta
 
 from pydantic import ValidationError
 from sqlalchemy import func, select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings
 from app.core.errors import ApiError, conflict
 from app.core.ids import seconds_to_vn_midnight, utcnow, vn_day_start
 from app.core.security import content_hash
-from app.models import IdempotencyKey, Job, Post, PostVersion, User
+from app.models import IdempotencyKey, Job, Post, PostSubmission, PostVersion, User
 from app.pipeline.preprocess import text_hash
 from app.pipeline.privacy import mask_phones
 from app.schemas import IngestPost
@@ -64,14 +66,25 @@ def daily_limit_error(message: str) -> ApiError:
                     headers={"Retry-After": str(seconds_to_vn_midnight())})
 
 
+def daily_used(session: Session, user: User) -> int:
+    """The shared intake/quota counter: new collected posts on the Vietnam calendar day."""
+    return session.scalar(select(func.count()).select_from(Post)
+                          .where(Post.collector_id == user.id, Post.mode == "collect",
+                                 Post.first_seen_at >= vn_day_start()))
+
+
 def daily_left(session: Session, user: User, settings: Settings) -> int | None:
     """New posts this account may still add today. None: not capped (collector role, or the cap is off)."""
     if not settings.ingest_daily_limit or users.has_role(user, "collector"):
         return None
-    used = session.scalar(select(func.count()).select_from(Post)
-                          .where(Post.collector_id == user.id, Post.mode == "collect",
-                                 Post.first_seen_at >= vn_day_start()))
-    return max(0, settings.ingest_daily_limit - used)
+    return max(0, settings.ingest_daily_limit - daily_used(session, user))
+
+
+def _record_submission(session: Session, post_id: str, user_id: str, sent_at) -> None:
+    # Atomic upsert preserves the first send time, including simultaneous duplicate sends.
+    insert = pg_insert if session.get_bind().dialect.name == "postgresql" else sqlite_insert
+    session.execute(insert(PostSubmission).values(post_id=post_id, user_id=user_id, first_sent_at=sent_at)
+                    .on_conflict_do_nothing(index_elements=["post_id", "user_id"]))
 
 
 def ingest_post(session: Session, user: User, post_in: IngestPost, *, mode: str, contributed: bool,
@@ -83,6 +96,9 @@ def ingest_post(session: Session, user: User, post_in: IngestPost, *, mode: str,
     if seen is not None:
         if seen.request_hash != request_hash:
             raise conflict("Idempotency key đã dùng cho nội dung khác")
+        # A legacy second sender may only have an idempotency row after migration 0007.
+        if seen.result_ref and session.get(Post, seen.result_ref) is not None:
+            _record_submission(session, seen.result_ref, user.id, seen.created_at)
         return IngestResult(post_in.idempotency_key, "duplicate", seen.result_ref)
 
     text = mask_phones(post_in.text)  # extension masks first; mask again before storing
@@ -126,6 +142,7 @@ def ingest_post(session: Session, user: User, post_in: IngestPost, *, mode: str,
         jobs.enqueue(session, kind="extract", post_version_id=version.id, requested_by=user.id)
         result = IngestResult(post_in.idempotency_key, "created", post.id)
 
+    _record_submission(session, result.post_id, user.id, now)
     session.add(IdempotencyKey(key=post_in.idempotency_key, user_id=user.id, request_hash=request_hash,
                                result_ref=result.post_id))
     session.flush()

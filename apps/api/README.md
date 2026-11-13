@@ -45,6 +45,28 @@ và health check chạy `SELECT 1`, nên Neon vẫn thức khi phiên Render đa
 
 ## Kiến trúc trong code
 
+### Bot tự duyệt có điều kiện (ADR-0009)
+
+Mặc định `REVIEW_BOT_AUTO_APPROVE=false`; bật riêng cờ quan sát `REVIEW_BOT_ENABLED` không cấp quyền công bố.
+Chỉ khi cả hai cờ bật, bot mới có thể approve tin đang chờ với verdict `approve`, confidence **1.0**,
+bốn kiểm tra có trích dẫn, giá chính xác VND/tháng/phòng, phường TP.HCM đã phân giải và chỉ một phòng.
+Allow-list duy nhất: `rent_llm_only` (nguồn giá `llm_only` được pipeline ghi tường minh); mọi lý do khác,
+thiếu phường, xung đột, nhiều phòng, demo hoặc người gửi không còn vai trò/có dấu `blocked` đều giữ hàng chờ.
+Tin cũ thiếu mã lý do không tự được cấp quyền. Bot không loại tin, sửa trường hoặc xóa dữ liệu.
+
+`REVIEW_BOT_AUTO_APPROVE_DAILY_LIMIT=200` giới hạn số sự kiện tự duyệt theo ngày Việt Nam; **0 = chặn hết**.
+Khóa cơ sở dữ liệu dùng chung giữa worker bảo vệ trần; không cần migration. Danh tính `review-bot` không có
+vai trò hoặc mật khẩu đăng nhập; không cấp quyền hay đổi mật khẩu cho tài khoản này.
+
+Admin xem thêm số đã duyệt hôm nay, cờ và trần trong `GET /team/bot-reviews/summary`. Màn Hàng duyệt có mục
+“Bot đã duyệt” (`GET /team/reviews?status=bot_approved`); mở chi tiết và bấm “Hoàn tác” để đưa về hàng chờ,
+gỡ khỏi trang công khai và lưu lịch sử người quyết định. Action `undo` cần `expected_version`; bản cũ trả 409.
+Hoàn tác không hoàn lại hạn mức và không kích hoạt lại cùng kết quả bot. Thống kê đồng thuận chỉ dùng quyết định người.
+
+Một lượt xét bình thường dùng **1 lời gọi Gemini**; tự duyệt không phát sinh lời gọi bổ sung. Retry/job trùng có thể
+tăng tổng; trích xuất trước đó tính riêng. Hết trần tự duyệt bot vẫn quan sát, còn tốn hạn mức gọi mô hình.
+Xem [ADR-0009](../../docs/decisions/ADR-0009-bot-tu-duyet-co-dieu-kien.md) về chốt, danh tính, giới hạn và quyết định bật.
+
 ```mermaid
 flowchart LR
     R[app/api<br/>router: kiểm input, gọi service] --> S[app/services<br/>nghiệp vụ + giao dịch DB]

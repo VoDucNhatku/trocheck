@@ -18,6 +18,8 @@ import styles from './Market.module.css';
 const EXCLUDED: Record<string, string> = { not_contributed: 'Chưa đóng góp', not_approved: 'Chưa được chấp nhận', not_accepted: 'Chưa được chấp nhận', rejected: 'Đã loại', duplicate: 'Trùng tin', non_exact_price: 'Giá không cụ thể', price_not_exact: 'Giá không cụ thể', basis_unknown: 'Chưa rõ cách tính giá', property_type_unknown: 'Chưa rõ loại phòng', period_not_month: 'Giá không theo tháng', not_monthly: 'Giá không theo tháng', ward_unresolved: 'Chưa xác định phường', outside_window: 'Ngoài cửa sổ thời gian', old: 'Ngoài thời gian', not_rental_offer: 'Không phải bài cho thuê', demo_mismatch: 'Khác bộ dữ liệu' };
 
 function WardName({ name }: { name: string }) {
+  const parts = name.match(/^(phường|xã|đặc khu)\s+(.+)$/iu);
+  if (parts && parts[2].length <= 22) return <>{parts[1]} <span className={styles.phrase}>{parts[2]}</span></>;
   return name.length <= 22 && name.trim().split(/\s+/u).length <= 3 ? <span className={styles.phrase}>{name}</span> : <PhraseText text={name} />;
 }
 
@@ -76,7 +78,7 @@ export function Market({ query, filters, wards = [], showThemeToggle = true }: {
         <Field label="Phường (tên hoặc mã)" name="ward" defaultValue={filters.ward} list="market-wards" placeholder="Tất cả phường" />
         <datalist id="market-wards">{wards.map(ward => <option key={ward} value={ward} />)}</datalist>
         <div className={styles.field}><label htmlFor="market-type"><span className={styles.phrase}>Loại phòng</span></label><select id="market-type" className={styles.select} name="type" defaultValue={filters.type}><option value="">Tất cả loại</option>{Object.entries(PROPERTY_LABEL).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></div>
-        <div className={styles.field}><label htmlFor="market-demo">Bộ dữ liệu</label><select id="market-demo" className={styles.select} name="demo" defaultValue={filters.demo}><option value="true">Demo tự tạo</option><option value="false">Kho thật</option></select></div>
+        <div className={styles.field}><label htmlFor="market-demo">Bộ dữ liệu</label><select key={`${query}-${data?.is_demo}`} id="market-demo" className={styles.select} name="demo" defaultValue={data ? String(data.is_demo) : filters.demo}><option value="">Theo máy chủ</option>{data?.is_demo !== false && <option value="true">Demo tự tạo</option>}<option value="false">Kho thật</option></select></div>
         <Button type="submit">Áp dụng bộ lọc</Button>
       </form>
     </section>

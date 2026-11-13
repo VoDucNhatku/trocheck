@@ -85,6 +85,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/posts/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Posts Summary */
+        get: operations["my_posts_summary_api_v1_me_posts_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/posts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Submitted Posts */
+        get: operations["my_submitted_posts_api_v1_me_posts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/ingest/batch": {
         parameters: {
             query?: never;
@@ -781,6 +815,21 @@ export interface components {
             /** Contributed */
             contributed: boolean;
         };
+        /** DailyQuota */
+        DailyQuota: {
+            /** Used */
+            used: number;
+            /** Limit */
+            limit: number | null;
+            /** Remaining */
+            remaining: number | null;
+            /**
+             * Timezone
+             * @default Asia/Ho_Chi_Minh
+             * @constant
+             */
+            timezone?: "Asia/Ho_Chi_Minh";
+        };
         /** DirectoryUser */
         DirectoryUser: {
             /** User Id */
@@ -944,6 +993,38 @@ export interface components {
         ExtensionTokens: {
             /** Items */
             items: components["schemas"]["ExtensionTokenInfo"][];
+        };
+        /** ExtractedListing */
+        ExtractedListing: {
+            /** Listing Id */
+            listing_id: string;
+            /** Review Status */
+            review_status: string;
+            /** Reason Codes */
+            reason_codes: string[];
+            /** Public Url */
+            public_url: string | null;
+            /** Price Vnd */
+            price_vnd: number | null;
+            /** Price Min Vnd */
+            price_min_vnd: number | null;
+            /** Price Form */
+            price_form: string | null;
+            /** Price Basis */
+            price_basis: string | null;
+            /** Price Period */
+            price_period: string | null;
+            /** Area M2 */
+            area_m2: number | null;
+            /** Room Type */
+            room_type: string | null;
+            /** Ward Code */
+            ward_code: string | null;
+            /** Ward Name */
+            ward_name: string | null;
+            /** Resolution */
+            resolution: string | null;
+            comparison: components["schemas"]["Comparison"];
         };
         /** Fee */
         Fee: {
@@ -1312,6 +1393,52 @@ export interface components {
             /** Is Demo */
             is_demo: boolean;
         };
+        /** MyPost */
+        MyPost: {
+            /** Post Id */
+            post_id: string;
+            /** Received At */
+            received_at: string;
+            /** Source Group Name */
+            source_group_name: string | null;
+            /** Permalink */
+            permalink: string | null;
+            /** Excerpt */
+            excerpt: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "received" | "needs_review" | "published" | "rejected" | "not_rental" | "failed";
+            /** Reason Codes */
+            reason_codes: string[];
+            /** Photo Count */
+            photo_count: number;
+            /** Listings */
+            listings: components["schemas"]["ExtractedListing"][];
+        };
+        /** MyPosts */
+        MyPosts: {
+            /** Items */
+            items: components["schemas"]["MyPost"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Limit */
+            limit: number;
+            /**
+             * Comparison Baseline
+             * @default real_accepted
+             * @constant
+             */
+            comparison_baseline?: "real_accepted";
+        };
+        /** MyPostsSummary */
+        MyPostsSummary: {
+            counts: components["schemas"]["StatusCounts"];
+            quota: components["schemas"]["DailyQuota"];
+        };
         /** PostJob */
         PostJob: {
             /** Status */
@@ -1464,7 +1591,7 @@ export interface components {
              * Action
              * @enum {string}
              */
-            action: "approve" | "reject" | "split" | "merge";
+            action: "approve" | "reject" | "split" | "merge" | "undo";
             /** Expected Version */
             expected_version: number;
             /** Fields */
@@ -1499,6 +1626,12 @@ export interface components {
         };
         /** ReviewHistory */
         ReviewHistory: {
+            /**
+             * Source
+             * @default human
+             * @enum {string}
+             */
+            source?: "human" | "bot";
             /** Action */
             action: string;
             /** User Id */
@@ -1530,6 +1663,11 @@ export interface components {
         };
         /** ReviewQueueItem */
         ReviewQueueItem: {
+            /**
+             * Bot Approved
+             * @default false
+             */
+            bot_approved?: boolean;
             /** Listing Id */
             listing_id: string;
             /** Reasons */
@@ -1657,6 +1795,17 @@ export interface components {
             updated_at: string | null;
             /** Is Demo */
             is_demo: boolean;
+        };
+        /** StatusCounts */
+        StatusCounts: {
+            /** All */
+            all: number;
+            /** Published */
+            published: number;
+            /** Waiting */
+            waiting: number;
+            /** Other */
+            other: number;
         };
         /** TeamPost */
         TeamPost: {
@@ -1874,6 +2023,77 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SessionUser"];
+                };
+            };
+        };
+    };
+    my_posts_summary_api_v1_me_posts_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyPostsSummary"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    my_submitted_posts_api_v1_me_posts_get: {
+        parameters: {
+            query?: {
+                group?: "all" | "published" | "waiting" | "other";
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyPosts"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -2453,6 +2673,7 @@ export interface operations {
                 reason?: string | null;
                 page?: number;
                 page_size?: number;
+                status?: "needs_review" | "bot_approved";
             };
             header?: never;
             path?: never;

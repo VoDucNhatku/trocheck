@@ -20,6 +20,8 @@ from app.models import User
 from app.schemas import IngestBatch, IngestPost, LabRunRequest, LoginRequest, RegisterRequest, ReviewDecision, TokenCreate
 from app.schemas.public import Comparison, ErrorResponse, ListingDetail, ListingsResponse, StatsOverview
 from app.schemas import workspace as dto
+from app.schemas import my_posts as mine
+from app.services import my_posts
 from app.services import analyses, bot_reviews, evaluation, images, ingest, lab, listings, market, reviews, team, users
 
 router = APIRouter(prefix="/api/v1")
@@ -91,6 +93,24 @@ def who_am_i(user: User = Depends(current_user)):
 
 
 # --- extension -> API ----------------------------------------------------------------
+
+@router.get("/me/posts/summary", tags=["account"], response_model=mine.MyPostsSummary,
+            responses={401: {"model": ErrorResponse}})
+def my_posts_summary(response: Response, user: User = Depends(current_user), session: Session = Depends(get_session),
+                     settings: Settings = Depends(settings_dep)):
+    response.headers["Cache-Control"] = "private, no-store"
+    response.headers["Vary"] = "Cookie, Authorization"
+    return my_posts.summary(session, user, settings)
+
+
+@router.get("/me/posts", tags=["account"], response_model=mine.MyPosts,
+            responses={401: {"model": ErrorResponse}})
+def my_submitted_posts(response: Response, group: mine.StatusGroup = "all", page: int = Query(1, ge=1),
+                       limit: int = Query(20, ge=1, le=50), user: User = Depends(current_user),
+                       session: Session = Depends(get_session), settings: Settings = Depends(settings_dep)):
+    response.headers["Cache-Control"] = "private, no-store"
+    response.headers["Vary"] = "Cookie, Authorization"
+    return my_posts.search(session, user, settings, group=group, page=page, limit=limit)
 
 @router.post("/ingest/batch", tags=["extension"])
 def ingest_batch(body: IngestBatch, user: User = Depends(current_user),
@@ -204,7 +224,7 @@ def export(format: Literal["csv", "json"] = "csv", include_demo: bool = False,
 @router.get("/team/bot-reviews/summary", tags=["team"])
 def bot_review_summary(user: User = Depends(require_roles("reviewer")), session: Session = Depends(get_session),
                        settings: Settings = Depends(settings_dep)):
-    return bot_reviews.summary(session, settings)
+    return bot_reviews.summary(session, settings, include_auto_approve="admin" in user.roles)
 
 
 @router.get("/team/bot-reviews", tags=["team"])
@@ -215,8 +235,9 @@ def bot_review_page(page: int = Query(1, ge=1), page_size: int = Query(50, ge=1,
 
 @router.get("/team/reviews", tags=["team"], response_model=dto.ReviewQueue)
 def review_queue(reason: str | None = None, page: int = Query(1, ge=1), page_size: int = Query(50, ge=1, le=200),
+                 status: Literal["needs_review", "bot_approved"] = "needs_review",
                  user: User = Depends(require_roles("reviewer")), session: Session = Depends(get_session)):
-    return reviews.queue(session, reason=reason, page=page, page_size=page_size)
+    return reviews.queue(session, reason=reason, page=page, page_size=page_size, status=status)
 
 
 @router.get("/team/reviews/{listing_id}", tags=["team"], response_model=dto.ReviewDetail, response_model_exclude_unset=True)

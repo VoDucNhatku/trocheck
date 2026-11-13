@@ -1,6 +1,6 @@
 {
   "name": "trocheck-collector",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "private": true,
   "description": "TrọCheck Chrome extension: collects rendered Facebook group posts",
   "license": "MIT",

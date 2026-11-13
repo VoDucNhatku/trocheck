@@ -12,6 +12,7 @@
 .place b { font-size: 15px; font-weight: 600; }
 .place > span, .price > span { color: var(--muted); font-size: 14px; }
 .price strong { font-family: var(--font-display); font-size: 24px; font-weight: 600; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.price strong.insufficient { font-family: inherit; font-size: 14px; text-align: right; white-space: nowrap; }
 .root .note { margin-top: 16px; color: var(--muted); font-size: 13px; line-height: 1.6; }
 @media (hover: hover) and (pointer: fine) {
   .root .rows a:hover { background: var(--panel1); color: var(--on-night); }

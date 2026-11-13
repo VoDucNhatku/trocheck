@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, type ReactNode } from 'react';
-import { MARKUP_AFTER_CASES, MARKUP_AFTER_LOWER, MARKUP_BEFORE_CASES, MARKUP_BEFORE_LOWER } from './prototypeMarkup';
+import { MARKUP_AFTER_CASES, MARKUP_AFTER_LOWER, MARKUP_BEFORE_LOWER } from './prototypeMarkup';
 import { ExtensionSection } from './ExtensionFlow';
 import { HardCases } from './HardCases';
 import { protectLandingPhrases } from './landing-phrases';
@@ -9,7 +9,7 @@ import './prototype.css';
 import './port-accessibility.css';
 
 /** The authored prototype DOM stays intact so its CSS timelines share the same targets. */
-export function PrototypeLanding({ demo, market }: { demo?: boolean; market?: ReactNode }) {
+export function PrototypeLanding({ demo, market, stats }: { demo?: boolean; market?: ReactNode; stats?: ReactNode }) {
   const container = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const root = container.current;
@@ -55,7 +55,7 @@ export function PrototypeLanding({ demo, market }: { demo?: boolean; market?: Re
     }
 
     const frames = new Set<number>();
-    const counters = root.querySelectorAll<HTMLElement>('#stat-total, #stat-eligible');
+    const counters = root.querySelectorAll<HTMLElement>('[data-count]');
     const observer = new IntersectionObserver(entries => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
@@ -72,13 +72,13 @@ export function PrototypeLanding({ demo, market }: { demo?: boolean; market?: Re
         tick(start);
       }
     }, { threshold: .3 });
-    counters.forEach(counter => { counter.dataset.count = counter.textContent || '0'; observer.observe(counter); });
+    counters.forEach(counter => observer.observe(counter));
     return () => { controller.abort(); resize.disconnect(); observer.disconnect(); frames.forEach(cancelAnimationFrame); };
   }, [demo]);
   return <div ref={container} className="landing-prototype">
     <Markup html={MARKUP_BEFORE_LOWER} />
     <div className="home-lower">
-      <Markup html={MARKUP_BEFORE_CASES} />
+      {stats}
       <HardCases />
       <ExtensionSection />
       {market}

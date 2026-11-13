@@ -3,6 +3,7 @@ import { FEE_LABEL, formatVnd } from '@/lib/format';
 import styles from './review.module.css';
 
 export const REASON_NAME: Record<string, string> = {
+  rent_llm_only: 'Giá được mô hình đọc từ bài đăng',
   conflict: 'Các cách đọc chưa khớp', multi_listing: 'Một bài có nhiều tin',
   basis_unknown: 'Chưa rõ cách tính giá', possible_duplicate: 'Có thể trùng tin',
   llm_error: 'Bước LLM gặp lỗi', field_needs_review: 'Trường cần kiểm tra',

@@ -7,6 +7,17 @@ const { JSDOM } = require('jsdom');
 const script = (name) => fs.readFileSync(path.join(__dirname, '../extension', name), 'utf8');
 const settle = () => new Promise(resolve => setImmediate(resolve));
 
+test('popup links to submitted posts on the same web app as account connection', async t => {
+  const win = popup(t, () => ({ posts: [] }));
+  await settle();
+  const link = win.document.querySelector('#my-posts');
+  assert.equal(link.textContent, 'Xem bài đã gửi');
+  assert.equal(link.href, 'https://trocheck.vercel.app/bai-cua-toi');
+  assert.equal(link.target, '_blank');
+  assert.match(link.rel, /noopener/);
+  assert.equal(JSON.parse(script('manifest.json')).version, '0.3.2');
+});
+
 function popup(t, sendMessage, { url = 'https://www.facebook.com/groups/42/', state = {} } = {}) {
   const dom = new JSDOM(script('popup.html'), { runScripts: 'outside-only' });
   t.after(() => dom.window.close());

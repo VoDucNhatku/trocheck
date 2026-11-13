@@ -22,13 +22,24 @@ from app.services.processing import _touch_cluster
 from app.services.spec import listing_validator
 
 REASONS = ("conflict", "multi_listing", "basis_unknown", "possible_duplicate", "llm_error")
+BOT_USER_ID = "0000000000000000000000000B"
 
 
-def queue(session: Session, *, reason: str | None = None, page: int = 1, page_size: int = 50) -> dict:
+def bot_approval():
+    return select(ReviewEvent.id).where(
+        ReviewEvent.listing_id == Listing.id, ReviewEvent.user_id == BOT_USER_ID,
+        ReviewEvent.action == "approve",
+        ReviewEvent.before_json["version"].as_integer() == Listing.version - 1).exists()
+
+
+def queue(session: Session, *, reason: str | None = None, page: int = 1, page_size: int = 50,
+          status: str = "needs_review") -> dict:
     query = (select(Listing, Post, PostVersion.text)
              .join(Post, Post.id == Listing.post_id)
              .join(PostVersion, PostVersion.id == Post.current_version_id)
-             .where(Listing.is_current.is_(True), Listing.review_status == "needs_review"))
+             .where(Listing.is_current.is_(True)))
+    query = query.where(Listing.review_status == "approved", bot_approval()) if status == "bot_approved" else query.where(
+        Listing.review_status == "needs_review")
     rows = session.execute(query.order_by(Listing.created_at)).all()
     if reason:
         rows = [r for r in rows if reason in (r[0].review_reasons or [])]
@@ -37,6 +48,7 @@ def queue(session: Session, *, reason: str | None = None, page: int = 1, page_si
     for listing, post, text in rows[(page - 1) * page_size: page * page_size]:
         items.append({
             "listing_id": listing.id,
+            "bot_approved": status == "bot_approved",
             "reasons": listing.review_reasons or [],
             "reason": (listing.review_reasons or ["field_needs_review"])[0],
             "excerpt": text[:200],
@@ -77,7 +89,7 @@ def detail(session: Session, listing_id: str, settings: Settings) -> dict:
                     suspects.append({"listing_id": lst.id, "cluster_id": lst.cluster_id, "cosine": round(score, 3),
                                      "rent_vnd": lst.rent_amount_vnd, "area_m2": lst.area_m2})
     events = session.scalars(select(ReviewEvent).where(ReviewEvent.listing_id == listing.id)
-                             .order_by(ReviewEvent.created_at))
+                             .order_by(ReviewEvent.created_at, ReviewEvent.id))
     return {
         "listing": serialize.listing_dict(listing),
         "version": listing.version,
@@ -89,7 +101,8 @@ def detail(session: Session, listing_id: str, settings: Settings) -> dict:
                 "regex_spans": [s for s in run.regex_spans if s.get("listing_index") in (None, listing.listing_index)],
                 "llm_spans": [s for s in run.llm_spans if s.get("listing_index") in (None, listing.listing_index)]},
         "suspected_duplicates": sorted(suspects, key=lambda s: -s["cosine"])[:5],
-        "history": [{"action": e.action, "user_id": e.user_id, "reason": e.reason, "created_at": iso(e.created_at)}
+        "history": [{"action": e.action, "user_id": e.user_id, "reason": e.reason, "created_at": iso(e.created_at),
+                     "source": "bot" if e.user_id == BOT_USER_ID else "human"}
                     for e in events],
     }
 
@@ -124,7 +137,7 @@ def _apply_fields(listing: Listing, fields: dict) -> None:
         setattr(listing, key, value)
 
 
-def decide(session: Session, user: User, listing_id: str, body, settings: Settings) -> dict:
+def decide(session: Session, user: User, listing_id: str, body, settings: Settings, *, commit: bool = True) -> dict:
     if session.get(Listing, listing_id) is None:
         raise not_found()
     # Optimistic lock: only the reviewer holding the current version may write (AT14).
@@ -137,6 +150,13 @@ def decide(session: Session, user: User, listing_id: str, body, settings: Settin
     before = {"version": body.expected_version, "review_status": listing.review_status, "cluster_id": listing.cluster_id,
               "listing": serialize.listing_dict(listing)}
     old_cluster = listing.cluster_id
+    if body.action == "undo":
+        latest = session.scalar(select(ReviewEvent).where(ReviewEvent.listing_id == listing.id)
+                                .order_by(ReviewEvent.created_at.desc(), ReviewEvent.id.desc()).limit(1))
+        if (listing.review_status != "approved" or latest is None or latest.user_id != BOT_USER_ID
+                or latest.action != "approve" or (latest.before_json or {}).get("version") != body.expected_version - 1):
+            raise conflict("Chỉ hoàn tác quyết định bot hiện hành; tải lại tin trước khi duyệt")
+        listing.review_status = "needs_review"
     if body.action == "approve":
         if body.fields:
             _apply_fields(listing, body.fields)
@@ -165,7 +185,10 @@ def decide(session: Session, user: User, listing_id: str, body, settings: Settin
              "listing": serialize.listing_dict(listing)}
     session.add(ReviewEvent(listing_id=listing.id, user_id=user.id, action=body.action, before_json=before,
                             after_json=after, reason=body.reason))
-    session.commit()
+    if commit:
+        session.commit()
+    else:
+        session.flush()
     return {"listing_id": listing.id, "review_status": listing.review_status, "version": listing.version,
             "cluster_id": listing.cluster_id}
 

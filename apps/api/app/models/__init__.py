@@ -79,6 +79,15 @@ class Post(Base):
                                                                  post_update=True)
 
 
+class PostSubmission(Base):
+    """One account's first submission, independent of post-level deduplication."""
+    __tablename__ = "post_submissions"
+    __table_args__ = (Index("ix_post_submissions_user_sent", "user_id", "first_sent_at"),)
+    post_id: Mapped[str] = mapped_column(ForeignKey("posts.id", ondelete="CASCADE"), primary_key=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    first_sent_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
 class PostImage(Base):
     """A room photo from a post, stored on Cloudinary. One row per distinct file per post."""
     __tablename__ = "post_images"

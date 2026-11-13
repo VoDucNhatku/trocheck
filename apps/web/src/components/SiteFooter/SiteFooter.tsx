@@ -25,7 +25,7 @@ export function SiteFooter({ account = null }: { account?: string | null }) {
           </div>
           <div>
             <h2>Dữ liệu</h2>
-            <Link href="/tim-tro?demo=true">Bộ demo</Link>
+            <Link href={scoped('/thi-truong')}>Thị trường</Link>
             <Link href="/tim-tro?demo=false">Kho dữ liệu thật</Link>
             <Link href={scoped("/#cach-hoat-dong")}>Cách hoạt động</Link>
           </div>
