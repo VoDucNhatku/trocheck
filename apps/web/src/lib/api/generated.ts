@@ -102,6 +102,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/ingest/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Ingest Image
+         * @description One room photo for a post already sent by this account; the body is the raw image file.
+         */
+        put: operations["ingest_image_api_v1_ingest_images_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/images/recent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Recent Images
+         * @description Newest room photos from contributed, non-demo posts (one per post).
+         */
+        get: operations["recent_images_api_v1_images_recent_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/analyses": {
         parameters: {
             query?: never;
@@ -281,6 +321,40 @@ export interface paths {
         };
         /** Export */
         get: operations["export_api_v1_team_export_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/team/bot-reviews/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bot Review Summary */
+        get: operations["bot_review_summary_api_v1_team_bot_reviews_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/team/bot-reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bot Review Page */
+        get: operations["bot_review_page_api_v1_team_bot_reviews_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1168,7 +1242,7 @@ export interface components {
              * Resolution
              * @enum {string}
              */
-            resolution: "exact" | "from_street" | "from_landmark" | "unresolved";
+            resolution: "exact" | "from_street" | "from_landmark" | "from_former_unit" | "unresolved";
         };
         /** LoggedOut */
         LoggedOut: {
@@ -1823,6 +1897,68 @@ export interface operations {
             };
         };
     };
+    ingest_image_api_v1_ingest_images_put: {
+        parameters: {
+            query: {
+                idempotency_key: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    recent_images_api_v1_images_recent_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     create_analysis_api_v1_analyses_post: {
         parameters: {
             query?: never;
@@ -2218,6 +2354,58 @@ export interface operations {
             query?: {
                 format?: "csv" | "json";
                 include_demo?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    bot_review_summary_api_v1_team_bot_reviews_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    bot_review_page_api_v1_team_bot_reviews_get: {
+        parameters: {
+            query?: {
+                page?: number;
+                page_size?: number;
             };
             header?: never;
             path?: never;

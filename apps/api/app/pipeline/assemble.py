@@ -23,6 +23,7 @@ class Draft:
     multi_price: bool = False
     rent_unsupported: bool = False
     present: dict = field(default_factory=dict)  # field -> has a value
+    location_reason: str | None = None
 
 
 def evidence(sp: Span) -> dict:
@@ -93,17 +94,31 @@ def _build_room(spans: list[Span]) -> dict:
     return _abstain(room)
 
 
-def _build_location(spans: list[Span], places: Places) -> dict:
+def _build_location(spans: list[Span], places: Places, text: str = "") -> tuple[dict, str | None]:
     loc = {"landmark": None, "street": None, "ward_code": None, "ward_name": None,
            "old_ward_name": None, "old_district_name": None, "resolution": "unresolved"}
     if not spans:
-        return _abstain(loc)
+        return _abstain(loc), None
+    location_reason = None
     for sp in spans:
         kind = n.location_kind(sp.quote)
         if kind == "ward" and loc["ward_code"] is None:
+            name = places.ward_phrase(n.strip_location_prefix(sp.quote))
             ward = places.ward(sp.quote)
             if ward is None and n.location_key(sp.quote) not in places.ambiguous_keys:
-                ward = places.ward(n.strip_location_prefix(sp.quote), original=sp.quote)
+                ward = places.ward(name, original=sp.quote)
+            current = ward and n.location_key(name) == n.location_key(n.strip_location_prefix(ward.name))
+            if places.former_wards and not current:
+                former, row, reason = places.former_ward(name, text, original=sp.quote)
+                if row:
+                    loc.update(old_ward_name=row["old_ward_name"], old_district_name=row["old_district_name"])
+                if reason:
+                    ward = None
+                    location_reason = reason
+                    loc["abstain_reason"] = "ambiguous_source"
+                elif former:
+                    loc.update(ward_code=former.code, ward_name=former.name, resolution="from_former_unit")
+                    continue
             if ward:
                 loc.update(ward_code=ward.code, ward_name=ward.name, resolution="exact")
         elif kind == "district" and loc["old_district_name"] is None:
@@ -112,7 +127,7 @@ def _build_location(spans: list[Span], places: Places) -> dict:
             loc["street"] = sp.quote.strip(" ,.")
         elif kind == "landmark" and loc["landmark"] is None:
             loc["landmark"] = sp.quote.strip(" ,.")
-    if loc["ward_code"] is None:
+    if loc["ward_code"] is None and not loc.get("abstain_reason"):
         for kind, value, resolution in (("street", loc["street"], "from_street"),
                                         ("landmark", loc["landmark"], "from_landmark")):
             ward = places.lookup(kind, value)
@@ -122,8 +137,9 @@ def _build_location(spans: list[Span], places: Places) -> dict:
     # A place is written but nothing usable came out of it (e.g. a ward missing from wards.yaml):
     # it is in the text, so not "abstained", but a person has to resolve it.
     resolved = any(loc[k] for k in ("ward_code", "street", "landmark"))
-    loc.update(decision="answered" if resolved else "needs_review", evidence=[evidence(sp) for sp in spans])
-    return loc
+    loc.update(decision="answered" if resolved and not loc.get("abstain_reason") else "needs_review",
+               evidence=[evidence(sp) for sp in spans])
+    return loc, location_reason
 
 
 def _build_fees(spans: list[Span]) -> list[dict]:
@@ -135,7 +151,7 @@ def _build_fees(spans: list[Span]) -> list[dict]:
     return fees
 
 
-def build_listings(spans: list[Span], count: int, places: Places) -> list[Draft]:
+def build_listings(spans: list[Span], count: int, places: Places, text: str = "") -> list[Draft]:
     drafts = []
     for idx in range(count):
         own = [sp for sp in spans if sp.listing_index in (None, idx)]
@@ -143,12 +159,14 @@ def build_listings(spans: list[Span], count: int, places: Places) -> list[Draft]
         own.sort(key=lambda sp: (sp.listing_index is None, sp.start))
         by = {label: [sp for sp in own if sp.label == label] for label in ("PRICE", "AREA", "ROOM", "LOC", "FEE")}
         rent, multi_price, unsupported = _build_rent(by["PRICE"])
+        location, location_reason = _build_location(sorted(by["LOC"], key=lambda sp: sp.start), places, text)
         draft = Draft(
             listing_index=idx,
             rent=rent,
             area=_build_area(by["AREA"]),
             room=_build_room(sorted(by["ROOM"], key=lambda sp: sp.start)),
-            location=_build_location(sorted(by["LOC"], key=lambda sp: sp.start), places),
+            location=location,
+            location_reason=location_reason,
             fees=_build_fees(sorted(by["FEE"], key=lambda sp: sp.start)),
             multi_price=multi_price,
             rent_unsupported=unsupported,

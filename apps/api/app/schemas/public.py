@@ -70,7 +70,7 @@ class Location(FieldMeta):
     ward_name: str | None = None
     old_ward_name: str | None = None
     old_district_name: str | None = None
-    resolution: Literal["exact", "from_street", "from_landmark", "unresolved"]
+    resolution: Literal["exact", "from_street", "from_landmark", "from_former_unit", "unresolved"]
 
 
 class Fee(BaseModel):

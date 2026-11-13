@@ -116,15 +116,23 @@ def _fee_start(view: TextView, start: int, rules: RuleSet) -> int | None:
     return window_start + clause_offset + fee_hits[0].start()
 
 
-def find_spans(view: TextView) -> list[Span]:
+def find_spans(view: TextView, *, demo: bool = False) -> list[Span]:
     rules = load_rules()
     spans: list[Span] = []
     taken: dict[str, list[tuple[int, int]]] = {"NUM": [], "ROOM": [], "LOC": []}
     for rule in rules.rules:
         haystack = view.folded if rule.view == "folded" else view.lower
         group = "NUM" if rule.label in NUMERIC_LABELS else rule.label
-        for m in rule.regex.finditer(haystack):
+        pattern = rule.regex
+        if demo and rule.id in ("LOC_WARD", "LOC_OLD_DISTRICT"):
+            legacy = {"LOC_WARD": r"(?:\bp\.\s?|\bphường\s+|\bxã\s+){NAME}",
+                      "LOC_OLD_DISTRICT": r"(?:\bq\.\s?|\bquận\s+|\bhuyện\s+){NAME}"}
+            pattern = re.compile(_expand(legacy[rule.id], rules.raw["blocks"]))
+        for m in pattern.finditer(haystack):
             vs, ve = m.start(), m.end()
+            if not demo and rule.id == "LOC_WARD" and re.search(
+                    r"\b(?:duong|pho|hem|ngo|ngach|kiet)\s+(?:so\s+)?$", view.folded[:vs]):
+                continue
             while ve > vs and haystack[ve - 1].isspace():
                 ve -= 1
             if ve <= vs or _overlaps((vs, ve), taken[group]):

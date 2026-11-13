@@ -5,7 +5,7 @@
 # view: folded = lowercase without diacritics ("phòng" -> "phong");
 #       lower  = lowercase with diacritics (needed where unaccented text is ambiguous).
 # Shared building blocks are written as {NUM}, {MONEY}, {SUFFIX}, {INCLUDES}, {NAME}.
-version: "1.0.0"
+version: "1.1.0"
 
 blocks:
   NUM: '\d+(?:[.,]\d+)*'
@@ -14,6 +14,7 @@ blocks:
   SUFFIX: '(?:\s?/\s?(?:thang|th|t|nguoi|ng|phong|p|can|ngay)\b)*'
   INCLUDES: '(?:\s+bao\s+(?:dien|nuoc|wifi|internet|mang|dich vu|dv|gui xe)(?:\s*(?:va|\+|&)?\s*(?:dien|nuoc|wifi|internet|mang|dich vu|dv|gui xe))*)?'
   NAME: '[^\W\d_][\w]*(?:\s+(?!(?:giá|full|lh|liên|lien|điện|dien|nước|nuoc|cọc|coc|có|phòng|phong|dt|diện|cho|cần|chỉ|ib|inbox|free|wifi|gần|gan|cách|cach|đối|doi|cạnh|canh|sát|sat|từ|tại|ở|và|cc|nội|noi|giờ|gio|wc|vs|pn|đi|thuận|thuan|tiện|tien|mới|rộng|rong|sạch|sach|đẹp|dep|thoáng|thoang|tự|chính|chinh|chủ|miễn|mien|bao|dịch|dich|xe|gửi|gui|vệ|ve|internet|mạng|mang|ngay|đủ|đầy|nhé|nhe|ạ|mình|minh|chị)\b)[\w]+){0,4}'
+  WARD_NAME: '[^\W\d_][\w]*(?:\s+(?!(?:q\d*|quận|quan|huyện|huyen|tp|tx)\b)(?!(?:giá|full|lh|liên|lien|điện|dien|nước|nuoc|cọc|coc|có|phòng|phong|dt|diện|cho|cần|chỉ|ib|inbox|free|wifi|gần|gan|cách|cach|đối|doi|cạnh|canh|sát|sat|từ|tại|ở|và|cc|nội|noi|giờ|gio|wc|vs|pn|đi|thuận|thuan|tiện|tien|mới|rộng|rong|sạch|sach|đẹp|dep|thoáng|thoang|tự|chính|chinh|chủ|miễn|mien|bao|dịch|dich|xe|gửi|gui|vệ|ve|internet|mạng|mang|ngay|đủ|đầy|nhé|nhe|ạ|mình|minh|chị)\b)[\w]+){0,4}'
 
 rules:
   # ---------------- PRICE (classified PRICE/FEE by context in code) ----------------
@@ -142,13 +143,13 @@ rules:
   - id: LOC_WARD
     label: LOC
     view: lower
-    pattern: '(?:\bp\.\s?|\bphường\s+|\bxã\s+){NAME}'
+    pattern: '(?<!không )(?<!khong )\b(?:phường\s+|phuong\s+|[pf]\.\s*|[pf]\s+|[pf](?=\d)|xã\s+|xa\s+|x\.\s*)(?:\d+\b|{WARD_NAME})'
     examples: ["phường Cầu Giấy", "P.Yên Hòa", "xã Hòa Lạc"]
     not_examples: ["không xa trường"]
   - id: LOC_OLD_DISTRICT
     label: LOC
     view: lower
-    pattern: '(?:\bq\.\s?|\bquận\s+|\bhuyện\s+){NAME}'
+    pattern: '\b(?:q\.\s*|q\s*(?=\d)|quận\s+|quan\s+|huyện\s+|huyen\s+|tp\.?\s+|thành phố\s+|thanh pho\s+|tx\.?\s+|thị xã\s+|thi xa\s+)(?:\d+\b|{NAME})'
     examples: ["Q. Thạch Thất", "quận Cầu Giấy"]
     not_examples: ["quán cà phê"]
   - id: LOC_STREET

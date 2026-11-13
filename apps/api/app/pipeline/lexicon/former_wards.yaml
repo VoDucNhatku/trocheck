@@ -1,0 +1,7366 @@
+# Official snapshots verified on 2026-11-13. Hoà/Hòa tone placement is retained in both source names.
+version: 1.0.0
+as_of: '2025-06-30'
+sources:
+  resolution: https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-quyet-so-1685-nq-ubtvqh15-sap-xep-cac-dvhc-cap-xa-cua-thanh-pho-ho-chi-minh-nam-2025-119250616211341304.htm
+  former_districts: https://danhmuchanhchinh.nso.gov.vn/DMDVHC.asmx
+counts:
+  nso_units: 441
+  included: 440
+  resolvable: 393
+  split: 47
+  omitted: 1
+  relations: 491
+omitted:
+- old_ward_code: '27640'
+  old_ward_name: Xã Quy Đức
+  old_district_name: Huyện Bình Chánh
+  reason: Tên NSO Quy Đức khác tên Qui Đức tại khoản 118; chưa có nguồn xác nhận đồng
+    nhất.
+former_wards:
+- old_ward_code: '26734'
+  old_ward_name: Phường Tân Định
+  old_district_code: '760'
+  old_district_name: Quận 1
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26737'
+    new_ward_name: Phường Tân Định
+    portion: full
+    article: 1
+    clause: 2
+    resolution_old_name: Phường Tân Định
+- old_ward_code: '26737'
+  old_ward_name: Phường Đa Kao
+  old_district_code: '760'
+  old_district_name: Quận 1
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26740'
+    new_ward_name: Phường Sài Gòn
+    portion: part
+    article: 1
+    clause: 1
+    resolution_old_name: Phường Đa Kao
+  - new_ward_code: '26737'
+    new_ward_name: Phường Tân Định
+    portion: remainder
+    article: 1
+    clause: 2
+    resolution_old_name: Phường Đa Kao
+- old_ward_code: '26740'
+  old_ward_name: Phường Bến Nghé
+  old_district_code: '760'
+  old_district_name: Quận 1
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26740'
+    new_ward_name: Phường Sài Gòn
+    portion: full
+    article: 1
+    clause: 1
+    resolution_old_name: Phường Bến Nghé
+- old_ward_code: '26743'
+  old_ward_name: Phường Bến Thành
+  old_district_code: '760'
+  old_district_name: Quận 1
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26743'
+    new_ward_name: Phường Bến Thành
+    portion: full
+    article: 1
+    clause: 3
+    resolution_old_name: Phường Bến Thành
+- old_ward_code: '26746'
+  old_ward_name: Phường Nguyễn Thái Bình
+  old_district_code: '760'
+  old_district_name: Quận 1
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26740'
+    new_ward_name: Phường Sài Gòn
+    portion: part
+    article: 1
+    clause: 1
+    resolution_old_name: Phường Nguyễn Thái Bình
+  - new_ward_code: '26743'
+    new_ward_name: Phường Bến Thành
+    portion: remainder
+    article: 1
+    clause: 3
+    resolution_old_name: Phường Nguyễn Thái Bình
+- old_ward_code: '26749'
+  old_ward_name: Phường Phạm Ngũ Lão
+  old_district_code: '760'
+  old_district_name: Quận 1
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26743'
+    new_ward_name: Phường Bến Thành
+    portion: full
+    article: 1
+    clause: 3
+    resolution_old_name: Phường Phạm Ngũ Lão
+- old_ward_code: '26752'
+  old_ward_name: Phường Cầu Ông Lãnh
+  old_district_code: '760'
+  old_district_name: Quận 1
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26743'
+    new_ward_name: Phường Bến Thành
+    portion: part
+    article: 1
+    clause: 3
+    resolution_old_name: Phường Cầu Ông Lãnh
+  - new_ward_code: '26758'
+    new_ward_name: Phường Cầu Ông Lãnh
+    portion: remainder
+    article: 1
+    clause: 4
+    resolution_old_name: Phường Cầu Ông Lãnh
+- old_ward_code: '26755'
+  old_ward_name: Phường Cô Giang
+  old_district_code: '760'
+  old_district_name: Quận 1
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26758'
+    new_ward_name: Phường Cầu Ông Lãnh
+    portion: full
+    article: 1
+    clause: 4
+    resolution_old_name: Phường Cô Giang
+- old_ward_code: '26758'
+  old_ward_name: Phường Nguyễn Cư Trinh
+  old_district_code: '760'
+  old_district_name: Quận 1
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26758'
+    new_ward_name: Phường Cầu Ông Lãnh
+    portion: full
+    article: 1
+    clause: 4
+    resolution_old_name: Phường Nguyễn Cư Trinh
+- old_ward_code: '26761'
+  old_ward_name: Phường Cầu Kho
+  old_district_code: '760'
+  old_district_name: Quận 1
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26758'
+    new_ward_name: Phường Cầu Ông Lãnh
+    portion: full
+    article: 1
+    clause: 4
+    resolution_old_name: Phường Cầu Kho
+- old_ward_code: '26764'
+  old_ward_name: Phường Thạnh Xuân
+  old_district_code: '761'
+  old_district_name: Quận 12
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26773'
+    new_ward_name: Phường Thới An
+    portion: full
+    article: 1
+    clause: 35
+    resolution_old_name: Phường Thạnh Xuân
+- old_ward_code: '26767'
+  old_ward_name: Phường Thạnh Lộc
+  old_district_code: '761'
+  old_district_name: Quận 12
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26767'
+    new_ward_name: Phường An Phú Đông
+    portion: full
+    article: 1
+    clause: 36
+    resolution_old_name: Phường Thạnh Lộc
+- old_ward_code: '26770'
+  old_ward_name: Phường Hiệp Thành
+  old_district_code: '761'
+  old_district_name: Quận 12
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26782'
+    new_ward_name: Phường Tân Thới Hiệp
+    portion: full
+    article: 1
+    clause: 34
+    resolution_old_name: Phường Hiệp Thành
+- old_ward_code: '26773'
+  old_ward_name: Phường Thới An
+  old_district_code: '761'
+  old_district_name: Quận 12
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26773'
+    new_ward_name: Phường Thới An
+    portion: full
+    article: 1
+    clause: 35
+    resolution_old_name: Phường Thới An
+- old_ward_code: '26776'
+  old_ward_name: Phường Tân Chánh Hiệp
+  old_district_code: '761'
+  old_district_name: Quận 12
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26785'
+    new_ward_name: Phường Trung Mỹ Tây
+    portion: full
+    article: 1
+    clause: 33
+    resolution_old_name: Phường Tân Chánh Hiệp
+- old_ward_code: '26779'
+  old_ward_name: Phường An Phú Đông
+  old_district_code: '761'
+  old_district_name: Quận 12
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26767'
+    new_ward_name: Phường An Phú Đông
+    portion: full
+    article: 1
+    clause: 36
+    resolution_old_name: Phường An Phú Đông
+- old_ward_code: '26782'
+  old_ward_name: Phường Tân Thới Hiệp
+  old_district_code: '761'
+  old_district_name: Quận 12
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26782'
+    new_ward_name: Phường Tân Thới Hiệp
+    portion: full
+    article: 1
+    clause: 34
+    resolution_old_name: Phường Tân Thới Hiệp
+- old_ward_code: '26785'
+  old_ward_name: Phường Trung Mỹ Tây
+  old_district_code: '761'
+  old_district_name: Quận 12
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26785'
+    new_ward_name: Phường Trung Mỹ Tây
+    portion: full
+    article: 1
+    clause: 33
+    resolution_old_name: Phường Trung Mỹ Tây
+- old_ward_code: '26787'
+  old_ward_name: Phường Tân Hưng Thuận
+  old_district_code: '761'
+  old_district_name: Quận 12
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26791'
+    new_ward_name: Phường Đông Hưng Thuận
+    portion: full
+    article: 1
+    clause: 32
+    resolution_old_name: Phường Tân Hưng Thuận
+- old_ward_code: '26788'
+  old_ward_name: Phường Đông Hưng Thuận
+  old_district_code: '761'
+  old_district_name: Quận 12
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26791'
+    new_ward_name: Phường Đông Hưng Thuận
+    portion: full
+    article: 1
+    clause: 32
+    resolution_old_name: Phường Đông Hưng Thuận
+- old_ward_code: '26791'
+  old_ward_name: Phường Tân Thới Nhất
+  old_district_code: '761'
+  old_district_name: Quận 12
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26791'
+    new_ward_name: Phường Đông Hưng Thuận
+    portion: full
+    article: 1
+    clause: 32
+    resolution_old_name: Phường Tân Thới Nhất
+- old_ward_code: '26872'
+  old_ward_name: Phường 15
+  old_district_code: '764'
+  old_district_name: Quận Gò Vấp
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26878'
+    new_ward_name: Phường An Hội Đông
+    portion: full
+    article: 1
+    clause: 50
+    resolution_old_name: Phường 15
+- old_ward_code: '26875'
+  old_ward_name: Phường 17
+  old_district_code: '764'
+  old_district_name: Quận Gò Vấp
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26884'
+    new_ward_name: Phường Gò Vấp
+    portion: full
+    article: 1
+    clause: 49
+    resolution_old_name: Phường 17
+- old_ward_code: '26876'
+  old_ward_name: Phường 6
+  old_district_code: '764'
+  old_district_name: Quận Gò Vấp
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26876'
+    new_ward_name: Phường An Nhơn
+    portion: full
+    article: 1
+    clause: 48
+    resolution_old_name: Phường 6
+- old_ward_code: '26878'
+  old_ward_name: Phường 16
+  old_district_code: '764'
+  old_district_name: Quận Gò Vấp
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26878'
+    new_ward_name: Phường An Hội Đông
+    portion: full
+    article: 1
+    clause: 50
+    resolution_old_name: Phường 16
+- old_ward_code: '26881'
+  old_ward_name: Phường 12
+  old_district_code: '764'
+  old_district_name: Quận Gò Vấp
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26882'
+    new_ward_name: Phường An Hội Tây
+    portion: full
+    article: 1
+    clause: 52
+    resolution_old_name: Phường 12
+- old_ward_code: '26882'
+  old_ward_name: Phường 14
+  old_district_code: '764'
+  old_district_name: Quận Gò Vấp
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26882'
+    new_ward_name: Phường An Hội Tây
+    portion: full
+    article: 1
+    clause: 52
+    resolution_old_name: Phường 14
+- old_ward_code: '26884'
+  old_ward_name: Phường 10
+  old_district_code: '764'
+  old_district_name: Quận Gò Vấp
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26884'
+    new_ward_name: Phường Gò Vấp
+    portion: full
+    article: 1
+    clause: 49
+    resolution_old_name: Phường 10
+- old_ward_code: '26887'
+  old_ward_name: Phường 5
+  old_district_code: '764'
+  old_district_name: Quận Gò Vấp
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26876'
+    new_ward_name: Phường An Nhơn
+    portion: full
+    article: 1
+    clause: 48
+    resolution_old_name: Phường 5
+- old_ward_code: '26890'
+  old_ward_name: Phường 1
+  old_district_code: '764'
+  old_district_name: Quận Gò Vấp
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26890'
+    new_ward_name: Phường Hạnh Thông
+    portion: full
+    article: 1
+    clause: 47
+    resolution_old_name: Phường 1
+- old_ward_code: '26898'
+  old_ward_name: Phường 8
+  old_district_code: '764'
+  old_district_name: Quận Gò Vấp
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26898'
+    new_ward_name: Phường Thông Tây Hội
+    portion: full
+    article: 1
+    clause: 51
+    resolution_old_name: Phường 8
+- old_ward_code: '26899'
+  old_ward_name: Phường 11
+  old_district_code: '764'
+  old_district_name: Quận Gò Vấp
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26898'
+    new_ward_name: Phường Thông Tây Hội
+    portion: full
+    article: 1
+    clause: 51
+    resolution_old_name: Phường 11
+- old_ward_code: '26902'
+  old_ward_name: Phường 3
+  old_district_code: '764'
+  old_district_name: Quận Gò Vấp
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26890'
+    new_ward_name: Phường Hạnh Thông
+    portion: full
+    article: 1
+    clause: 47
+    resolution_old_name: Phường 3
+- old_ward_code: '26905'
+  old_ward_name: Phường 13
+  old_district_code: '765'
+  old_district_name: Quận Bình Thạnh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26905'
+    new_ward_name: Phường Bình Lợi Trung
+    portion: full
+    article: 1
+    clause: 44
+    resolution_old_name: Phường 13
+- old_ward_code: '26908'
+  old_ward_name: Phường 11
+  old_district_code: '765'
+  old_district_name: Quận Bình Thạnh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26905'
+    new_ward_name: Phường Bình Lợi Trung
+    portion: full
+    article: 1
+    clause: 44
+    resolution_old_name: Phường 11
+- old_ward_code: '26911'
+  old_ward_name: Phường 27
+  old_district_code: '765'
+  old_district_name: Quận Bình Thạnh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26911'
+    new_ward_name: Phường Bình Quới
+    portion: full
+    article: 1
+    clause: 46
+    resolution_old_name: Phường 27
+- old_ward_code: '26914'
+  old_ward_name: Phường 26
+  old_district_code: '765'
+  old_district_name: Quận Bình Thạnh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26929'
+    new_ward_name: Phường Bình Thạnh
+    portion: full
+    article: 1
+    clause: 43
+    resolution_old_name: Phường 26
+- old_ward_code: '26917'
+  old_ward_name: Phường 12
+  old_district_code: '765'
+  old_district_name: Quận Bình Thạnh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26929'
+    new_ward_name: Phường Bình Thạnh
+    portion: full
+    article: 1
+    clause: 43
+    resolution_old_name: Phường 12
+- old_ward_code: '26920'
+  old_ward_name: Phường 25
+  old_district_code: '765'
+  old_district_name: Quận Bình Thạnh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26956'
+    new_ward_name: Phường Thạnh Mỹ Tây
+    portion: full
+    article: 1
+    clause: 45
+    resolution_old_name: Phường 25
+- old_ward_code: '26923'
+  old_ward_name: Phường 5
+  old_district_code: '765'
+  old_district_name: Quận Bình Thạnh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26905'
+    new_ward_name: Phường Bình Lợi Trung
+    portion: full
+    article: 1
+    clause: 44
+    resolution_old_name: Phường 5
+- old_ward_code: '26926'
+  old_ward_name: Phường 7
+  old_district_code: '765'
+  old_district_name: Quận Bình Thạnh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26944'
+    new_ward_name: Phường Gia Định
+    portion: full
+    article: 1
+    clause: 42
+    resolution_old_name: Phường 7
+- old_ward_code: '26929'
+  old_ward_name: Phường 14
+  old_district_code: '765'
+  old_district_name: Quận Bình Thạnh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26929'
+    new_ward_name: Phường Bình Thạnh
+    portion: full
+    article: 1
+    clause: 43
+    resolution_old_name: Phường 14
+- old_ward_code: '26941'
+  old_ward_name: Phường 2
+  old_district_code: '765'
+  old_district_name: Quận Bình Thạnh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26944'
+    new_ward_name: Phường Gia Định
+    portion: full
+    article: 1
+    clause: 42
+    resolution_old_name: Phường 2
+- old_ward_code: '26944'
+  old_ward_name: Phường 1
+  old_district_code: '765'
+  old_district_name: Quận Bình Thạnh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26944'
+    new_ward_name: Phường Gia Định
+    portion: full
+    article: 1
+    clause: 42
+    resolution_old_name: Phường 1
+- old_ward_code: '26950'
+  old_ward_name: Phường 17
+  old_district_code: '765'
+  old_district_name: Quận Bình Thạnh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26944'
+    new_ward_name: Phường Gia Định
+    portion: full
+    article: 1
+    clause: 42
+    resolution_old_name: Phường 17
+- old_ward_code: '26953'
+  old_ward_name: Phường 19
+  old_district_code: '765'
+  old_district_name: Quận Bình Thạnh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26956'
+    new_ward_name: Phường Thạnh Mỹ Tây
+    portion: full
+    article: 1
+    clause: 45
+    resolution_old_name: Phường 19
+- old_ward_code: '26956'
+  old_ward_name: Phường 22
+  old_district_code: '765'
+  old_district_name: Quận Bình Thạnh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26956'
+    new_ward_name: Phường Thạnh Mỹ Tây
+    portion: full
+    article: 1
+    clause: 45
+    resolution_old_name: Phường 22
+- old_ward_code: '26962'
+  old_ward_name: Phường 28
+  old_district_code: '765'
+  old_district_name: Quận Bình Thạnh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26911'
+    new_ward_name: Phường Bình Quới
+    portion: full
+    article: 1
+    clause: 46
+    resolution_old_name: Phường 28
+- old_ward_code: '26965'
+  old_ward_name: Phường 2
+  old_district_code: '766'
+  old_district_name: Quận Tân Bình
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26977'
+    new_ward_name: Phường Tân Sơn Hòa
+    portion: full
+    article: 1
+    clause: 56
+    resolution_old_name: Phường 2
+- old_ward_code: '26968'
+  old_ward_name: Phường 4
+  old_district_code: '766'
+  old_district_name: Quận Tân Bình
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26968'
+    new_ward_name: Phường Tân Sơn Nhất
+    portion: full
+    article: 1
+    clause: 57
+    resolution_old_name: Phường 4
+- old_ward_code: '26971'
+  old_ward_name: Phường 12
+  old_district_code: '766'
+  old_district_name: Quận Tân Bình
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26983'
+    new_ward_name: Phường Bảy Hiền
+    portion: full
+    article: 1
+    clause: 59
+    resolution_old_name: Phường 12
+- old_ward_code: '26974'
+  old_ward_name: Phường 13
+  old_district_code: '766'
+  old_district_name: Quận Tân Bình
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27004'
+    new_ward_name: Phường Tân Bình
+    portion: full
+    article: 1
+    clause: 60
+    resolution_old_name: Phường 13
+- old_ward_code: '26977'
+  old_ward_name: Phường 1
+  old_district_code: '766'
+  old_district_name: Quận Tân Bình
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26977'
+    new_ward_name: Phường Tân Sơn Hòa
+    portion: full
+    article: 1
+    clause: 56
+    resolution_old_name: Phường 1
+- old_ward_code: '26980'
+  old_ward_name: Phường 3
+  old_district_code: '766'
+  old_district_name: Quận Tân Bình
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26977'
+    new_ward_name: Phường Tân Sơn Hòa
+    portion: full
+    article: 1
+    clause: 56
+    resolution_old_name: Phường 3
+- old_ward_code: '26983'
+  old_ward_name: Phường 11
+  old_district_code: '766'
+  old_district_name: Quận Tân Bình
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26983'
+    new_ward_name: Phường Bảy Hiền
+    portion: full
+    article: 1
+    clause: 59
+    resolution_old_name: Phường 11
+- old_ward_code: '26986'
+  old_ward_name: Phường 7
+  old_district_code: '766'
+  old_district_name: Quận Tân Bình
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26968'
+    new_ward_name: Phường Tân Sơn Nhất
+    portion: full
+    article: 1
+    clause: 57
+    resolution_old_name: Phường 7
+- old_ward_code: '26989'
+  old_ward_name: Phường 5
+  old_district_code: '766'
+  old_district_name: Quận Tân Bình
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26968'
+    new_ward_name: Phường Tân Sơn Nhất
+    portion: full
+    article: 1
+    clause: 57
+    resolution_old_name: Phường 5
+- old_ward_code: '26992'
+  old_ward_name: Phường 10
+  old_district_code: '766'
+  old_district_name: Quận Tân Bình
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26983'
+    new_ward_name: Phường Bảy Hiền
+    portion: full
+    article: 1
+    clause: 59
+    resolution_old_name: Phường 10
+- old_ward_code: '26995'
+  old_ward_name: Phường 6
+  old_district_code: '766'
+  old_district_name: Quận Tân Bình
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26995'
+    new_ward_name: Phường Tân Hòa
+    portion: full
+    article: 1
+    clause: 58
+    resolution_old_name: Phường 6
+- old_ward_code: '26998'
+  old_ward_name: Phường 8
+  old_district_code: '766'
+  old_district_name: Quận Tân Bình
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26995'
+    new_ward_name: Phường Tân Hòa
+    portion: full
+    article: 1
+    clause: 58
+    resolution_old_name: Phường 8
+- old_ward_code: '27001'
+  old_ward_name: Phường 9
+  old_district_code: '766'
+  old_district_name: Quận Tân Bình
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26995'
+    new_ward_name: Phường Tân Hòa
+    portion: full
+    article: 1
+    clause: 58
+    resolution_old_name: Phường 9
+- old_ward_code: '27004'
+  old_ward_name: Phường 14
+  old_district_code: '766'
+  old_district_name: Quận Tân Bình
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27004'
+    new_ward_name: Phường Tân Bình
+    portion: full
+    article: 1
+    clause: 60
+    resolution_old_name: Phường 14
+- old_ward_code: '27007'
+  old_ward_name: Phường 15
+  old_district_code: '766'
+  old_district_name: Quận Tân Bình
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27004'
+    new_ward_name: Phường Tân Bình
+    portion: part
+    article: 1
+    clause: 60
+    resolution_old_name: Phường 15
+  - new_ward_code: '27007'
+    new_ward_name: Phường Tân Sơn
+    portion: remainder
+    article: 1
+    clause: 61
+    resolution_old_name: Phường 15
+- old_ward_code: '27010'
+  old_ward_name: Phường Tân Sơn Nhì
+  old_district_code: '767'
+  old_district_name: Quận Tân Phú
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27019'
+    new_ward_name: Phường Tân Sơn Nhì
+    portion: full
+    article: 1
+    clause: 63
+    resolution_old_name: Phường Tân Sơn Nhì
+- old_ward_code: '27013'
+  old_ward_name: Phường Tây Thạnh
+  old_district_code: '767'
+  old_district_name: Quận Tân Phú
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27013'
+    new_ward_name: Phường Tây Thạnh
+    portion: full
+    article: 1
+    clause: 62
+    resolution_old_name: Phường Tây Thạnh
+- old_ward_code: '27016'
+  old_ward_name: Phường Sơn Kỳ
+  old_district_code: '767'
+  old_district_name: Quận Tân Phú
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27439'
+    new_ward_name: Phường Bình Hưng Hòa
+    portion: part
+    article: 1
+    clause: 41
+    resolution_old_name: Phường Sơn Kỳ
+  - new_ward_code: '27013'
+    new_ward_name: Phường Tây Thạnh
+    portion: part
+    article: 1
+    clause: 62
+    resolution_old_name: Phường Sơn Kỳ
+  - new_ward_code: '27019'
+    new_ward_name: Phường Tân Sơn Nhì
+    portion: remainder
+    article: 1
+    clause: 63
+    resolution_old_name: Phường Sơn Kỳ
+- old_ward_code: '27019'
+  old_ward_name: Phường Tân Quý
+  old_district_code: '767'
+  old_district_name: Quận Tân Phú
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27019'
+    new_ward_name: Phường Tân Sơn Nhì
+    portion: part
+    article: 1
+    clause: 63
+    resolution_old_name: Phường Tân Quý
+  - new_ward_code: '27022'
+    new_ward_name: Phường Phú Thọ Hòa
+    portion: remainder
+    article: 1
+    clause: 64
+    resolution_old_name: Phường Tân Quý
+- old_ward_code: '27022'
+  old_ward_name: Phường Tân Thành
+  old_district_code: '767'
+  old_district_name: Quận Tân Phú
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27019'
+    new_ward_name: Phường Tân Sơn Nhì
+    portion: part
+    article: 1
+    clause: 63
+    resolution_old_name: Phường Tân Thành
+  - new_ward_code: '27022'
+    new_ward_name: Phường Phú Thọ Hòa
+    portion: part
+    article: 1
+    clause: 64
+    resolution_old_name: Phường Tân Thành
+  - new_ward_code: '27031'
+    new_ward_name: Phường Tân Phú
+    portion: remainder
+    article: 1
+    clause: 65
+    resolution_old_name: Phường Tân Thành
+- old_ward_code: '27025'
+  old_ward_name: Phường Phú Thọ Hòa
+  old_district_code: '767'
+  old_district_name: Quận Tân Phú
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27022'
+    new_ward_name: Phường Phú Thọ Hòa
+    portion: full
+    article: 1
+    clause: 64
+    resolution_old_name: Phường Phú Thọ Hòa
+- old_ward_code: '27028'
+  old_ward_name: Phường Phú Thạnh
+  old_district_code: '767'
+  old_district_name: Quận Tân Phú
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27028'
+    new_ward_name: Phường Phú Thạnh
+    portion: full
+    article: 1
+    clause: 66
+    resolution_old_name: Phường Phú Thạnh
+- old_ward_code: '27031'
+  old_ward_name: Phường Phú Trung
+  old_district_code: '767'
+  old_district_name: Quận Tân Phú
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27031'
+    new_ward_name: Phường Tân Phú
+    portion: full
+    article: 1
+    clause: 65
+    resolution_old_name: Phường Phú Trung
+- old_ward_code: '27034'
+  old_ward_name: Phường Hòa Thạnh
+  old_district_code: '767'
+  old_district_name: Quận Tân Phú
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27031'
+    new_ward_name: Phường Tân Phú
+    portion: full
+    article: 1
+    clause: 65
+    resolution_old_name: Phường Hòa Thạnh
+- old_ward_code: '27037'
+  old_ward_name: Phường Hiệp Tân
+  old_district_code: '767'
+  old_district_name: Quận Tân Phú
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27028'
+    new_ward_name: Phường Phú Thạnh
+    portion: full
+    article: 1
+    clause: 66
+    resolution_old_name: Phường Hiệp Tân
+- old_ward_code: '27040'
+  old_ward_name: Phường Tân Thới Hòa
+  old_district_code: '767'
+  old_district_name: Quận Tân Phú
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27031'
+    new_ward_name: Phường Tân Phú
+    portion: part
+    article: 1
+    clause: 65
+    resolution_old_name: Phường Tân Thới Hòa
+  - new_ward_code: '27028'
+    new_ward_name: Phường Phú Thạnh
+    portion: remainder
+    article: 1
+    clause: 66
+    resolution_old_name: Phường Tân Thới Hòa
+- old_ward_code: '27043'
+  old_ward_name: Phường 4
+  old_district_code: '768'
+  old_district_name: Quận Phú Nhuận
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27043'
+    new_ward_name: Phường Đức Nhuận
+    portion: full
+    article: 1
+    clause: 53
+    resolution_old_name: Phường 4
+- old_ward_code: '27046'
+  old_ward_name: Phường 5
+  old_district_code: '768'
+  old_district_name: Quận Phú Nhuận
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27043'
+    new_ward_name: Phường Đức Nhuận
+    portion: full
+    article: 1
+    clause: 53
+    resolution_old_name: Phường 5
+- old_ward_code: '27049'
+  old_ward_name: Phường 9
+  old_district_code: '768'
+  old_district_name: Quận Phú Nhuận
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27043'
+    new_ward_name: Phường Đức Nhuận
+    portion: full
+    article: 1
+    clause: 53
+    resolution_old_name: Phường 9
+- old_ward_code: '27052'
+  old_ward_name: Phường 7
+  old_district_code: '768'
+  old_district_name: Quận Phú Nhuận
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27058'
+    new_ward_name: Phường Cầu Kiệu
+    portion: full
+    article: 1
+    clause: 54
+    resolution_old_name: Phường 7
+- old_ward_code: '27058'
+  old_ward_name: Phường 1
+  old_district_code: '768'
+  old_district_name: Quận Phú Nhuận
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27058'
+    new_ward_name: Phường Cầu Kiệu
+    portion: full
+    article: 1
+    clause: 54
+    resolution_old_name: Phường 1
+- old_ward_code: '27061'
+  old_ward_name: Phường 2
+  old_district_code: '768'
+  old_district_name: Quận Phú Nhuận
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27058'
+    new_ward_name: Phường Cầu Kiệu
+    portion: full
+    article: 1
+    clause: 54
+    resolution_old_name: Phường 2
+- old_ward_code: '27064'
+  old_ward_name: Phường 8
+  old_district_code: '768'
+  old_district_name: Quận Phú Nhuận
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27073'
+    new_ward_name: Phường Phú Nhuận
+    portion: full
+    article: 1
+    clause: 55
+    resolution_old_name: Phường 8
+- old_ward_code: '27070'
+  old_ward_name: Phường 10
+  old_district_code: '768'
+  old_district_name: Quận Phú Nhuận
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27073'
+    new_ward_name: Phường Phú Nhuận
+    portion: full
+    article: 1
+    clause: 55
+    resolution_old_name: Phường 10
+- old_ward_code: '27073'
+  old_ward_name: Phường 11
+  old_district_code: '768'
+  old_district_name: Quận Phú Nhuận
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27073'
+    new_ward_name: Phường Phú Nhuận
+    portion: full
+    article: 1
+    clause: 55
+    resolution_old_name: Phường 11
+- old_ward_code: '27076'
+  old_ward_name: Phường 15
+  old_district_code: '768'
+  old_district_name: Quận Phú Nhuận
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27058'
+    new_ward_name: Phường Cầu Kiệu
+    portion: part
+    article: 1
+    clause: 54
+    resolution_old_name: Phường 15
+  - new_ward_code: '27073'
+    new_ward_name: Phường Phú Nhuận
+    portion: remainder
+    article: 1
+    clause: 55
+    resolution_old_name: Phường 15
+- old_ward_code: '27085'
+  old_ward_name: Phường 13
+  old_district_code: '768'
+  old_district_name: Quận Phú Nhuận
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27073'
+    new_ward_name: Phường Phú Nhuận
+    portion: full
+    article: 1
+    clause: 55
+    resolution_old_name: Phường 13
+- old_ward_code: '26794'
+  old_ward_name: Phường Linh Xuân
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26800'
+    new_ward_name: Phường Linh Xuân
+    portion: full
+    article: 1
+    clause: 70
+    resolution_old_name: Phường Linh Xuân
+- old_ward_code: '26797'
+  old_ward_name: Phường Bình Chiểu
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26803'
+    new_ward_name: Phường Tam Bình
+    portion: full
+    article: 1
+    clause: 69
+    resolution_old_name: Phường Bình Chiểu
+- old_ward_code: '26800'
+  old_ward_name: Phường Linh Trung
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26800'
+    new_ward_name: Phường Linh Xuân
+    portion: full
+    article: 1
+    clause: 70
+    resolution_old_name: Phường Linh Trung
+- old_ward_code: '26803'
+  old_ward_name: Phường Tam Bình
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26803'
+    new_ward_name: Phường Tam Bình
+    portion: full
+    article: 1
+    clause: 69
+    resolution_old_name: Phường Tam Bình
+- old_ward_code: '26806'
+  old_ward_name: Phường Tam Phú
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26803'
+    new_ward_name: Phường Tam Bình
+    portion: full
+    article: 1
+    clause: 69
+    resolution_old_name: Phường Tam Phú
+- old_ward_code: '26809'
+  old_ward_name: Phường Hiệp Bình Phước
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26809'
+    new_ward_name: Phường Hiệp Bình
+    portion: full
+    article: 1
+    clause: 67
+    resolution_old_name: Phường Hiệp Bình Phước
+- old_ward_code: '26812'
+  old_ward_name: Phường Hiệp Bình Chánh
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26809'
+    new_ward_name: Phường Hiệp Bình
+    portion: full
+    article: 1
+    clause: 67
+    resolution_old_name: Phường Hiệp Bình Chánh
+- old_ward_code: '26815'
+  old_ward_name: Phường Linh Chiểu
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26824'
+    new_ward_name: Phường Thủ Đức
+    portion: full
+    article: 1
+    clause: 68
+    resolution_old_name: Phường Linh Chiểu
+- old_ward_code: '26818'
+  old_ward_name: Phường Linh Tây
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26824'
+    new_ward_name: Phường Thủ Đức
+    portion: part
+    article: 1
+    clause: 68
+    resolution_old_name: Phường Linh Tây
+  - new_ward_code: '26800'
+    new_ward_name: Phường Linh Xuân
+    portion: remainder
+    article: 1
+    clause: 70
+    resolution_old_name: Phường Linh Tây
+- old_ward_code: '26821'
+  old_ward_name: Phường Linh Đông
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26809'
+    new_ward_name: Phường Hiệp Bình
+    portion: part
+    article: 1
+    clause: 67
+    resolution_old_name: Phường Linh Đông
+  - new_ward_code: '26824'
+    new_ward_name: Phường Thủ Đức
+    portion: remainder
+    article: 1
+    clause: 68
+    resolution_old_name: Phường Linh Đông
+- old_ward_code: '26824'
+  old_ward_name: Phường Bình Thọ
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26824'
+    new_ward_name: Phường Thủ Đức
+    portion: full
+    article: 1
+    clause: 68
+    resolution_old_name: Phường Bình Thọ
+- old_ward_code: '26827'
+  old_ward_name: Phường Trường Thọ
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26824'
+    new_ward_name: Phường Thủ Đức
+    portion: full
+    article: 1
+    clause: 68
+    resolution_old_name: Phường Trường Thọ
+- old_ward_code: '26830'
+  old_ward_name: Phường Long Bình
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26833'
+    new_ward_name: Phường Long Bình
+    portion: full
+    article: 1
+    clause: 72
+    resolution_old_name: Phường Long Bình
+- old_ward_code: '26833'
+  old_ward_name: Phường Long Thạnh Mỹ
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26842'
+    new_ward_name: Phường Tăng Nhơn Phú
+    portion: part
+    article: 1
+    clause: 71
+    resolution_old_name: Phường Long Thạnh Mỹ
+  - new_ward_code: '26833'
+    new_ward_name: Phường Long Bình
+    portion: remainder
+    article: 1
+    clause: 72
+    resolution_old_name: Phường Long Thạnh Mỹ
+- old_ward_code: '26836'
+  old_ward_name: Phường Tân Phú
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26842'
+    new_ward_name: Phường Tăng Nhơn Phú
+    portion: full
+    article: 1
+    clause: 71
+    resolution_old_name: Phường Tân Phú
+- old_ward_code: '26839'
+  old_ward_name: Phường Hiệp Phú
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26842'
+    new_ward_name: Phường Tăng Nhơn Phú
+    portion: full
+    article: 1
+    clause: 71
+    resolution_old_name: Phường Hiệp Phú
+- old_ward_code: '26842'
+  old_ward_name: Phường Tăng Nhơn Phú A
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26842'
+    new_ward_name: Phường Tăng Nhơn Phú
+    portion: full
+    article: 1
+    clause: 71
+    resolution_old_name: Phường Tăng Nhơn Phú A
+- old_ward_code: '26845'
+  old_ward_name: Phường Tăng Nhơn Phú B
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26842'
+    new_ward_name: Phường Tăng Nhơn Phú
+    portion: full
+    article: 1
+    clause: 71
+    resolution_old_name: Phường Tăng Nhơn Phú B
+- old_ward_code: '26848'
+  old_ward_name: Phường Phước Long B
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26848'
+    new_ward_name: Phường Phước Long
+    portion: full
+    article: 1
+    clause: 77
+    resolution_old_name: Phường Phước Long B
+- old_ward_code: '26851'
+  old_ward_name: Phường Phước Long A
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26848'
+    new_ward_name: Phường Phước Long
+    portion: full
+    article: 1
+    clause: 77
+    resolution_old_name: Phường Phước Long A
+- old_ward_code: '26854'
+  old_ward_name: Phường Trường Thạnh
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26857'
+    new_ward_name: Phường Long Phước
+    portion: full
+    article: 1
+    clause: 73
+    resolution_old_name: Phường Trường Thạnh
+- old_ward_code: '26857'
+  old_ward_name: Phường Long Phước
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26857'
+    new_ward_name: Phường Long Phước
+    portion: full
+    article: 1
+    clause: 73
+    resolution_old_name: Phường Long Phước
+- old_ward_code: '26860'
+  old_ward_name: Phường Long Trường
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26860'
+    new_ward_name: Phường Long Trường
+    portion: full
+    article: 1
+    clause: 74
+    resolution_old_name: Phường Long Trường
+- old_ward_code: '26863'
+  old_ward_name: Phường Phước Bình
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26848'
+    new_ward_name: Phường Phước Long
+    portion: full
+    article: 1
+    clause: 77
+    resolution_old_name: Phường Phước Bình
+- old_ward_code: '26866'
+  old_ward_name: Phường Phú Hữu
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '26860'
+    new_ward_name: Phường Long Trường
+    portion: full
+    article: 1
+    clause: 74
+    resolution_old_name: Phường Phú Hữu
+- old_ward_code: '27088'
+  old_ward_name: Phường Thảo Điền
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27094'
+    new_ward_name: Phường An Khánh
+    portion: full
+    article: 1
+    clause: 78
+    resolution_old_name: Phường Thảo Điền
+- old_ward_code: '27091'
+  old_ward_name: Phường An Phú
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27097'
+    new_ward_name: Phường Bình Trưng
+    portion: part
+    article: 1
+    clause: 76
+    resolution_old_name: Phường An Phú
+  - new_ward_code: '27094'
+    new_ward_name: Phường An Khánh
+    portion: remainder
+    article: 1
+    clause: 78
+    resolution_old_name: Phường An Phú
+- old_ward_code: '27094'
+  old_ward_name: Phường An Khánh
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27094'
+    new_ward_name: Phường An Khánh
+    portion: full
+    article: 1
+    clause: 78
+    resolution_old_name: Phường An Khánh
+- old_ward_code: '27097'
+  old_ward_name: Phường Bình Trưng Đông
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27097'
+    new_ward_name: Phường Bình Trưng
+    portion: full
+    article: 1
+    clause: 76
+    resolution_old_name: Phường Bình Trưng Đông
+- old_ward_code: '27100'
+  old_ward_name: Phường Bình Trưng Tây
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27097'
+    new_ward_name: Phường Bình Trưng
+    portion: full
+    article: 1
+    clause: 76
+    resolution_old_name: Phường Bình Trưng Tây
+- old_ward_code: '27109'
+  old_ward_name: Phường Cát Lái
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27112'
+    new_ward_name: Phường Cát Lái
+    portion: full
+    article: 1
+    clause: 75
+    resolution_old_name: Phường Cát Lái
+- old_ward_code: '27112'
+  old_ward_name: Phường Thạnh Mỹ Lợi
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27112'
+    new_ward_name: Phường Cát Lái
+    portion: full
+    article: 1
+    clause: 75
+    resolution_old_name: Phường Thạnh Mỹ Lợi
+- old_ward_code: '27115'
+  old_ward_name: Phường An Lợi Đông
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27094'
+    new_ward_name: Phường An Khánh
+    portion: full
+    article: 1
+    clause: 78
+    resolution_old_name: Phường An Lợi Đông
+- old_ward_code: '27118'
+  old_ward_name: Phường Thủ Thiêm
+  old_district_code: '769'
+  old_district_name: Thành phố Thủ Đức
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27094'
+    new_ward_name: Phường An Khánh
+    portion: full
+    article: 1
+    clause: 78
+    resolution_old_name: Phường Thủ Thiêm
+- old_ward_code: '27127'
+  old_ward_name: Phường 14
+  old_district_code: '770'
+  old_district_name: Quận 3
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27142'
+    new_ward_name: Phường Nhiêu Lộc
+    portion: full
+    article: 1
+    clause: 7
+    resolution_old_name: Phường 14
+- old_ward_code: '27130'
+  old_ward_name: Phường 12
+  old_district_code: '770'
+  old_district_name: Quận 3
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27142'
+    new_ward_name: Phường Nhiêu Lộc
+    portion: full
+    article: 1
+    clause: 7
+    resolution_old_name: Phường 12
+- old_ward_code: '27133'
+  old_ward_name: Phường 11
+  old_district_code: '770'
+  old_district_name: Quận 3
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27142'
+    new_ward_name: Phường Nhiêu Lộc
+    portion: full
+    article: 1
+    clause: 7
+    resolution_old_name: Phường 11
+- old_ward_code: '27139'
+  old_ward_name: Phường Võ Thị Sáu
+  old_district_code: '770'
+  old_district_name: Quận 3
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27139'
+    new_ward_name: Phường Xuân Hòa
+    portion: full
+    article: 1
+    clause: 6
+    resolution_old_name: Phường Võ Thị Sáu
+- old_ward_code: '27142'
+  old_ward_name: Phường 9
+  old_district_code: '770'
+  old_district_name: Quận 3
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27142'
+    new_ward_name: Phường Nhiêu Lộc
+    portion: full
+    article: 1
+    clause: 7
+    resolution_old_name: Phường 9
+- old_ward_code: '27148'
+  old_ward_name: Phường 4
+  old_district_code: '770'
+  old_district_name: Quận 3
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27154'
+    new_ward_name: Phường Bàn Cờ
+    portion: part
+    article: 1
+    clause: 5
+    resolution_old_name: Phường 4
+  - new_ward_code: '27139'
+    new_ward_name: Phường Xuân Hòa
+    portion: remainder
+    article: 1
+    clause: 6
+    resolution_old_name: Phường 4
+- old_ward_code: '27151'
+  old_ward_name: Phường 5
+  old_district_code: '770'
+  old_district_name: Quận 3
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27154'
+    new_ward_name: Phường Bàn Cờ
+    portion: full
+    article: 1
+    clause: 5
+    resolution_old_name: Phường 5
+- old_ward_code: '27154'
+  old_ward_name: Phường 3
+  old_district_code: '770'
+  old_district_name: Quận 3
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27154'
+    new_ward_name: Phường Bàn Cờ
+    portion: full
+    article: 1
+    clause: 5
+    resolution_old_name: Phường 3
+- old_ward_code: '27157'
+  old_ward_name: Phường 2
+  old_district_code: '770'
+  old_district_name: Quận 3
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27154'
+    new_ward_name: Phường Bàn Cờ
+    portion: full
+    article: 1
+    clause: 5
+    resolution_old_name: Phường 2
+- old_ward_code: '27160'
+  old_ward_name: Phường 1
+  old_district_code: '770'
+  old_district_name: Quận 3
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27154'
+    new_ward_name: Phường Bàn Cờ
+    portion: full
+    article: 1
+    clause: 5
+    resolution_old_name: Phường 1
+- old_ward_code: '27163'
+  old_ward_name: Phường 15
+  old_district_code: '771'
+  old_district_name: Quận 10
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27163'
+    new_ward_name: Phường Hòa Hưng
+    portion: full
+    article: 1
+    clause: 27
+    resolution_old_name: Phường 15
+- old_ward_code: '27166'
+  old_ward_name: Phường 13
+  old_district_code: '771'
+  old_district_name: Quận 10
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27163'
+    new_ward_name: Phường Hòa Hưng
+    portion: full
+    article: 1
+    clause: 27
+    resolution_old_name: Phường 13
+- old_ward_code: '27169'
+  old_ward_name: Phường 14
+  old_district_code: '771'
+  old_district_name: Quận 10
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27169'
+    new_ward_name: Phường Diên Hồng
+    portion: part
+    article: 1
+    clause: 25
+    resolution_old_name: Phường 14
+  - new_ward_code: '27163'
+    new_ward_name: Phường Hòa Hưng
+    portion: remainder
+    article: 1
+    clause: 27
+    resolution_old_name: Phường 14
+- old_ward_code: '27172'
+  old_ward_name: Phường 12
+  old_district_code: '771'
+  old_district_name: Quận 10
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27163'
+    new_ward_name: Phường Hòa Hưng
+    portion: full
+    article: 1
+    clause: 27
+    resolution_old_name: Phường 12
+- old_ward_code: '27178'
+  old_ward_name: Phường 10
+  old_district_code: '771'
+  old_district_name: Quận 10
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27190'
+    new_ward_name: Phường Vườn Lài
+    portion: full
+    article: 1
+    clause: 26
+    resolution_old_name: Phường 10
+- old_ward_code: '27181'
+  old_ward_name: Phường 9
+  old_district_code: '771'
+  old_district_name: Quận 10
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27190'
+    new_ward_name: Phường Vườn Lài
+    portion: full
+    article: 1
+    clause: 26
+    resolution_old_name: Phường 9
+- old_ward_code: '27184'
+  old_ward_name: Phường 1
+  old_district_code: '771'
+  old_district_name: Quận 10
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27190'
+    new_ward_name: Phường Vườn Lài
+    portion: full
+    article: 1
+    clause: 26
+    resolution_old_name: Phường 1
+- old_ward_code: '27187'
+  old_ward_name: Phường 8
+  old_district_code: '771'
+  old_district_name: Quận 10
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27169'
+    new_ward_name: Phường Diên Hồng
+    portion: full
+    article: 1
+    clause: 25
+    resolution_old_name: Phường 8
+- old_ward_code: '27190'
+  old_ward_name: Phường 2
+  old_district_code: '771'
+  old_district_name: Quận 10
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27190'
+    new_ward_name: Phường Vườn Lài
+    portion: full
+    article: 1
+    clause: 26
+    resolution_old_name: Phường 2
+- old_ward_code: '27193'
+  old_ward_name: Phường 4
+  old_district_code: '771'
+  old_district_name: Quận 10
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27190'
+    new_ward_name: Phường Vườn Lài
+    portion: full
+    article: 1
+    clause: 26
+    resolution_old_name: Phường 4
+- old_ward_code: '27202'
+  old_ward_name: Phường 6
+  old_district_code: '771'
+  old_district_name: Quận 10
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27169'
+    new_ward_name: Phường Diên Hồng
+    portion: full
+    article: 1
+    clause: 25
+    resolution_old_name: Phường 6
+- old_ward_code: '27208'
+  old_ward_name: Phường 15
+  old_district_code: '772'
+  old_district_name: Quận 11
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27226'
+    new_ward_name: Phường Phú Thọ
+    portion: full
+    article: 1
+    clause: 31
+    resolution_old_name: Phường 15
+- old_ward_code: '27211'
+  old_ward_name: Phường 5
+  old_district_code: '772'
+  old_district_name: Quận 11
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27211'
+    new_ward_name: Phường Hòa Bình
+    portion: full
+    article: 1
+    clause: 30
+    resolution_old_name: Phường 5
+- old_ward_code: '27214'
+  old_ward_name: Phường 14
+  old_district_code: '772'
+  old_district_name: Quận 11
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27211'
+    new_ward_name: Phường Hòa Bình
+    portion: full
+    article: 1
+    clause: 30
+    resolution_old_name: Phường 14
+- old_ward_code: '27220'
+  old_ward_name: Phường 3
+  old_district_code: '772'
+  old_district_name: Quận 11
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27232'
+    new_ward_name: Phường Bình Thới
+    portion: full
+    article: 1
+    clause: 29
+    resolution_old_name: Phường 3
+- old_ward_code: '27226'
+  old_ward_name: Phường 11
+  old_district_code: '772'
+  old_district_name: Quận 11
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27226'
+    new_ward_name: Phường Phú Thọ
+    portion: full
+    article: 1
+    clause: 31
+    resolution_old_name: Phường 11
+- old_ward_code: '27229'
+  old_ward_name: Phường 8
+  old_district_code: '772'
+  old_district_name: Quận 11
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27232'
+    new_ward_name: Phường Bình Thới
+    portion: part
+    article: 1
+    clause: 29
+    resolution_old_name: Phường 8
+  - new_ward_code: '27226'
+    new_ward_name: Phường Phú Thọ
+    portion: remainder
+    article: 1
+    clause: 31
+    resolution_old_name: Phường 8
+- old_ward_code: '27232'
+  old_ward_name: Phường 10
+  old_district_code: '772'
+  old_district_name: Quận 11
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27232'
+    new_ward_name: Phường Bình Thới
+    portion: full
+    article: 1
+    clause: 29
+    resolution_old_name: Phường 10
+- old_ward_code: '27238'
+  old_ward_name: Phường 7
+  old_district_code: '772'
+  old_district_name: Quận 11
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27238'
+    new_ward_name: Phường Minh Phụng
+    portion: full
+    article: 1
+    clause: 28
+    resolution_old_name: Phường 7
+- old_ward_code: '27247'
+  old_ward_name: Phường 1
+  old_district_code: '772'
+  old_district_name: Quận 11
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27238'
+    new_ward_name: Phường Minh Phụng
+    portion: full
+    article: 1
+    clause: 28
+    resolution_old_name: Phường 1
+- old_ward_code: '27253'
+  old_ward_name: Phường 16
+  old_district_code: '772'
+  old_district_name: Quận 11
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27238'
+    new_ward_name: Phường Minh Phụng
+    portion: full
+    article: 1
+    clause: 28
+    resolution_old_name: Phường 16
+- old_ward_code: '27259'
+  old_ward_name: Phường 13
+  old_district_code: '773'
+  old_district_name: Quận 4
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27259'
+    new_ward_name: Phường Xóm Chiếu
+    portion: full
+    article: 1
+    clause: 8
+    resolution_old_name: Phường 13
+- old_ward_code: '27265'
+  old_ward_name: Phường 9
+  old_district_code: '773'
+  old_district_name: Quận 4
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27265'
+    new_ward_name: Phường Khánh Hội
+    portion: full
+    article: 1
+    clause: 9
+    resolution_old_name: Phường 9
+- old_ward_code: '27271'
+  old_ward_name: Phường 8
+  old_district_code: '773'
+  old_district_name: Quận 4
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27265'
+    new_ward_name: Phường Khánh Hội
+    portion: full
+    article: 1
+    clause: 9
+    resolution_old_name: Phường 8
+- old_ward_code: '27277'
+  old_ward_name: Phường 18
+  old_district_code: '773'
+  old_district_name: Quận 4
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27259'
+    new_ward_name: Phường Xóm Chiếu
+    portion: full
+    article: 1
+    clause: 8
+    resolution_old_name: Phường 18
+- old_ward_code: '27283'
+  old_ward_name: Phường 4
+  old_district_code: '773'
+  old_district_name: Quận 4
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27265'
+    new_ward_name: Phường Khánh Hội
+    portion: part
+    article: 1
+    clause: 9
+    resolution_old_name: Phường 4
+  - new_ward_code: '27286'
+    new_ward_name: Phường Vĩnh Hội
+    portion: remainder
+    article: 1
+    clause: 10
+    resolution_old_name: Phường 4
+- old_ward_code: '27286'
+  old_ward_name: Phường 3
+  old_district_code: '773'
+  old_district_name: Quận 4
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27286'
+    new_ward_name: Phường Vĩnh Hội
+    portion: full
+    article: 1
+    clause: 10
+    resolution_old_name: Phường 3
+- old_ward_code: '27289'
+  old_ward_name: Phường 16
+  old_district_code: '773'
+  old_district_name: Quận 4
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27259'
+    new_ward_name: Phường Xóm Chiếu
+    portion: full
+    article: 1
+    clause: 8
+    resolution_old_name: Phường 16
+- old_ward_code: '27292'
+  old_ward_name: Phường 2
+  old_district_code: '773'
+  old_district_name: Quận 4
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27265'
+    new_ward_name: Phường Khánh Hội
+    portion: part
+    article: 1
+    clause: 9
+    resolution_old_name: Phường 2
+  - new_ward_code: '27286'
+    new_ward_name: Phường Vĩnh Hội
+    portion: remainder
+    article: 1
+    clause: 10
+    resolution_old_name: Phường 2
+- old_ward_code: '27295'
+  old_ward_name: Phường 15
+  old_district_code: '773'
+  old_district_name: Quận 4
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27259'
+    new_ward_name: Phường Xóm Chiếu
+    portion: part
+    article: 1
+    clause: 8
+    resolution_old_name: Phường 15
+  - new_ward_code: '27265'
+    new_ward_name: Phường Khánh Hội
+    portion: remainder
+    article: 1
+    clause: 9
+    resolution_old_name: Phường 15
+- old_ward_code: '27298'
+  old_ward_name: Phường 1
+  old_district_code: '773'
+  old_district_name: Quận 4
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27286'
+    new_ward_name: Phường Vĩnh Hội
+    portion: full
+    article: 1
+    clause: 10
+    resolution_old_name: Phường 1
+- old_ward_code: '27301'
+  old_ward_name: Phường 4
+  old_district_code: '774'
+  old_district_name: Quận 5
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27301'
+    new_ward_name: Phường Chợ Quán
+    portion: full
+    article: 1
+    clause: 11
+    resolution_old_name: Phường 4
+- old_ward_code: '27304'
+  old_ward_name: Phường 9
+  old_district_code: '774'
+  old_district_name: Quận 5
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27316'
+    new_ward_name: Phường An Đông
+    portion: full
+    article: 1
+    clause: 12
+    resolution_old_name: Phường 9
+- old_ward_code: '27307'
+  old_ward_name: Phường 2
+  old_district_code: '774'
+  old_district_name: Quận 5
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27301'
+    new_ward_name: Phường Chợ Quán
+    portion: full
+    article: 1
+    clause: 11
+    resolution_old_name: Phường 2
+- old_ward_code: '27310'
+  old_ward_name: Phường 12
+  old_district_code: '774'
+  old_district_name: Quận 5
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27343'
+    new_ward_name: Phường Chợ Lớn
+    portion: full
+    article: 1
+    clause: 13
+    resolution_old_name: Phường 12
+- old_ward_code: '27316'
+  old_ward_name: Phường 7
+  old_district_code: '774'
+  old_district_name: Quận 5
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27316'
+    new_ward_name: Phường An Đông
+    portion: full
+    article: 1
+    clause: 12
+    resolution_old_name: Phường 7
+- old_ward_code: '27325'
+  old_ward_name: Phường 1
+  old_district_code: '774'
+  old_district_name: Quận 5
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27301'
+    new_ward_name: Phường Chợ Quán
+    portion: full
+    article: 1
+    clause: 11
+    resolution_old_name: Phường 1
+- old_ward_code: '27328'
+  old_ward_name: Phường 11
+  old_district_code: '774'
+  old_district_name: Quận 5
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27343'
+    new_ward_name: Phường Chợ Lớn
+    portion: full
+    article: 1
+    clause: 13
+    resolution_old_name: Phường 11
+- old_ward_code: '27331'
+  old_ward_name: Phường 14
+  old_district_code: '774'
+  old_district_name: Quận 5
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27343'
+    new_ward_name: Phường Chợ Lớn
+    portion: full
+    article: 1
+    clause: 13
+    resolution_old_name: Phường 14
+- old_ward_code: '27334'
+  old_ward_name: Phường 5
+  old_district_code: '774'
+  old_district_name: Quận 5
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27316'
+    new_ward_name: Phường An Đông
+    portion: full
+    article: 1
+    clause: 12
+    resolution_old_name: Phường 5
+- old_ward_code: '27343'
+  old_ward_name: Phường 13
+  old_district_code: '774'
+  old_district_name: Quận 5
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27343'
+    new_ward_name: Phường Chợ Lớn
+    portion: full
+    article: 1
+    clause: 13
+    resolution_old_name: Phường 13
+- old_ward_code: '27346'
+  old_ward_name: Phường 14
+  old_district_code: '775'
+  old_district_name: Quận 6
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27349'
+    new_ward_name: Phường Phú Lâm
+    portion: full
+    article: 1
+    clause: 17
+    resolution_old_name: Phường 14
+- old_ward_code: '27349'
+  old_ward_name: Phường 13
+  old_district_code: '775'
+  old_district_name: Quận 6
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27349'
+    new_ward_name: Phường Phú Lâm
+    portion: full
+    article: 1
+    clause: 17
+    resolution_old_name: Phường 13
+- old_ward_code: '27352'
+  old_ward_name: Phường 9
+  old_district_code: '775'
+  old_district_name: Quận 6
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27367'
+    new_ward_name: Phường Bình Tây
+    portion: full
+    article: 1
+    clause: 14
+    resolution_old_name: Phường 9
+- old_ward_code: '27358'
+  old_ward_name: Phường 12
+  old_district_code: '775'
+  old_district_name: Quận 6
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27349'
+    new_ward_name: Phường Phú Lâm
+    portion: full
+    article: 1
+    clause: 17
+    resolution_old_name: Phường 12
+- old_ward_code: '27364'
+  old_ward_name: Phường 11
+  old_district_code: '775'
+  old_district_name: Quận 6
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27364'
+    new_ward_name: Phường Bình Phú
+    portion: full
+    article: 1
+    clause: 16
+    resolution_old_name: Phường 11
+- old_ward_code: '27367'
+  old_ward_name: Phường 2
+  old_district_code: '775'
+  old_district_name: Quận 6
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27367'
+    new_ward_name: Phường Bình Tây
+    portion: full
+    article: 1
+    clause: 14
+    resolution_old_name: Phường 2
+- old_ward_code: '27373'
+  old_ward_name: Phường 1
+  old_district_code: '775'
+  old_district_name: Quận 6
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27373'
+    new_ward_name: Phường Bình Tiên
+    portion: full
+    article: 1
+    clause: 15
+    resolution_old_name: Phường 1
+- old_ward_code: '27376'
+  old_ward_name: Phường 8
+  old_district_code: '775'
+  old_district_name: Quận 6
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27373'
+    new_ward_name: Phường Bình Tiên
+    portion: full
+    article: 1
+    clause: 15
+    resolution_old_name: Phường 8
+- old_ward_code: '27382'
+  old_ward_name: Phường 7
+  old_district_code: '775'
+  old_district_name: Quận 6
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27373'
+    new_ward_name: Phường Bình Tiên
+    portion: full
+    article: 1
+    clause: 15
+    resolution_old_name: Phường 7
+- old_ward_code: '27385'
+  old_ward_name: Phường 10
+  old_district_code: '775'
+  old_district_name: Quận 6
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27364'
+    new_ward_name: Phường Bình Phú
+    portion: full
+    article: 1
+    clause: 16
+    resolution_old_name: Phường 10
+- old_ward_code: '27397'
+  old_ward_name: Phường Rạch Ông
+  old_district_code: '776'
+  old_district_name: Quận 8
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27418'
+    new_ward_name: Phường Chánh Hưng
+    portion: full
+    article: 1
+    clause: 22
+    resolution_old_name: Phường Rạch Ông
+- old_ward_code: '27403'
+  old_ward_name: Phường Hưng Phú
+  old_district_code: '776'
+  old_district_name: Quận 8
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27418'
+    new_ward_name: Phường Chánh Hưng
+    portion: full
+    article: 1
+    clause: 22
+    resolution_old_name: Phường Hưng Phú
+- old_ward_code: '27409'
+  old_ward_name: Phường 4
+  old_district_code: '776'
+  old_district_name: Quận 8
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27418'
+    new_ward_name: Phường Chánh Hưng
+    portion: full
+    article: 1
+    clause: 22
+    resolution_old_name: Phường 4
+- old_ward_code: '27415'
+  old_ward_name: Phường Xóm Củi
+  old_district_code: '776'
+  old_district_name: Quận 8
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27427'
+    new_ward_name: Phường Phú Định
+    portion: full
+    article: 1
+    clause: 23
+    resolution_old_name: Phường Xóm Củi
+- old_ward_code: '27418'
+  old_ward_name: Phường 5
+  old_district_code: '776'
+  old_district_name: Quận 8
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27418'
+    new_ward_name: Phường Chánh Hưng
+    portion: part
+    article: 1
+    clause: 22
+    resolution_old_name: Phường 5
+  - new_ward_code: '27424'
+    new_ward_name: Phường Bình Đông
+    portion: remainder
+    article: 1
+    clause: 24
+    resolution_old_name: Phường 5
+- old_ward_code: '27421'
+  old_ward_name: Phường 14
+  old_district_code: '776'
+  old_district_name: Quận 8
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27427'
+    new_ward_name: Phường Phú Định
+    portion: full
+    article: 1
+    clause: 23
+    resolution_old_name: Phường 14
+- old_ward_code: '27424'
+  old_ward_name: Phường 6
+  old_district_code: '776'
+  old_district_name: Quận 8
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27424'
+    new_ward_name: Phường Bình Đông
+    portion: full
+    article: 1
+    clause: 24
+    resolution_old_name: Phường 6
+- old_ward_code: '27427'
+  old_ward_name: Phường 15
+  old_district_code: '776'
+  old_district_name: Quận 8
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27427'
+    new_ward_name: Phường Phú Định
+    portion: full
+    article: 1
+    clause: 23
+    resolution_old_name: Phường 15
+- old_ward_code: '27430'
+  old_ward_name: Phường 16
+  old_district_code: '776'
+  old_district_name: Quận 8
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27364'
+    new_ward_name: Phường Bình Phú
+    portion: part
+    article: 1
+    clause: 16
+    resolution_old_name: Phường 16
+  - new_ward_code: '27427'
+    new_ward_name: Phường Phú Định
+    portion: part
+    article: 1
+    clause: 23
+    resolution_old_name: Phường 16
+  - new_ward_code: '27595'
+    new_ward_name: Xã Tân Nhựt
+    portion: remainder
+    article: 1
+    clause: 116
+    resolution_old_name: Phường 16
+- old_ward_code: '27433'
+  old_ward_name: Phường 7
+  old_district_code: '776'
+  old_district_name: Quận 8
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27424'
+    new_ward_name: Phường Bình Đông
+    portion: part
+    article: 1
+    clause: 24
+    resolution_old_name: Phường 7
+  - new_ward_code: '27619'
+    new_ward_name: Xã Bình Hưng
+    portion: remainder
+    article: 1
+    clause: 119
+    resolution_old_name: Phường 7
+- old_ward_code: '27436'
+  old_ward_name: Phường Bình Hưng Hòa
+  old_district_code: '777'
+  old_district_name: Quận Bình Tân
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27439'
+    new_ward_name: Phường Bình Hưng Hòa
+    portion: full
+    article: 1
+    clause: 41
+    resolution_old_name: Phường Bình Hưng Hòa
+- old_ward_code: '27439'
+  old_ward_name: Phường Bình Hưng Hoà A
+  old_district_code: '777'
+  old_district_name: Quận Bình Tân
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27448'
+    new_ward_name: Phường Bình Trị Đông
+    portion: part
+    article: 1
+    clause: 40
+    resolution_old_name: Phường Bình Hưng Hòa A
+  - new_ward_code: '27439'
+    new_ward_name: Phường Bình Hưng Hòa
+    portion: remainder
+    article: 1
+    clause: 41
+    resolution_old_name: Phường Bình Hưng Hòa A
+- old_ward_code: '27442'
+  old_ward_name: Phường Bình Hưng Hoà B
+  old_district_code: '777'
+  old_district_name: Quận Bình Tân
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27442'
+    new_ward_name: Phường Bình Tân
+    portion: full
+    article: 1
+    clause: 38
+    resolution_old_name: Phường Bình Hưng Hòa B
+- old_ward_code: '27445'
+  old_ward_name: Phường Bình Trị Đông
+  old_district_code: '777'
+  old_district_name: Quận Bình Tân
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27448'
+    new_ward_name: Phường Bình Trị Đông
+    portion: full
+    article: 1
+    clause: 40
+    resolution_old_name: Phường Bình Trị Đông
+- old_ward_code: '27448'
+  old_ward_name: Phường Bình Trị Đông A
+  old_district_code: '777'
+  old_district_name: Quận Bình Tân
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27442'
+    new_ward_name: Phường Bình Tân
+    portion: part
+    article: 1
+    clause: 38
+    resolution_old_name: Phường Bình Trị Đông A
+  - new_ward_code: '27448'
+    new_ward_name: Phường Bình Trị Đông
+    portion: remainder
+    article: 1
+    clause: 40
+    resolution_old_name: Phường Bình Trị Đông A
+- old_ward_code: '27451'
+  old_ward_name: Phường Bình Trị Đông B
+  old_district_code: '777'
+  old_district_name: Quận Bình Tân
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27460'
+    new_ward_name: Phường An Lạc
+    portion: full
+    article: 1
+    clause: 37
+    resolution_old_name: Phường Bình Trị Đông B
+- old_ward_code: '27454'
+  old_ward_name: Phường Tân Tạo
+  old_district_code: '777'
+  old_district_name: Quận Bình Tân
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27442'
+    new_ward_name: Phường Bình Tân
+    portion: part
+    article: 1
+    clause: 38
+    resolution_old_name: Phường Tân Tạo
+  - new_ward_code: '27457'
+    new_ward_name: Phường Tân Tạo
+    portion: part
+    article: 1
+    clause: 39
+    resolution_old_name: Phường Tân Tạo
+  - new_ward_code: '27604'
+    new_ward_name: Xã Tân Vĩnh Lộc
+    portion: remainder
+    article: 1
+    clause: 114
+    resolution_old_name: Phường Tân Tạo
+- old_ward_code: '27457'
+  old_ward_name: Phường Tân Tạo A
+  old_district_code: '777'
+  old_district_name: Quận Bình Tân
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27457'
+    new_ward_name: Phường Tân Tạo
+    portion: part
+    article: 1
+    clause: 39
+    resolution_old_name: Phường Tân Tạo A
+  - new_ward_code: '27595'
+    new_ward_name: Xã Tân Nhựt
+    portion: remainder
+    article: 1
+    clause: 116
+    resolution_old_name: Phường Tân Tạo A
+- old_ward_code: '27460'
+  old_ward_name: Phường An Lạc
+  old_district_code: '777'
+  old_district_name: Quận Bình Tân
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27460'
+    new_ward_name: Phường An Lạc
+    portion: full
+    article: 1
+    clause: 37
+    resolution_old_name: Phường An Lạc
+- old_ward_code: '27463'
+  old_ward_name: Phường An Lạc A
+  old_district_code: '777'
+  old_district_name: Quận Bình Tân
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27460'
+    new_ward_name: Phường An Lạc
+    portion: full
+    article: 1
+    clause: 37
+    resolution_old_name: Phường An Lạc A
+- old_ward_code: '27466'
+  old_ward_name: Phường Tân Thuận Đông
+  old_district_code: '778'
+  old_district_name: Quận 7
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27478'
+    new_ward_name: Phường Tân Thuận
+    portion: full
+    article: 1
+    clause: 18
+    resolution_old_name: Phường Tân Thuận Đông
+- old_ward_code: '27469'
+  old_ward_name: Phường Tân Thuận Tây
+  old_district_code: '778'
+  old_district_name: Quận 7
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27478'
+    new_ward_name: Phường Tân Thuận
+    portion: full
+    article: 1
+    clause: 18
+    resolution_old_name: Phường Tân Thuận Tây
+- old_ward_code: '27472'
+  old_ward_name: Phường Tân Kiểng
+  old_district_code: '778'
+  old_district_name: Quận 7
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27475'
+    new_ward_name: Phường Tân Hưng
+    portion: full
+    article: 1
+    clause: 21
+    resolution_old_name: Phường Tân Kiểng
+- old_ward_code: '27475'
+  old_ward_name: Phường Tân Hưng
+  old_district_code: '778'
+  old_district_name: Quận 7
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27475'
+    new_ward_name: Phường Tân Hưng
+    portion: full
+    article: 1
+    clause: 21
+    resolution_old_name: Phường Tân Hưng
+- old_ward_code: '27478'
+  old_ward_name: Phường Bình Thuận
+  old_district_code: '778'
+  old_district_name: Quận 7
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27478'
+    new_ward_name: Phường Tân Thuận
+    portion: full
+    article: 1
+    clause: 18
+    resolution_old_name: Phường Bình Thuận
+- old_ward_code: '27481'
+  old_ward_name: Phường Tân Quy
+  old_district_code: '778'
+  old_district_name: Quận 7
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27475'
+    new_ward_name: Phường Tân Hưng
+    portion: full
+    article: 1
+    clause: 21
+    resolution_old_name: Phường Tân Quy
+- old_ward_code: '27484'
+  old_ward_name: Phường Phú Thuận
+  old_district_code: '778'
+  old_district_name: Quận 7
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27484'
+    new_ward_name: Phường Phú Thuận
+    portion: full
+    article: 1
+    clause: 19
+    resolution_old_name: Phường Phú Thuận
+- old_ward_code: '27487'
+  old_ward_name: Phường Tân Phú
+  old_district_code: '778'
+  old_district_name: Quận 7
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27487'
+    new_ward_name: Phường Tân Mỹ
+    portion: full
+    article: 1
+    clause: 20
+    resolution_old_name: Phường Tân Phú
+- old_ward_code: '27490'
+  old_ward_name: Phường Tân Phong
+  old_district_code: '778'
+  old_district_name: Quận 7
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27475'
+    new_ward_name: Phường Tân Hưng
+    portion: full
+    article: 1
+    clause: 21
+    resolution_old_name: Phường Tân Phong
+- old_ward_code: '27493'
+  old_ward_name: Phường Phú Mỹ
+  old_district_code: '778'
+  old_district_name: Quận 7
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27484'
+    new_ward_name: Phường Phú Thuận
+    portion: part
+    article: 1
+    clause: 19
+    resolution_old_name: Phường Phú Mỹ
+  - new_ward_code: '27487'
+    new_ward_name: Phường Tân Mỹ
+    portion: remainder
+    article: 1
+    clause: 20
+    resolution_old_name: Phường Phú Mỹ
+- old_ward_code: '27496'
+  old_ward_name: Thị trấn Củ Chi
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27496'
+    new_ward_name: Xã Tân An Hội
+    portion: full
+    article: 1
+    clause: 124
+    resolution_old_name: Thị trấn Củ Chi
+- old_ward_code: '27499'
+  old_ward_name: Xã Phú Mỹ Hưng
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27508'
+    new_ward_name: Xã An Nhơn Tây
+    portion: full
+    article: 1
+    clause: 126
+    resolution_old_name: Xã Phú Mỹ Hưng
+- old_ward_code: '27502'
+  old_ward_name: Xã An Phú
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27508'
+    new_ward_name: Xã An Nhơn Tây
+    portion: full
+    article: 1
+    clause: 126
+    resolution_old_name: Xã An Phú
+- old_ward_code: '27505'
+  old_ward_name: Xã Trung Lập Thượng
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27526'
+    new_ward_name: Xã Thái Mỹ
+    portion: full
+    article: 1
+    clause: 125
+    resolution_old_name: Xã Trung Lập Thượng
+- old_ward_code: '27508'
+  old_ward_name: Xã An Nhơn Tây
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27508'
+    new_ward_name: Xã An Nhơn Tây
+    portion: full
+    article: 1
+    clause: 126
+    resolution_old_name: Xã An Nhơn Tây
+- old_ward_code: '27511'
+  old_ward_name: Xã Nhuận Đức
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27511'
+    new_ward_name: Xã Nhuận Đức
+    portion: full
+    article: 1
+    clause: 127
+    resolution_old_name: Xã Nhuận Đức
+- old_ward_code: '27514'
+  old_ward_name: Xã Phạm Văn Cội
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27511'
+    new_ward_name: Xã Nhuận Đức
+    portion: full
+    article: 1
+    clause: 127
+    resolution_old_name: Xã Phạm Văn Cội
+- old_ward_code: '27517'
+  old_ward_name: Xã Phú Hòa Đông
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27541'
+    new_ward_name: Xã Phú Hòa Đông
+    portion: full
+    article: 1
+    clause: 128
+    resolution_old_name: Xã Phú Hòa Đông
+- old_ward_code: '27520'
+  old_ward_name: Xã Trung Lập Hạ
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27511'
+    new_ward_name: Xã Nhuận Đức
+    portion: full
+    article: 1
+    clause: 127
+    resolution_old_name: Xã Trung Lập Hạ
+- old_ward_code: '27523'
+  old_ward_name: Xã Trung An
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27544'
+    new_ward_name: Xã Bình Mỹ
+    portion: full
+    article: 1
+    clause: 129
+    resolution_old_name: Xã Trung An
+- old_ward_code: '27526'
+  old_ward_name: Xã Phước Thạnh
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27526'
+    new_ward_name: Xã Thái Mỹ
+    portion: full
+    article: 1
+    clause: 125
+    resolution_old_name: Xã Phước Thạnh
+- old_ward_code: '27529'
+  old_ward_name: Xã Phước Hiệp
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27496'
+    new_ward_name: Xã Tân An Hội
+    portion: full
+    article: 1
+    clause: 124
+    resolution_old_name: Xã Phước Hiệp
+- old_ward_code: '27532'
+  old_ward_name: Xã Tân An Hội
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27496'
+    new_ward_name: Xã Tân An Hội
+    portion: full
+    article: 1
+    clause: 124
+    resolution_old_name: Xã Tân An Hội
+- old_ward_code: '27535'
+  old_ward_name: Xã Phước Vĩnh An
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27553'
+    new_ward_name: Xã Củ Chi
+    portion: full
+    article: 1
+    clause: 123
+    resolution_old_name: Xã Phước Vĩnh An
+- old_ward_code: '27538'
+  old_ward_name: Xã Thái Mỹ
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27526'
+    new_ward_name: Xã Thái Mỹ
+    portion: full
+    article: 1
+    clause: 125
+    resolution_old_name: Xã Thái Mỹ
+- old_ward_code: '27541'
+  old_ward_name: Xã Tân Thạnh Tây
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27541'
+    new_ward_name: Xã Phú Hòa Đông
+    portion: full
+    article: 1
+    clause: 128
+    resolution_old_name: Xã Tân Thạnh Tây
+- old_ward_code: '27544'
+  old_ward_name: Xã Hòa Phú
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27544'
+    new_ward_name: Xã Bình Mỹ
+    portion: full
+    article: 1
+    clause: 129
+    resolution_old_name: Xã Hòa Phú
+- old_ward_code: '27547'
+  old_ward_name: Xã Tân Thạnh Đông
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27541'
+    new_ward_name: Xã Phú Hòa Đông
+    portion: full
+    article: 1
+    clause: 128
+    resolution_old_name: Xã Tân Thạnh Đông
+- old_ward_code: '27550'
+  old_ward_name: Xã Bình Mỹ
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27544'
+    new_ward_name: Xã Bình Mỹ
+    portion: full
+    article: 1
+    clause: 129
+    resolution_old_name: Xã Bình Mỹ
+- old_ward_code: '27553'
+  old_ward_name: Xã Tân Phú Trung
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27553'
+    new_ward_name: Xã Củ Chi
+    portion: full
+    article: 1
+    clause: 123
+    resolution_old_name: Xã Tân Phú Trung
+- old_ward_code: '27556'
+  old_ward_name: Xã Tân Thông Hội
+  old_district_code: '783'
+  old_district_name: Huyện Củ Chi
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27553'
+    new_ward_name: Xã Củ Chi
+    portion: full
+    article: 1
+    clause: 123
+    resolution_old_name: Xã Tân Thông Hội
+- old_ward_code: '27559'
+  old_ward_name: Thị trấn Hóc Môn
+  old_district_code: '784'
+  old_district_name: Huyện Hóc Môn
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27559'
+    new_ward_name: Xã Hóc Môn
+    portion: full
+    article: 1
+    clause: 131
+    resolution_old_name: Thị trấn Hóc Môn
+- old_ward_code: '27562'
+  old_ward_name: Xã Tân Hiệp
+  old_district_code: '784'
+  old_district_name: Huyện Hóc Môn
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27559'
+    new_ward_name: Xã Hóc Môn
+    portion: full
+    article: 1
+    clause: 131
+    resolution_old_name: Xã Tân Hiệp
+- old_ward_code: '27565'
+  old_ward_name: Xã Nhị Bình
+  old_district_code: '784'
+  old_district_name: Huyện Hóc Môn
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27568'
+    new_ward_name: Xã Đông Thạnh
+    portion: full
+    article: 1
+    clause: 130
+    resolution_old_name: Xã Nhị Bình
+- old_ward_code: '27568'
+  old_ward_name: Xã Đông Thạnh
+  old_district_code: '784'
+  old_district_name: Huyện Hóc Môn
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27568'
+    new_ward_name: Xã Đông Thạnh
+    portion: full
+    article: 1
+    clause: 130
+    resolution_old_name: Xã Đông Thạnh
+- old_ward_code: '27571'
+  old_ward_name: Xã Tân Thới Nhì
+  old_district_code: '784'
+  old_district_name: Huyện Hóc Môn
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27577'
+    new_ward_name: Xã Xuân Thới Sơn
+    portion: full
+    article: 1
+    clause: 132
+    resolution_old_name: Xã Tân Thới Nhì
+- old_ward_code: '27574'
+  old_ward_name: Xã Thới Tam Thôn
+  old_district_code: '784'
+  old_district_name: Huyện Hóc Môn
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27568'
+    new_ward_name: Xã Đông Thạnh
+    portion: full
+    article: 1
+    clause: 130
+    resolution_old_name: Xã Thới Tam Thôn
+- old_ward_code: '27577'
+  old_ward_name: Xã Xuân Thới Sơn
+  old_district_code: '784'
+  old_district_name: Huyện Hóc Môn
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27577'
+    new_ward_name: Xã Xuân Thới Sơn
+    portion: full
+    article: 1
+    clause: 132
+    resolution_old_name: Xã Xuân Thới Sơn
+- old_ward_code: '27580'
+  old_ward_name: Xã Tân Xuân
+  old_district_code: '784'
+  old_district_name: Huyện Hóc Môn
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27559'
+    new_ward_name: Xã Hóc Môn
+    portion: full
+    article: 1
+    clause: 131
+    resolution_old_name: Xã Tân Xuân
+- old_ward_code: '27583'
+  old_ward_name: Xã Xuân Thới Đông
+  old_district_code: '784'
+  old_district_name: Huyện Hóc Môn
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27577'
+    new_ward_name: Xã Xuân Thới Sơn
+    portion: full
+    article: 1
+    clause: 132
+    resolution_old_name: Xã Xuân Thới Đông
+- old_ward_code: '27586'
+  old_ward_name: Xã Trung Chánh
+  old_district_code: '784'
+  old_district_name: Huyện Hóc Môn
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27592'
+    new_ward_name: Xã Bà Điểm
+    portion: full
+    article: 1
+    clause: 133
+    resolution_old_name: Xã Trung Chánh
+- old_ward_code: '27589'
+  old_ward_name: Xã Xuân Thới Thượng
+  old_district_code: '784'
+  old_district_name: Huyện Hóc Môn
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27592'
+    new_ward_name: Xã Bà Điểm
+    portion: full
+    article: 1
+    clause: 133
+    resolution_old_name: Xã Xuân Thới Thượng
+- old_ward_code: '27592'
+  old_ward_name: Xã Bà Điểm
+  old_district_code: '784'
+  old_district_name: Huyện Hóc Môn
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27592'
+    new_ward_name: Xã Bà Điểm
+    portion: full
+    article: 1
+    clause: 133
+    resolution_old_name: Xã Bà Điểm
+- old_ward_code: '27595'
+  old_ward_name: Thị trấn Tân Túc
+  old_district_code: '785'
+  old_district_name: Huyện Bình Chánh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27595'
+    new_ward_name: Xã Tân Nhựt
+    portion: full
+    article: 1
+    clause: 116
+    resolution_old_name: Thị trấn Tân Túc
+- old_ward_code: '27598'
+  old_ward_name: Xã Phạm Văn Hai
+  old_district_code: '785'
+  old_district_name: Huyện Bình Chánh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27601'
+    new_ward_name: Xã Vĩnh Lộc
+    portion: part
+    article: 1
+    clause: 113
+    resolution_old_name: Xã Phạm Văn Hai
+  - new_ward_code: '27604'
+    new_ward_name: Xã Tân Vĩnh Lộc
+    portion: remainder
+    article: 1
+    clause: 114
+    resolution_old_name: Xã Phạm Văn Hai
+- old_ward_code: '27601'
+  old_ward_name: Xã Vĩnh Lộc A
+  old_district_code: '785'
+  old_district_name: Huyện Bình Chánh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27601'
+    new_ward_name: Xã Vĩnh Lộc
+    portion: full
+    article: 1
+    clause: 113
+    resolution_old_name: Xã Vĩnh Lộc A
+- old_ward_code: '27604'
+  old_ward_name: Xã Vĩnh Lộc B
+  old_district_code: '785'
+  old_district_name: Huyện Bình Chánh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27604'
+    new_ward_name: Xã Tân Vĩnh Lộc
+    portion: full
+    article: 1
+    clause: 114
+    resolution_old_name: Xã Vĩnh Lộc B
+- old_ward_code: '27607'
+  old_ward_name: Xã Bình Lợi
+  old_district_code: '785'
+  old_district_name: Huyện Bình Chánh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27610'
+    new_ward_name: Xã Bình Lợi
+    portion: full
+    article: 1
+    clause: 115
+    resolution_old_name: Xã Bình Lợi
+- old_ward_code: '27610'
+  old_ward_name: Xã Lê Minh Xuân
+  old_district_code: '785'
+  old_district_name: Huyện Bình Chánh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27610'
+    new_ward_name: Xã Bình Lợi
+    portion: full
+    article: 1
+    clause: 115
+    resolution_old_name: Xã Lê Minh Xuân
+- old_ward_code: '27613'
+  old_ward_name: Xã Tân Nhựt
+  old_district_code: '785'
+  old_district_name: Huyện Bình Chánh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27595'
+    new_ward_name: Xã Tân Nhựt
+    portion: full
+    article: 1
+    clause: 116
+    resolution_old_name: Xã Tân Nhựt
+- old_ward_code: '27616'
+  old_ward_name: Xã Tân Kiên
+  old_district_code: '785'
+  old_district_name: Huyện Bình Chánh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27457'
+    new_ward_name: Phường Tân Tạo
+    portion: part
+    article: 1
+    clause: 39
+    resolution_old_name: Xã Tân Kiên
+  - new_ward_code: '27595'
+    new_ward_name: Xã Tân Nhựt
+    portion: remainder
+    article: 1
+    clause: 116
+    resolution_old_name: Xã Tân Kiên
+- old_ward_code: '27619'
+  old_ward_name: Xã Bình Hưng
+  old_district_code: '785'
+  old_district_name: Huyện Bình Chánh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27619'
+    new_ward_name: Xã Bình Hưng
+    portion: full
+    article: 1
+    clause: 119
+    resolution_old_name: Xã Bình Hưng
+- old_ward_code: '27622'
+  old_ward_name: Xã Phong Phú
+  old_district_code: '785'
+  old_district_name: Huyện Bình Chánh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27619'
+    new_ward_name: Xã Bình Hưng
+    portion: full
+    article: 1
+    clause: 119
+    resolution_old_name: Xã Phong Phú
+- old_ward_code: '27625'
+  old_ward_name: Xã An Phú Tây
+  old_district_code: '785'
+  old_district_name: Huyện Bình Chánh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27424'
+    new_ward_name: Phường Bình Đông
+    portion: part
+    article: 1
+    clause: 24
+    resolution_old_name: Xã An Phú Tây
+  - new_ward_code: '27637'
+    new_ward_name: Xã Bình Chánh
+    portion: remainder
+    article: 1
+    clause: 117
+    resolution_old_name: Xã An Phú Tây
+- old_ward_code: '27628'
+  old_ward_name: Xã Hưng Long
+  old_district_code: '785'
+  old_district_name: Huyện Bình Chánh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27628'
+    new_ward_name: Xã Hưng Long
+    portion: full
+    article: 1
+    clause: 118
+    resolution_old_name: Xã Hưng Long
+- old_ward_code: '27631'
+  old_ward_name: Xã Đa Phước
+  old_district_code: '785'
+  old_district_name: Huyện Bình Chánh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27628'
+    new_ward_name: Xã Hưng Long
+    portion: full
+    article: 1
+    clause: 118
+    resolution_old_name: Xã Đa Phước
+- old_ward_code: '27634'
+  old_ward_name: Xã Tân Quý Tây
+  old_district_code: '785'
+  old_district_name: Huyện Bình Chánh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27637'
+    new_ward_name: Xã Bình Chánh
+    portion: full
+    article: 1
+    clause: 117
+    resolution_old_name: Xã Tân Quý Tây
+- old_ward_code: '27637'
+  old_ward_name: Xã Bình Chánh
+  old_district_code: '785'
+  old_district_name: Huyện Bình Chánh
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27637'
+    new_ward_name: Xã Bình Chánh
+    portion: full
+    article: 1
+    clause: 117
+    resolution_old_name: Xã Bình Chánh
+- old_ward_code: '27643'
+  old_ward_name: Thị trấn Nhà Bè
+  old_district_code: '786'
+  old_district_name: Huyện Nhà Bè
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27655'
+    new_ward_name: Xã Nhà Bè
+    portion: full
+    article: 1
+    clause: 134
+    resolution_old_name: Thị trấn Nhà Bè
+- old_ward_code: '27646'
+  old_ward_name: Xã Phước Kiển
+  old_district_code: '786'
+  old_district_name: Huyện Nhà Bè
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27655'
+    new_ward_name: Xã Nhà Bè
+    portion: full
+    article: 1
+    clause: 134
+    resolution_old_name: Xã Phước Kiển
+- old_ward_code: '27649'
+  old_ward_name: Xã Phước Lộc
+  old_district_code: '786'
+  old_district_name: Huyện Nhà Bè
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27655'
+    new_ward_name: Xã Nhà Bè
+    portion: full
+    article: 1
+    clause: 134
+    resolution_old_name: Xã Phước Lộc
+- old_ward_code: '27652'
+  old_ward_name: Xã Nhơn Đức
+  old_district_code: '786'
+  old_district_name: Huyện Nhà Bè
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27658'
+    new_ward_name: Xã Hiệp Phước
+    portion: full
+    article: 1
+    clause: 135
+    resolution_old_name: Xã Nhơn Đức
+- old_ward_code: '27655'
+  old_ward_name: Xã Phú Xuân
+  old_district_code: '786'
+  old_district_name: Huyện Nhà Bè
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27655'
+    new_ward_name: Xã Nhà Bè
+    portion: full
+    article: 1
+    clause: 134
+    resolution_old_name: Xã Phú Xuân
+- old_ward_code: '27658'
+  old_ward_name: Xã Long Thới
+  old_district_code: '786'
+  old_district_name: Huyện Nhà Bè
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27658'
+    new_ward_name: Xã Hiệp Phước
+    portion: full
+    article: 1
+    clause: 135
+    resolution_old_name: Xã Long Thới
+- old_ward_code: '27661'
+  old_ward_name: Xã Hiệp Phước
+  old_district_code: '786'
+  old_district_name: Huyện Nhà Bè
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27658'
+    new_ward_name: Xã Hiệp Phước
+    portion: full
+    article: 1
+    clause: 135
+    resolution_old_name: Xã Hiệp Phước
+- old_ward_code: '27664'
+  old_ward_name: Thị trấn Cần Thạnh
+  old_district_code: '787'
+  old_district_name: Huyện Cần Giờ
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27664'
+    new_ward_name: Xã Cần Giờ
+    portion: full
+    article: 1
+    clause: 122
+    resolution_old_name: Thị trấn Cần Thạnh
+- old_ward_code: '27667'
+  old_ward_name: Xã Bình Khánh
+  old_district_code: '787'
+  old_district_name: Huyện Cần Giờ
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27667'
+    new_ward_name: Xã Bình Khánh
+    portion: full
+    article: 1
+    clause: 120
+    resolution_old_name: Xã Bình Khánh
+- old_ward_code: '27670'
+  old_ward_name: Xã Tam Thôn Hiệp
+  old_district_code: '787'
+  old_district_name: Huyện Cần Giờ
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27667'
+    new_ward_name: Xã Bình Khánh
+    portion: full
+    article: 1
+    clause: 120
+    resolution_old_name: Xã Tam Thôn Hiệp
+- old_ward_code: '27673'
+  old_ward_name: Xã An Thới Đông
+  old_district_code: '787'
+  old_district_name: Huyện Cần Giờ
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27667'
+    new_ward_name: Xã Bình Khánh
+    portion: part
+    article: 1
+    clause: 120
+    resolution_old_name: Xã An Thới Đông
+  - new_ward_code: '27673'
+    new_ward_name: Xã An Thới Đông
+    portion: remainder
+    article: 1
+    clause: 121
+    resolution_old_name: Xã An Thới Đông
+- old_ward_code: '27676'
+  old_ward_name: Xã Thạnh An
+  old_district_code: '787'
+  old_district_name: Huyện Cần Giờ
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27676'
+    new_ward_name: Xã Thạnh An
+    portion: full
+    article: 1
+    clause: 164
+    resolution_old_name: Xã Thạnh An
+- old_ward_code: '27679'
+  old_ward_name: Xã Long Hòa
+  old_district_code: '787'
+  old_district_name: Huyện Cần Giờ
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27664'
+    new_ward_name: Xã Cần Giờ
+    portion: full
+    article: 1
+    clause: 122
+    resolution_old_name: Xã Long Hòa
+- old_ward_code: '27682'
+  old_ward_name: Xã Lý Nhơn
+  old_district_code: '787'
+  old_district_name: Huyện Cần Giờ
+  old_province_code: '79'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '79'
+  relations:
+  - new_ward_code: '27673'
+    new_ward_name: Xã An Thới Đông
+    portion: full
+    article: 1
+    clause: 121
+    resolution_old_name: Xã Lý Nhơn
+- old_ward_code: '25741'
+  old_ward_name: Phường Hiệp Thành
+  old_district_code: '718'
+  old_district_name: Thành phố Thủ Dầu Một
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25747'
+    new_ward_name: Phường Thủ Dầu Một
+    portion: part
+    article: 1
+    clause: 87
+    resolution_old_name: Phường Hiệp Thành
+  - new_ward_code: '25750'
+    new_ward_name: Phường Phú Lợi
+    portion: remainder
+    article: 1
+    clause: 88
+    resolution_old_name: Phường Hiệp Thành
+- old_ward_code: '25744'
+  old_ward_name: Phường Phú Lợi
+  old_district_code: '718'
+  old_district_name: Thành phố Thủ Dầu Một
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25750'
+    new_ward_name: Phường Phú Lợi
+    portion: full
+    article: 1
+    clause: 88
+    resolution_old_name: Phường Phú Lợi
+- old_ward_code: '25747'
+  old_ward_name: Phường Phú Cường
+  old_district_code: '718'
+  old_district_name: Thành phố Thủ Dầu Một
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25747'
+    new_ward_name: Phường Thủ Dầu Một
+    portion: full
+    article: 1
+    clause: 87
+    resolution_old_name: Phường Phú Cường
+- old_ward_code: '25750'
+  old_ward_name: Phường Phú Hòa
+  old_district_code: '718'
+  old_district_name: Thành phố Thủ Dầu Một
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25750'
+    new_ward_name: Phường Phú Lợi
+    portion: full
+    article: 1
+    clause: 88
+    resolution_old_name: Phường Phú Hòa
+- old_ward_code: '25753'
+  old_ward_name: Phường Phú Thọ
+  old_district_code: '718'
+  old_district_name: Thành phố Thủ Dầu Một
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25747'
+    new_ward_name: Phường Thủ Dầu Một
+    portion: full
+    article: 1
+    clause: 87
+    resolution_old_name: Phường Phú Thọ
+- old_ward_code: '25756'
+  old_ward_name: Phường Chánh Nghĩa
+  old_district_code: '718'
+  old_district_name: Thành phố Thủ Dầu Một
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25747'
+    new_ward_name: Phường Thủ Dầu Một
+    portion: full
+    article: 1
+    clause: 87
+    resolution_old_name: Phường Chánh Nghĩa
+- old_ward_code: '25759'
+  old_ward_name: Phường Định Hoà
+  old_district_code: '718'
+  old_district_name: Thành phố Thủ Dầu Một
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25771'
+    new_ward_name: Phường Chánh Hiệp
+    portion: full
+    article: 1
+    clause: 89
+    resolution_old_name: Phường Định Hòa
+- old_ward_code: '25760'
+  old_ward_name: Phường Hoà Phú
+  old_district_code: '718'
+  old_district_name: Thành phố Thủ Dầu Một
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25760'
+    new_ward_name: Phường Bình Dương
+    portion: full
+    article: 1
+    clause: 90
+    resolution_old_name: Phường Hòa Phú
+- old_ward_code: '25762'
+  old_ward_name: Phường Phú Mỹ
+  old_district_code: '718'
+  old_district_name: Thành phố Thủ Dầu Một
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25760'
+    new_ward_name: Phường Bình Dương
+    portion: full
+    article: 1
+    clause: 90
+    resolution_old_name: Phường Phú Mỹ
+- old_ward_code: '25763'
+  old_ward_name: Phường Phú Tân
+  old_district_code: '718'
+  old_district_name: Thành phố Thủ Dầu Một
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25760'
+    new_ward_name: Phường Bình Dương
+    portion: full
+    article: 1
+    clause: 90
+    resolution_old_name: Phường Phú Tân
+- old_ward_code: '25765'
+  old_ward_name: Phường Tân An
+  old_district_code: '718'
+  old_district_name: Thành phố Thủ Dầu Một
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25768'
+    new_ward_name: Phường Phú An
+    portion: full
+    article: 1
+    clause: 92
+    resolution_old_name: Phường Tân An
+- old_ward_code: '25768'
+  old_ward_name: Phường Hiệp An
+  old_district_code: '718'
+  old_district_name: Thành phố Thủ Dầu Một
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25771'
+    new_ward_name: Phường Chánh Hiệp
+    portion: part
+    article: 1
+    clause: 89
+    resolution_old_name: Phường Hiệp An
+  - new_ward_code: '25768'
+    new_ward_name: Phường Phú An
+    portion: remainder
+    article: 1
+    clause: 92
+    resolution_old_name: Phường Hiệp An
+- old_ward_code: '25771'
+  old_ward_name: Phường Tương Bình Hiệp
+  old_district_code: '718'
+  old_district_name: Thành phố Thủ Dầu Một
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25771'
+    new_ward_name: Phường Chánh Hiệp
+    portion: full
+    article: 1
+    clause: 89
+    resolution_old_name: Phường Tương Bình Hiệp
+- old_ward_code: '25774'
+  old_ward_name: Phường Chánh Mỹ
+  old_district_code: '718'
+  old_district_name: Thành phố Thủ Dầu Một
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25747'
+    new_ward_name: Phường Thủ Dầu Một
+    portion: part
+    article: 1
+    clause: 87
+    resolution_old_name: Phường Chánh Mỹ
+  - new_ward_code: '25771'
+    new_ward_name: Phường Chánh Hiệp
+    portion: remainder
+    article: 1
+    clause: 89
+    resolution_old_name: Phường Chánh Mỹ
+- old_ward_code: '25816'
+  old_ward_name: Xã Trừ Văn Thố
+  old_district_code: '719'
+  old_district_name: Huyện Bàu Bàng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25819'
+    new_ward_name: Xã Trừ Văn Thố
+    portion: full
+    article: 1
+    clause: 142
+    resolution_old_name: Xã Trừ Văn Thố
+- old_ward_code: '25819'
+  old_ward_name: Xã Cây Trường II
+  old_district_code: '719'
+  old_district_name: Huyện Bàu Bàng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25819'
+    new_ward_name: Xã Trừ Văn Thố
+    portion: full
+    article: 1
+    clause: 142
+    resolution_old_name: Xã Cây Trường II
+- old_ward_code: '25822'
+  old_ward_name: Thị trấn Lai Uyên
+  old_district_code: '719'
+  old_district_name: Huyện Bàu Bàng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25819'
+    new_ward_name: Xã Trừ Văn Thố
+    portion: part
+    article: 1
+    clause: 142
+    resolution_old_name: Thị trấn Lai Uyên
+  - new_ward_code: '25822'
+    new_ward_name: Xã Bàu Bàng
+    portion: remainder
+    article: 1
+    clause: 143
+    resolution_old_name: Thị trấn Lai Uyên
+- old_ward_code: '25825'
+  old_ward_name: Xã Tân Hưng
+  old_district_code: '719'
+  old_district_name: Huyện Bàu Bàng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25813'
+    new_ward_name: Phường Bến Cát
+    portion: full
+    article: 1
+    clause: 95
+    resolution_old_name: Xã Tân Hưng
+- old_ward_code: '25828'
+  old_ward_name: Xã Long Nguyên
+  old_district_code: '719'
+  old_district_name: Huyện Bàu Bàng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25840'
+    new_ward_name: Phường Long Nguyên
+    portion: full
+    article: 1
+    clause: 94
+    resolution_old_name: Xã Long Nguyên
+- old_ward_code: '25831'
+  old_ward_name: Xã Hưng Hòa
+  old_district_code: '719'
+  old_district_name: Huyện Bàu Bàng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25837'
+    new_ward_name: Phường Chánh Phú Hòa
+    portion: full
+    article: 1
+    clause: 96
+    resolution_old_name: Xã Hưng Hòa
+- old_ward_code: '25834'
+  old_ward_name: Xã Lai Hưng
+  old_district_code: '719'
+  old_district_name: Huyện Bàu Bàng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25813'
+    new_ward_name: Phường Bến Cát
+    portion: full
+    article: 1
+    clause: 95
+    resolution_old_name: Xã Lai Hưng
+- old_ward_code: '25777'
+  old_ward_name: Thị trấn Dầu Tiếng
+  old_district_code: '720'
+  old_district_name: Huyện Dầu Tiếng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25777'
+    new_ward_name: Xã Dầu Tiếng
+    portion: full
+    article: 1
+    clause: 146
+    resolution_old_name: Thị trấn Dầu Tiếng
+- old_ward_code: '25780'
+  old_ward_name: Xã Minh Hoà
+  old_district_code: '720'
+  old_district_name: Huyện Dầu Tiếng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25780'
+    new_ward_name: Xã Minh Thạnh
+    portion: full
+    article: 1
+    clause: 147
+    resolution_old_name: Xã Minh Hòa
+- old_ward_code: '25783'
+  old_ward_name: Xã Minh Thạnh
+  old_district_code: '720'
+  old_district_name: Huyện Dầu Tiếng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25792'
+    new_ward_name: Xã Long Hòa
+    portion: part
+    article: 1
+    clause: 144
+    resolution_old_name: Xã Minh Thạnh
+  - new_ward_code: '25780'
+    new_ward_name: Xã Minh Thạnh
+    portion: remainder
+    article: 1
+    clause: 147
+    resolution_old_name: Xã Minh Thạnh
+- old_ward_code: '25786'
+  old_ward_name: Xã Minh Tân
+  old_district_code: '720'
+  old_district_name: Huyện Dầu Tiếng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25792'
+    new_ward_name: Xã Long Hòa
+    portion: part
+    article: 1
+    clause: 144
+    resolution_old_name: Xã Minh Tân
+  - new_ward_code: '25780'
+    new_ward_name: Xã Minh Thạnh
+    portion: remainder
+    article: 1
+    clause: 147
+    resolution_old_name: Xã Minh Tân
+- old_ward_code: '25789'
+  old_ward_name: Xã Định An
+  old_district_code: '720'
+  old_district_name: Huyện Dầu Tiếng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25777'
+    new_ward_name: Xã Dầu Tiếng
+    portion: full
+    article: 1
+    clause: 146
+    resolution_old_name: Xã Định An
+- old_ward_code: '25792'
+  old_ward_name: Xã Long Hoà
+  old_district_code: '720'
+  old_district_name: Huyện Dầu Tiếng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25792'
+    new_ward_name: Xã Long Hòa
+    portion: full
+    article: 1
+    clause: 144
+    resolution_old_name: Xã Long Hòa
+- old_ward_code: '25795'
+  old_ward_name: Xã Định Thành
+  old_district_code: '720'
+  old_district_name: Huyện Dầu Tiếng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25777'
+    new_ward_name: Xã Dầu Tiếng
+    portion: full
+    article: 1
+    clause: 146
+    resolution_old_name: Xã Định Thành
+- old_ward_code: '25798'
+  old_ward_name: Xã Định Hiệp
+  old_district_code: '720'
+  old_district_name: Huyện Dầu Tiếng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25807'
+    new_ward_name: Xã Thanh An
+    portion: part
+    article: 1
+    clause: 145
+    resolution_old_name: Xã Định Hiệp
+  - new_ward_code: '25777'
+    new_ward_name: Xã Dầu Tiếng
+    portion: remainder
+    article: 1
+    clause: 146
+    resolution_old_name: Xã Định Hiệp
+- old_ward_code: '25801'
+  old_ward_name: Xã An Lập
+  old_district_code: '720'
+  old_district_name: Huyện Dầu Tiếng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25843'
+    new_ward_name: Phường Tây Nam
+    portion: part
+    article: 1
+    clause: 93
+    resolution_old_name: Xã An Lập
+  - new_ward_code: '25807'
+    new_ward_name: Xã Thanh An
+    portion: remainder
+    article: 1
+    clause: 145
+    resolution_old_name: Xã An Lập
+- old_ward_code: '25804'
+  old_ward_name: Xã Long Tân
+  old_district_code: '720'
+  old_district_name: Huyện Dầu Tiếng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25792'
+    new_ward_name: Xã Long Hòa
+    portion: full
+    article: 1
+    clause: 144
+    resolution_old_name: Xã Long Tân
+- old_ward_code: '25807'
+  old_ward_name: Xã Thanh An
+  old_district_code: '720'
+  old_district_name: Huyện Dầu Tiếng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25807'
+    new_ward_name: Xã Thanh An
+    portion: full
+    article: 1
+    clause: 145
+    resolution_old_name: Xã Thanh An
+- old_ward_code: '25810'
+  old_ward_name: Xã Thanh Tuyền
+  old_district_code: '720'
+  old_district_name: Huyện Dầu Tiếng
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25843'
+    new_ward_name: Phường Tây Nam
+    portion: part
+    article: 1
+    clause: 93
+    resolution_old_name: Xã Thanh Tuyền
+  - new_ward_code: '25807'
+    new_ward_name: Xã Thanh An
+    portion: remainder
+    article: 1
+    clause: 145
+    resolution_old_name: Xã Thanh Tuyền
+- old_ward_code: '25813'
+  old_ward_name: Phường Mỹ Phước
+  old_district_code: '721'
+  old_district_name: Thành phố Bến Cát
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25840'
+    new_ward_name: Phường Long Nguyên
+    portion: part
+    article: 1
+    clause: 94
+    resolution_old_name: Phường Mỹ Phước
+  - new_ward_code: '25813'
+    new_ward_name: Phường Bến Cát
+    portion: remainder
+    article: 1
+    clause: 95
+    resolution_old_name: Phường Mỹ Phước
+- old_ward_code: '25837'
+  old_ward_name: Phường Chánh Phú Hòa
+  old_district_code: '721'
+  old_district_name: Thành phố Bến Cát
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25837'
+    new_ward_name: Phường Chánh Phú Hòa
+    portion: full
+    article: 1
+    clause: 96
+    resolution_old_name: Phường Chánh Phú Hòa
+- old_ward_code: '25840'
+  old_ward_name: Phường An Điền
+  old_district_code: '721'
+  old_district_name: Thành phố Bến Cát
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25840'
+    new_ward_name: Phường Long Nguyên
+    portion: full
+    article: 1
+    clause: 94
+    resolution_old_name: Phường An Điền
+- old_ward_code: '25843'
+  old_ward_name: Phường An Tây
+  old_district_code: '721'
+  old_district_name: Thành phố Bến Cát
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25843'
+    new_ward_name: Phường Tây Nam
+    portion: full
+    article: 1
+    clause: 93
+    resolution_old_name: Phường An Tây
+- old_ward_code: '25846'
+  old_ward_name: Phường Thới Hòa
+  old_district_code: '721'
+  old_district_name: Thành phố Bến Cát
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25846'
+    new_ward_name: Phường Thới Hòa
+    portion: full
+    article: 1
+    clause: 164
+    resolution_old_name: Phường Thới Hòa
+- old_ward_code: '25849'
+  old_ward_name: Phường Hòa Lợi
+  old_district_code: '721'
+  old_district_name: Thành phố Bến Cát
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25849'
+    new_ward_name: Phường Hòa Lợi
+    portion: full
+    article: 1
+    clause: 91
+    resolution_old_name: Phường Hòa Lợi
+- old_ward_code: '25852'
+  old_ward_name: Phường Tân Định
+  old_district_code: '721'
+  old_district_name: Thành phố Bến Cát
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25849'
+    new_ward_name: Phường Hòa Lợi
+    portion: full
+    article: 1
+    clause: 91
+    resolution_old_name: Phường Tân Định
+- old_ward_code: '25855'
+  old_ward_name: Xã Phú An
+  old_district_code: '721'
+  old_district_name: Thành phố Bến Cát
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25768'
+    new_ward_name: Phường Phú An
+    portion: full
+    article: 1
+    clause: 92
+    resolution_old_name: Xã Phú An
+- old_ward_code: '25858'
+  old_ward_name: Thị trấn Phước Vĩnh
+  old_district_code: '722'
+  old_district_name: Huyện Phú Giáo
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25858'
+    new_ward_name: Xã Phú Giáo
+    portion: full
+    article: 1
+    clause: 138
+    resolution_old_name: Thị trấn Phước Vĩnh
+- old_ward_code: '25861'
+  old_ward_name: Xã An Linh
+  old_district_code: '722'
+  old_district_name: Huyện Phú Giáo
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25867'
+    new_ward_name: Xã An Long
+    portion: full
+    article: 1
+    clause: 141
+    resolution_old_name: Xã An Linh
+- old_ward_code: '25864'
+  old_ward_name: Xã Phước Sang
+  old_district_code: '722'
+  old_district_name: Huyện Phú Giáo
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25864'
+    new_ward_name: Xã Phước Thành
+    portion: full
+    article: 1
+    clause: 140
+    resolution_old_name: Xã Phước Sang
+- old_ward_code: '25865'
+  old_ward_name: Xã An Thái
+  old_district_code: '722'
+  old_district_name: Huyện Phú Giáo
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25864'
+    new_ward_name: Xã Phước Thành
+    portion: full
+    article: 1
+    clause: 140
+    resolution_old_name: Xã An Thái
+- old_ward_code: '25867'
+  old_ward_name: Xã An Long
+  old_district_code: '722'
+  old_district_name: Huyện Phú Giáo
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25867'
+    new_ward_name: Xã An Long
+    portion: full
+    article: 1
+    clause: 141
+    resolution_old_name: Xã An Long
+- old_ward_code: '25870'
+  old_ward_name: Xã An Bình
+  old_district_code: '722'
+  old_district_name: Huyện Phú Giáo
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25858'
+    new_ward_name: Xã Phú Giáo
+    portion: full
+    article: 1
+    clause: 138
+    resolution_old_name: Xã An Bình
+- old_ward_code: '25873'
+  old_ward_name: Xã Tân Hiệp
+  old_district_code: '722'
+  old_district_name: Huyện Phú Giáo
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25864'
+    new_ward_name: Xã Phước Thành
+    portion: full
+    article: 1
+    clause: 140
+    resolution_old_name: Xã Tân Hiệp
+- old_ward_code: '25876'
+  old_ward_name: Xã Tam Lập
+  old_district_code: '722'
+  old_district_name: Huyện Phú Giáo
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25858'
+    new_ward_name: Xã Phú Giáo
+    portion: part
+    article: 1
+    clause: 138
+    resolution_old_name: Xã Tam Lập
+  - new_ward_code: '25882'
+    new_ward_name: Xã Phước Hòa
+    portion: remainder
+    article: 1
+    clause: 139
+    resolution_old_name: Xã Tam Lập
+- old_ward_code: '25879'
+  old_ward_name: Xã Tân Long
+  old_district_code: '722'
+  old_district_name: Huyện Phú Giáo
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25867'
+    new_ward_name: Xã An Long
+    portion: full
+    article: 1
+    clause: 141
+    resolution_old_name: Xã Tân Long
+- old_ward_code: '25882'
+  old_ward_name: Xã Vĩnh Hoà
+  old_district_code: '722'
+  old_district_name: Huyện Phú Giáo
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25882'
+    new_ward_name: Xã Phước Hòa
+    portion: full
+    article: 1
+    clause: 139
+    resolution_old_name: Xã Vĩnh Hòa
+- old_ward_code: '25885'
+  old_ward_name: Xã Phước Hoà
+  old_district_code: '722'
+  old_district_name: Huyện Phú Giáo
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25882'
+    new_ward_name: Xã Phước Hòa
+    portion: full
+    article: 1
+    clause: 139
+    resolution_old_name: Xã Phước Hòa
+- old_ward_code: '25888'
+  old_ward_name: Phường Uyên Hưng
+  old_district_code: '723'
+  old_district_name: Thành phố Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25888'
+    new_ward_name: Phường Tân Uyên
+    portion: full
+    article: 1
+    clause: 99
+    resolution_old_name: Phường Uyên Hưng
+- old_ward_code: '25891'
+  old_ward_name: Phường Tân Phước Khánh
+  old_district_code: '723'
+  old_district_name: Thành phố Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25891'
+    new_ward_name: Phường Tân Khánh
+    portion: full
+    article: 1
+    clause: 101
+    resolution_old_name: Phường Tân Phước Khánh
+- old_ward_code: '25912'
+  old_ward_name: Phường Vĩnh Tân
+  old_district_code: '723'
+  old_district_name: Thành phố Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25912'
+    new_ward_name: Phường Vĩnh Tân
+    portion: full
+    article: 1
+    clause: 97
+    resolution_old_name: Phường Vĩnh Tân
+- old_ward_code: '25915'
+  old_ward_name: Phường Hội Nghĩa
+  old_district_code: '723'
+  old_district_name: Thành phố Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25915'
+    new_ward_name: Phường Bình Cơ
+    portion: full
+    article: 1
+    clause: 98
+    resolution_old_name: Phường Hội Nghĩa
+- old_ward_code: '25920'
+  old_ward_name: Phường Tân Hiệp
+  old_district_code: '723'
+  old_district_name: Thành phố Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25920'
+    new_ward_name: Phường Tân Hiệp
+    portion: full
+    article: 1
+    clause: 100
+    resolution_old_name: Phường Tân Hiệp
+- old_ward_code: '25921'
+  old_ward_name: Phường Khánh Bình
+  old_district_code: '723'
+  old_district_name: Thành phố Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25920'
+    new_ward_name: Phường Tân Hiệp
+    portion: full
+    article: 1
+    clause: 100
+    resolution_old_name: Phường Khánh Bình
+- old_ward_code: '25924'
+  old_ward_name: Phường Phú Chánh
+  old_district_code: '723'
+  old_district_name: Thành phố Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25760'
+    new_ward_name: Phường Bình Dương
+    portion: full
+    article: 1
+    clause: 90
+    resolution_old_name: Phường Phú Chánh
+- old_ward_code: '25930'
+  old_ward_name: Xã Bạch Đằng
+  old_district_code: '723'
+  old_district_name: Thành phố Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25888'
+    new_ward_name: Phường Tân Uyên
+    portion: full
+    article: 1
+    clause: 99
+    resolution_old_name: Xã Bạch Đằng
+- old_ward_code: '25933'
+  old_ward_name: Phường Tân Vĩnh Hiệp
+  old_district_code: '723'
+  old_district_name: Thành phố Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25891'
+    new_ward_name: Phường Tân Khánh
+    portion: full
+    article: 1
+    clause: 101
+    resolution_old_name: Phường Tân Vĩnh Hiệp
+- old_ward_code: '25936'
+  old_ward_name: Phường Thạnh Phước
+  old_district_code: '723'
+  old_district_name: Thành phố Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25891'
+    new_ward_name: Phường Tân Khánh
+    portion: full
+    article: 1
+    clause: 101
+    resolution_old_name: Phường Thạnh Phước
+- old_ward_code: '25937'
+  old_ward_name: Xã Thạnh Hội
+  old_district_code: '723'
+  old_district_name: Thành phố Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25891'
+    new_ward_name: Phường Tân Khánh
+    portion: full
+    article: 1
+    clause: 101
+    resolution_old_name: Xã Thạnh Hội
+- old_ward_code: '25939'
+  old_ward_name: Phường Thái Hòa
+  old_district_code: '723'
+  old_district_name: Thành phố Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25945'
+    new_ward_name: Phường Tân Đông Hiệp
+    portion: part
+    article: 1
+    clause: 81
+    resolution_old_name: Phường Thái Hòa
+  - new_ward_code: '25891'
+    new_ward_name: Phường Tân Khánh
+    portion: remainder
+    article: 1
+    clause: 101
+    resolution_old_name: Phường Thái Hòa
+- old_ward_code: '25942'
+  old_ward_name: Phường Dĩ An
+  old_district_code: '724'
+  old_district_name: Thành phố Dĩ An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25942'
+    new_ward_name: Phường Dĩ An
+    portion: full
+    article: 1
+    clause: 80
+    resolution_old_name: Phường Dĩ An
+- old_ward_code: '25945'
+  old_ward_name: Phường Tân Bình
+  old_district_code: '724'
+  old_district_name: Thành phố Dĩ An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25945'
+    new_ward_name: Phường Tân Đông Hiệp
+    portion: full
+    article: 1
+    clause: 81
+    resolution_old_name: Phường Tân Bình
+- old_ward_code: '25948'
+  old_ward_name: Phường Tân Đông Hiệp
+  old_district_code: '724'
+  old_district_name: Thành phố Dĩ An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25942'
+    new_ward_name: Phường Dĩ An
+    portion: part
+    article: 1
+    clause: 80
+    resolution_old_name: Phường Tân Đông Hiệp
+  - new_ward_code: '25945'
+    new_ward_name: Phường Tân Đông Hiệp
+    portion: remainder
+    article: 1
+    clause: 81
+    resolution_old_name: Phường Tân Đông Hiệp
+- old_ward_code: '25951'
+  old_ward_name: Phường Bình An
+  old_district_code: '724'
+  old_district_name: Thành phố Dĩ An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25951'
+    new_ward_name: Phường Đông Hòa
+    portion: full
+    article: 1
+    clause: 79
+    resolution_old_name: Phường Bình An
+- old_ward_code: '25954'
+  old_ward_name: Phường Bình Thắng
+  old_district_code: '724'
+  old_district_name: Thành phố Dĩ An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25951'
+    new_ward_name: Phường Đông Hòa
+    portion: full
+    article: 1
+    clause: 79
+    resolution_old_name: Phường Bình Thắng
+- old_ward_code: '25957'
+  old_ward_name: Phường Đông Hòa
+  old_district_code: '724'
+  old_district_name: Thành phố Dĩ An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25951'
+    new_ward_name: Phường Đông Hòa
+    portion: full
+    article: 1
+    clause: 79
+    resolution_old_name: Phường Đông Hòa
+- old_ward_code: '25960'
+  old_ward_name: Phường An Bình
+  old_district_code: '724'
+  old_district_name: Thành phố Dĩ An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25942'
+    new_ward_name: Phường Dĩ An
+    portion: full
+    article: 1
+    clause: 80
+    resolution_old_name: Phường An Bình
+- old_ward_code: '25963'
+  old_ward_name: Phường An Thạnh
+  old_district_code: '725'
+  old_district_name: Thành phố Thuận An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25978'
+    new_ward_name: Phường Thuận An
+    portion: full
+    article: 1
+    clause: 85
+    resolution_old_name: Phường An Thạnh
+- old_ward_code: '25966'
+  old_ward_name: Phường Lái Thiêu
+  old_district_code: '725'
+  old_district_name: Thành phố Thuận An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25966'
+    new_ward_name: Phường Lái Thiêu
+    portion: full
+    article: 1
+    clause: 84
+    resolution_old_name: Phường Lái Thiêu
+- old_ward_code: '25969'
+  old_ward_name: Phường Bình Chuẩn
+  old_district_code: '725'
+  old_district_name: Thành phố Thuận An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25975'
+    new_ward_name: Phường An Phú
+    portion: part
+    article: 1
+    clause: 82
+    resolution_old_name: Phường Bình Chuẩn
+  - new_ward_code: '25969'
+    new_ward_name: Phường Thuận Giao
+    portion: remainder
+    article: 1
+    clause: 86
+    resolution_old_name: Phường Bình Chuẩn
+- old_ward_code: '25972'
+  old_ward_name: Phường Thuận Giao
+  old_district_code: '725'
+  old_district_name: Thành phố Thuận An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25969'
+    new_ward_name: Phường Thuận Giao
+    portion: full
+    article: 1
+    clause: 86
+    resolution_old_name: Phường Thuận Giao
+- old_ward_code: '25975'
+  old_ward_name: Phường An Phú
+  old_district_code: '725'
+  old_district_name: Thành phố Thuận An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25975'
+    new_ward_name: Phường An Phú
+    portion: full
+    article: 1
+    clause: 82
+    resolution_old_name: Phường An Phú
+- old_ward_code: '25978'
+  old_ward_name: Phường Hưng Định
+  old_district_code: '725'
+  old_district_name: Thành phố Thuận An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25978'
+    new_ward_name: Phường Thuận An
+    portion: full
+    article: 1
+    clause: 85
+    resolution_old_name: Phường Hưng Định
+- old_ward_code: '25981'
+  old_ward_name: Xã An Sơn
+  old_district_code: '725'
+  old_district_name: Thành phố Thuận An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25978'
+    new_ward_name: Phường Thuận An
+    portion: full
+    article: 1
+    clause: 85
+    resolution_old_name: Xã An Sơn
+- old_ward_code: '25984'
+  old_ward_name: Phường Bình Nhâm
+  old_district_code: '725'
+  old_district_name: Thành phố Thuận An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25966'
+    new_ward_name: Phường Lái Thiêu
+    portion: full
+    article: 1
+    clause: 84
+    resolution_old_name: Phường Bình Nhâm
+- old_ward_code: '25987'
+  old_ward_name: Phường Bình Hòa
+  old_district_code: '725'
+  old_district_name: Thành phố Thuận An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25987'
+    new_ward_name: Phường Bình Hòa
+    portion: full
+    article: 1
+    clause: 83
+    resolution_old_name: Phường Bình Hòa
+- old_ward_code: '25990'
+  old_ward_name: Phường Vĩnh Phú
+  old_district_code: '725'
+  old_district_name: Thành phố Thuận An
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25987'
+    new_ward_name: Phường Bình Hòa
+    portion: part
+    article: 1
+    clause: 83
+    resolution_old_name: Phường Vĩnh Phú
+  - new_ward_code: '25966'
+    new_ward_name: Phường Lái Thiêu
+    portion: remainder
+    article: 1
+    clause: 84
+    resolution_old_name: Phường Vĩnh Phú
+- old_ward_code: '25894'
+  old_ward_name: Xã Tân Định
+  old_district_code: '726'
+  old_district_name: Huyện Bắc Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25906'
+    new_ward_name: Xã Bắc Tân Uyên
+    portion: full
+    article: 1
+    clause: 137
+    resolution_old_name: Xã Tân Định
+- old_ward_code: '25897'
+  old_ward_name: Xã Bình Mỹ
+  old_district_code: '726'
+  old_district_name: Huyện Bắc Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25915'
+    new_ward_name: Phường Bình Cơ
+    portion: full
+    article: 1
+    clause: 98
+    resolution_old_name: Xã Bình Mỹ
+- old_ward_code: '25900'
+  old_ward_name: Thị trấn Tân Bình
+  old_district_code: '726'
+  old_district_name: Huyện Bắc Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25912'
+    new_ward_name: Phường Vĩnh Tân
+    portion: full
+    article: 1
+    clause: 97
+    resolution_old_name: Thị trấn Tân Bình
+- old_ward_code: '25903'
+  old_ward_name: Xã Tân Lập
+  old_district_code: '726'
+  old_district_name: Huyện Bắc Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25888'
+    new_ward_name: Phường Tân Uyên
+    portion: full
+    article: 1
+    clause: 99
+    resolution_old_name: Xã Tân Lập
+- old_ward_code: '25906'
+  old_ward_name: Thị trấn Tân Thành
+  old_district_code: '726'
+  old_district_name: Huyện Bắc Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25906'
+    new_ward_name: Xã Bắc Tân Uyên
+    portion: full
+    article: 1
+    clause: 137
+    resolution_old_name: Thị trấn Tân Thành
+- old_ward_code: '25907'
+  old_ward_name: Xã Đất Cuốc
+  old_district_code: '726'
+  old_district_name: Huyện Bắc Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25906'
+    new_ward_name: Xã Bắc Tân Uyên
+    portion: full
+    article: 1
+    clause: 137
+    resolution_old_name: Xã Đất Cuốc
+- old_ward_code: '25908'
+  old_ward_name: Xã Hiếu Liêm
+  old_district_code: '726'
+  old_district_name: Huyện Bắc Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25909'
+    new_ward_name: Xã Thường Tân
+    portion: full
+    article: 1
+    clause: 136
+    resolution_old_name: Xã Hiếu Liêm
+- old_ward_code: '25909'
+  old_ward_name: Xã Lạc An
+  old_district_code: '726'
+  old_district_name: Huyện Bắc Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25909'
+    new_ward_name: Xã Thường Tân
+    portion: full
+    article: 1
+    clause: 136
+    resolution_old_name: Xã Lạc An
+- old_ward_code: '25918'
+  old_ward_name: Xã Tân Mỹ
+  old_district_code: '726'
+  old_district_name: Huyện Bắc Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25888'
+    new_ward_name: Phường Tân Uyên
+    portion: part
+    article: 1
+    clause: 99
+    resolution_old_name: Xã Tân Mỹ
+  - new_ward_code: '25909'
+    new_ward_name: Xã Thường Tân
+    portion: remainder
+    article: 1
+    clause: 136
+    resolution_old_name: Xã Tân Mỹ
+- old_ward_code: '25927'
+  old_ward_name: Xã Thường Tân
+  old_district_code: '726'
+  old_district_name: Huyện Bắc Tân Uyên
+  old_province_code: '74'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '74'
+  relations:
+  - new_ward_code: '25909'
+    new_ward_name: Xã Thường Tân
+    portion: full
+    article: 1
+    clause: 136
+    resolution_old_name: Xã Thường Tân
+- old_ward_code: '26506'
+  old_ward_name: Phường 1
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26506'
+    new_ward_name: Phường Vũng Tàu
+    portion: full
+    article: 1
+    clause: 102
+    resolution_old_name: Phường 1
+- old_ward_code: '26508'
+  old_ward_name: Phường Thắng Tam
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26506'
+    new_ward_name: Phường Vũng Tàu
+    portion: full
+    article: 1
+    clause: 102
+    resolution_old_name: Phường Thắng Tam
+- old_ward_code: '26509'
+  old_ward_name: Phường 2
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26506'
+    new_ward_name: Phường Vũng Tàu
+    portion: full
+    article: 1
+    clause: 102
+    resolution_old_name: Phường 2
+- old_ward_code: '26512'
+  old_ward_name: Phường 3
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26506'
+    new_ward_name: Phường Vũng Tàu
+    portion: full
+    article: 1
+    clause: 102
+    resolution_old_name: Phường 3
+- old_ward_code: '26515'
+  old_ward_name: Phường 4
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26506'
+    new_ward_name: Phường Vũng Tàu
+    portion: full
+    article: 1
+    clause: 102
+    resolution_old_name: Phường 4
+- old_ward_code: '26518'
+  old_ward_name: Phường 5
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26506'
+    new_ward_name: Phường Vũng Tàu
+    portion: full
+    article: 1
+    clause: 102
+    resolution_old_name: Phường 5
+- old_ward_code: '26521'
+  old_ward_name: Phường Thắng Nhì
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26506'
+    new_ward_name: Phường Vũng Tàu
+    portion: full
+    article: 1
+    clause: 102
+    resolution_old_name: Phường Thắng Nhì
+- old_ward_code: '26524'
+  old_ward_name: Phường 7
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26526'
+    new_ward_name: Phường Tam Thắng
+    portion: full
+    article: 1
+    clause: 103
+    resolution_old_name: Phường 7
+- old_ward_code: '26526'
+  old_ward_name: Phường Nguyễn An Ninh
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26526'
+    new_ward_name: Phường Tam Thắng
+    portion: full
+    article: 1
+    clause: 103
+    resolution_old_name: Phường Nguyễn An Ninh
+- old_ward_code: '26527'
+  old_ward_name: Phường 8
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26526'
+    new_ward_name: Phường Tam Thắng
+    portion: full
+    article: 1
+    clause: 103
+    resolution_old_name: Phường 8
+- old_ward_code: '26530'
+  old_ward_name: Phường 9
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26526'
+    new_ward_name: Phường Tam Thắng
+    portion: full
+    article: 1
+    clause: 103
+    resolution_old_name: Phường 9
+- old_ward_code: '26533'
+  old_ward_name: Phường Thắng Nhất
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26536'
+    new_ward_name: Phường Rạch Dừa
+    portion: full
+    article: 1
+    clause: 104
+    resolution_old_name: Phường Thắng Nhất
+- old_ward_code: '26535'
+  old_ward_name: Phường Rạch Dừa
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26536'
+    new_ward_name: Phường Rạch Dừa
+    portion: full
+    article: 1
+    clause: 104
+    resolution_old_name: Phường Rạch Dừa
+- old_ward_code: '26536'
+  old_ward_name: Phường 10
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26536'
+    new_ward_name: Phường Rạch Dừa
+    portion: full
+    article: 1
+    clause: 104
+    resolution_old_name: Phường 10
+- old_ward_code: '26539'
+  old_ward_name: Phường 11
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26542'
+    new_ward_name: Phường Phước Thắng
+    portion: full
+    article: 1
+    clause: 105
+    resolution_old_name: Phường 11
+- old_ward_code: '26542'
+  old_ward_name: Phường 12
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26542'
+    new_ward_name: Phường Phước Thắng
+    portion: full
+    article: 1
+    clause: 105
+    resolution_old_name: Phường 12
+- old_ward_code: '26545'
+  old_ward_name: Xã Long Sơn
+  old_district_code: '747'
+  old_district_name: Thành phố Vũng Tàu
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26545'
+    new_ward_name: Xã Long Sơn
+    portion: full
+    article: 1
+    clause: 164
+    resolution_old_name: Xã Long Sơn
+- old_ward_code: '26548'
+  old_ward_name: Phường Phước Hưng
+  old_district_code: '748'
+  old_district_name: Thành phố Bà Rịa
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26560'
+    new_ward_name: Phường Bà Rịa
+    portion: full
+    article: 1
+    clause: 107
+    resolution_old_name: Phường Phước Hưng
+- old_ward_code: '26554'
+  old_ward_name: Phường Phước Nguyên
+  old_district_code: '748'
+  old_district_name: Thành phố Bà Rịa
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26560'
+    new_ward_name: Phường Bà Rịa
+    portion: full
+    article: 1
+    clause: 107
+    resolution_old_name: Phường Phước Nguyên
+- old_ward_code: '26557'
+  old_ward_name: Phường Long Toàn
+  old_district_code: '748'
+  old_district_name: Thành phố Bà Rịa
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26560'
+    new_ward_name: Phường Bà Rịa
+    portion: full
+    article: 1
+    clause: 107
+    resolution_old_name: Phường Long Toàn
+- old_ward_code: '26558'
+  old_ward_name: Phường Long Tâm
+  old_district_code: '748'
+  old_district_name: Thành phố Bà Rịa
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26572'
+    new_ward_name: Phường Tam Long
+    portion: full
+    article: 1
+    clause: 108
+    resolution_old_name: Phường Long Tâm
+- old_ward_code: '26560'
+  old_ward_name: Phường Phước Trung
+  old_district_code: '748'
+  old_district_name: Thành phố Bà Rịa
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26560'
+    new_ward_name: Phường Bà Rịa
+    portion: full
+    article: 1
+    clause: 107
+    resolution_old_name: Phường Phước Trung
+- old_ward_code: '26563'
+  old_ward_name: Phường Long Hương
+  old_district_code: '748'
+  old_district_name: Thành phố Bà Rịa
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26566'
+    new_ward_name: Phường Long Hương
+    portion: full
+    article: 1
+    clause: 106
+    resolution_old_name: Phường Long Hương
+- old_ward_code: '26566'
+  old_ward_name: Phường Kim Dinh
+  old_district_code: '748'
+  old_district_name: Thành phố Bà Rịa
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26566'
+    new_ward_name: Phường Long Hương
+    portion: full
+    article: 1
+    clause: 106
+    resolution_old_name: Phường Kim Dinh
+- old_ward_code: '26567'
+  old_ward_name: Xã Tân Hưng
+  old_district_code: '748'
+  old_district_name: Thành phố Bà Rịa
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26566'
+    new_ward_name: Phường Long Hương
+    portion: full
+    article: 1
+    clause: 106
+    resolution_old_name: Xã Tân Hưng
+- old_ward_code: '26569'
+  old_ward_name: Xã Long Phước
+  old_district_code: '748'
+  old_district_name: Thành phố Bà Rịa
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26572'
+    new_ward_name: Phường Tam Long
+    portion: full
+    article: 1
+    clause: 108
+    resolution_old_name: Xã Long Phước
+- old_ward_code: '26572'
+  old_ward_name: Xã Hoà Long
+  old_district_code: '748'
+  old_district_name: Thành phố Bà Rịa
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26572'
+    new_ward_name: Phường Tam Long
+    portion: full
+    article: 1
+    clause: 108
+    resolution_old_name: Xã Hòa Long
+- old_ward_code: '26574'
+  old_ward_name: Xã Bàu Chinh
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26608'
+    new_ward_name: Xã Kim Long
+    portion: full
+    article: 1
+    clause: 155
+    resolution_old_name: Xã Bàu Chinh
+- old_ward_code: '26575'
+  old_ward_name: Thị trấn Ngãi Giao
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26575'
+    new_ward_name: Xã Ngãi Giao
+    portion: full
+    article: 1
+    clause: 154
+    resolution_old_name: Thị trấn Ngãi Giao
+- old_ward_code: '26578'
+  old_ward_name: Xã Bình Ba
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26575'
+    new_ward_name: Xã Ngãi Giao
+    portion: full
+    article: 1
+    clause: 154
+    resolution_old_name: Xã Bình Ba
+- old_ward_code: '26581'
+  old_ward_name: Xã Suối Nghệ
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26575'
+    new_ward_name: Xã Ngãi Giao
+    portion: full
+    article: 1
+    clause: 154
+    resolution_old_name: Xã Suối Nghệ
+- old_ward_code: '26584'
+  old_ward_name: Xã Xuân Sơn
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26584'
+    new_ward_name: Xã Xuân Sơn
+    portion: full
+    article: 1
+    clause: 158
+    resolution_old_name: Xã Xuân Sơn
+- old_ward_code: '26587'
+  old_ward_name: Xã Sơn Bình
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26584'
+    new_ward_name: Xã Xuân Sơn
+    portion: full
+    article: 1
+    clause: 158
+    resolution_old_name: Xã Sơn Bình
+- old_ward_code: '26590'
+  old_ward_name: Xã Bình Giã
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26590'
+    new_ward_name: Xã Bình Giã
+    portion: full
+    article: 1
+    clause: 157
+    resolution_old_name: Xã Bình Giã
+- old_ward_code: '26593'
+  old_ward_name: Xã Bình Trung
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26590'
+    new_ward_name: Xã Bình Giã
+    portion: full
+    article: 1
+    clause: 157
+    resolution_old_name: Xã Bình Trung
+- old_ward_code: '26596'
+  old_ward_name: Xã Xà Bang
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26596'
+    new_ward_name: Xã Châu Đức
+    portion: full
+    article: 1
+    clause: 156
+    resolution_old_name: Xã Xà Bang
+- old_ward_code: '26599'
+  old_ward_name: Xã Cù Bị
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26596'
+    new_ward_name: Xã Châu Đức
+    portion: full
+    article: 1
+    clause: 156
+    resolution_old_name: Xã Cù Bị
+- old_ward_code: '26602'
+  old_ward_name: Xã Láng Lớn
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26608'
+    new_ward_name: Xã Kim Long
+    portion: full
+    article: 1
+    clause: 155
+    resolution_old_name: Xã Láng Lớn
+- old_ward_code: '26605'
+  old_ward_name: Xã Quảng Thành
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26590'
+    new_ward_name: Xã Bình Giã
+    portion: full
+    article: 1
+    clause: 157
+    resolution_old_name: Xã Quảng Thành
+- old_ward_code: '26608'
+  old_ward_name: Thị trấn Kim Long
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26608'
+    new_ward_name: Xã Kim Long
+    portion: full
+    article: 1
+    clause: 155
+    resolution_old_name: Thị trấn Kim Long
+- old_ward_code: '26611'
+  old_ward_name: Xã Suối Rao
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26584'
+    new_ward_name: Xã Xuân Sơn
+    portion: full
+    article: 1
+    clause: 158
+    resolution_old_name: Xã Suối Rao
+- old_ward_code: '26614'
+  old_ward_name: Xã Đá Bạc
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26617'
+    new_ward_name: Xã Nghĩa Thành
+    portion: full
+    article: 1
+    clause: 153
+    resolution_old_name: Xã Đá Bạc
+- old_ward_code: '26617'
+  old_ward_name: Xã Nghĩa Thành
+  old_district_code: '750'
+  old_district_name: Huyện Châu Đức
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26617'
+    new_ward_name: Xã Nghĩa Thành
+    portion: full
+    article: 1
+    clause: 153
+    resolution_old_name: Xã Nghĩa Thành
+- old_ward_code: '26620'
+  old_ward_name: Thị trấn Phước Bửu
+  old_district_code: '751'
+  old_district_name: Huyện Xuyên Mộc
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26620'
+    new_ward_name: Xã Hồ Tràm
+    portion: full
+    article: 1
+    clause: 159
+    resolution_old_name: Thị trấn Phước Bửu
+- old_ward_code: '26623'
+  old_ward_name: Xã Phước Thuận
+  old_district_code: '751'
+  old_district_name: Huyện Xuyên Mộc
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26620'
+    new_ward_name: Xã Hồ Tràm
+    portion: full
+    article: 1
+    clause: 159
+    resolution_old_name: Xã Phước Thuận
+- old_ward_code: '26626'
+  old_ward_name: Xã Phước Tân
+  old_district_code: '751'
+  old_district_name: Huyện Xuyên Mộc
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26620'
+    new_ward_name: Xã Hồ Tràm
+    portion: full
+    article: 1
+    clause: 159
+    resolution_old_name: Xã Phước Tân
+- old_ward_code: '26629'
+  old_ward_name: Xã Xuyên Mộc
+  old_district_code: '751'
+  old_district_name: Huyện Xuyên Mộc
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26632'
+    new_ward_name: Xã Xuyên Mộc
+    portion: full
+    article: 1
+    clause: 160
+    resolution_old_name: Xã Xuyên Mộc
+- old_ward_code: '26632'
+  old_ward_name: Xã Bông Trang
+  old_district_code: '751'
+  old_district_name: Huyện Xuyên Mộc
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26632'
+    new_ward_name: Xã Xuyên Mộc
+    portion: full
+    article: 1
+    clause: 160
+    resolution_old_name: Xã Bông Trang
+- old_ward_code: '26635'
+  old_ward_name: Xã Tân Lâm
+  old_district_code: '751'
+  old_district_name: Huyện Xuyên Mộc
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26638'
+    new_ward_name: Xã Bàu Lâm
+    portion: full
+    article: 1
+    clause: 162
+    resolution_old_name: Xã Tân Lâm
+- old_ward_code: '26638'
+  old_ward_name: Xã Bàu Lâm
+  old_district_code: '751'
+  old_district_name: Huyện Xuyên Mộc
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26638'
+    new_ward_name: Xã Bàu Lâm
+    portion: full
+    article: 1
+    clause: 162
+    resolution_old_name: Xã Bàu Lâm
+- old_ward_code: '26641'
+  old_ward_name: Xã Hòa Bình
+  old_district_code: '751'
+  old_district_name: Huyện Xuyên Mộc
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26641'
+    new_ward_name: Xã Hòa Hội
+    portion: full
+    article: 1
+    clause: 161
+    resolution_old_name: Xã Hòa Bình
+- old_ward_code: '26644'
+  old_ward_name: Xã Hòa Hưng
+  old_district_code: '751'
+  old_district_name: Huyện Xuyên Mộc
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26641'
+    new_ward_name: Xã Hòa Hội
+    portion: full
+    article: 1
+    clause: 161
+    resolution_old_name: Xã Hòa Hưng
+- old_ward_code: '26647'
+  old_ward_name: Xã Hòa Hiệp
+  old_district_code: '751'
+  old_district_name: Huyện Xuyên Mộc
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26647'
+    new_ward_name: Xã Hòa Hiệp
+    portion: full
+    article: 1
+    clause: 164
+    resolution_old_name: Xã Hòa Hiệp
+- old_ward_code: '26650'
+  old_ward_name: Xã Hòa Hội
+  old_district_code: '751'
+  old_district_name: Huyện Xuyên Mộc
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26641'
+    new_ward_name: Xã Hòa Hội
+    portion: full
+    article: 1
+    clause: 161
+    resolution_old_name: Xã Hòa Hội
+- old_ward_code: '26653'
+  old_ward_name: Xã Bưng Riềng
+  old_district_code: '751'
+  old_district_name: Huyện Xuyên Mộc
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26632'
+    new_ward_name: Xã Xuyên Mộc
+    portion: full
+    article: 1
+    clause: 160
+    resolution_old_name: Xã Bưng Riềng
+- old_ward_code: '26656'
+  old_ward_name: Xã Bình Châu
+  old_district_code: '751'
+  old_district_name: Huyện Xuyên Mộc
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26656'
+    new_ward_name: Xã Bình Châu
+    portion: full
+    article: 1
+    clause: 164
+    resolution_old_name: Xã Bình Châu
+- old_ward_code: '26659'
+  old_ward_name: Thị trấn Long Điền
+  old_district_code: '753'
+  old_district_name: Huyện Long Đất
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26659'
+    new_ward_name: Xã Long Điền
+    portion: full
+    article: 1
+    clause: 150
+    resolution_old_name: Thị trấn Long Điền
+- old_ward_code: '26662'
+  old_ward_name: Thị trấn Long Hải
+  old_district_code: '753'
+  old_district_name: Huyện Long Đất
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26662'
+    new_ward_name: Xã Long Hải
+    portion: full
+    article: 1
+    clause: 149
+    resolution_old_name: Thị trấn Long Hải
+- old_ward_code: '26668'
+  old_ward_name: Xã Tam An
+  old_district_code: '753'
+  old_district_name: Huyện Long Đất
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26659'
+    new_ward_name: Xã Long Điền
+    portion: full
+    article: 1
+    clause: 150
+    resolution_old_name: Xã Tam An
+- old_ward_code: '26674'
+  old_ward_name: Xã Phước Tỉnh
+  old_district_code: '753'
+  old_district_name: Huyện Long Đất
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26662'
+    new_ward_name: Xã Long Hải
+    portion: full
+    article: 1
+    clause: 149
+    resolution_old_name: Xã Phước Tỉnh
+- old_ward_code: '26677'
+  old_ward_name: Xã Phước Hưng
+  old_district_code: '753'
+  old_district_name: Huyện Long Đất
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26662'
+    new_ward_name: Xã Long Hải
+    portion: full
+    article: 1
+    clause: 149
+    resolution_old_name: Xã Phước Hưng
+- old_ward_code: '26680'
+  old_ward_name: Thị trấn Đất Đỏ
+  old_district_code: '753'
+  old_district_name: Huyện Long Đất
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26680'
+    new_ward_name: Xã Đất Đỏ
+    portion: full
+    article: 1
+    clause: 152
+    resolution_old_name: Thị trấn Đất Đỏ
+- old_ward_code: '26683'
+  old_ward_name: Xã Phước Long Thọ
+  old_district_code: '753'
+  old_district_name: Huyện Long Đất
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26680'
+    new_ward_name: Xã Đất Đỏ
+    portion: full
+    article: 1
+    clause: 152
+    resolution_old_name: Xã Phước Long Thọ
+- old_ward_code: '26686'
+  old_ward_name: Xã Phước Hội
+  old_district_code: '753'
+  old_district_name: Huyện Long Đất
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26686'
+    new_ward_name: Xã Phước Hải
+    portion: full
+    article: 1
+    clause: 151
+    resolution_old_name: Xã Phước Hội
+- old_ward_code: '26689'
+  old_ward_name: Thị trấn Phước Hải
+  old_district_code: '753'
+  old_district_name: Huyện Long Đất
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26686'
+    new_ward_name: Xã Phước Hải
+    portion: full
+    article: 1
+    clause: 151
+    resolution_old_name: Thị trấn Phước Hải
+- old_ward_code: '26695'
+  old_ward_name: Xã Long Tân
+  old_district_code: '753'
+  old_district_name: Huyện Long Đất
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26680'
+    new_ward_name: Xã Đất Đỏ
+    portion: full
+    article: 1
+    clause: 152
+    resolution_old_name: Xã Long Tân
+- old_ward_code: '26698'
+  old_ward_name: Xã Láng Dài
+  old_district_code: '753'
+  old_district_name: Huyện Long Đất
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26680'
+    new_ward_name: Xã Đất Đỏ
+    portion: full
+    article: 1
+    clause: 152
+    resolution_old_name: Xã Láng Dài
+- old_ward_code: '26704'
+  old_ward_name: Phường Phú Mỹ
+  old_district_code: '754'
+  old_district_name: Thành phố Phú Mỹ
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26704'
+    new_ward_name: Phường Phú Mỹ
+    portion: full
+    article: 1
+    clause: 111
+    resolution_old_name: Phường Phú Mỹ
+- old_ward_code: '26707'
+  old_ward_name: Phường Tân Hoà
+  old_district_code: '754'
+  old_district_name: Thành phố Phú Mỹ
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26710'
+    new_ward_name: Phường Tân Hải
+    portion: full
+    article: 1
+    clause: 109
+    resolution_old_name: Phường Tân Hòa
+- old_ward_code: '26710'
+  old_ward_name: Phường Tân Hải
+  old_district_code: '754'
+  old_district_name: Thành phố Phú Mỹ
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26710'
+    new_ward_name: Phường Tân Hải
+    portion: full
+    article: 1
+    clause: 109
+    resolution_old_name: Phường Tân Hải
+- old_ward_code: '26713'
+  old_ward_name: Phường Phước Hoà
+  old_district_code: '754'
+  old_district_name: Thành phố Phú Mỹ
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26713'
+    new_ward_name: Phường Tân Phước
+    portion: full
+    article: 1
+    clause: 110
+    resolution_old_name: Phường Phước Hòa
+- old_ward_code: '26716'
+  old_ward_name: Phường Tân Phước
+  old_district_code: '754'
+  old_district_name: Thành phố Phú Mỹ
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26713'
+    new_ward_name: Phường Tân Phước
+    portion: full
+    article: 1
+    clause: 110
+    resolution_old_name: Phường Tân Phước
+- old_ward_code: '26719'
+  old_ward_name: Phường Mỹ Xuân
+  old_district_code: '754'
+  old_district_name: Thành phố Phú Mỹ
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26704'
+    new_ward_name: Phường Phú Mỹ
+    portion: full
+    article: 1
+    clause: 111
+    resolution_old_name: Phường Mỹ Xuân
+- old_ward_code: '26722'
+  old_ward_name: Xã Sông Xoài
+  old_district_code: '754'
+  old_district_name: Thành phố Phú Mỹ
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26725'
+    new_ward_name: Phường Tân Thành
+    portion: full
+    article: 1
+    clause: 112
+    resolution_old_name: Xã Sông Xoài
+- old_ward_code: '26725'
+  old_ward_name: Phường Hắc Dịch
+  old_district_code: '754'
+  old_district_name: Thành phố Phú Mỹ
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26725'
+    new_ward_name: Phường Tân Thành
+    portion: full
+    article: 1
+    clause: 112
+    resolution_old_name: Phường Hắc Dịch
+- old_ward_code: '26728'
+  old_ward_name: Xã Châu Pha
+  old_district_code: '754'
+  old_district_name: Thành phố Phú Mỹ
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26728'
+    new_ward_name: Xã Châu Pha
+    portion: full
+    article: 1
+    clause: 148
+    resolution_old_name: Xã Châu Pha
+- old_ward_code: '26731'
+  old_ward_name: Xã Tóc Tiên
+  old_district_code: '754'
+  old_district_name: Thành phố Phú Mỹ
+  old_province_code: '77'
+  nso_source:
+    method: DanhMucPhuongXa
+    as_of: '2025-06-30'
+    province: '77'
+  relations:
+  - new_ward_code: '26728'
+    new_ward_name: Xã Châu Pha
+    portion: full
+    article: 1
+    clause: 148
+    resolution_old_name: Xã Tóc Tiên
