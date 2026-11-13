@@ -84,7 +84,33 @@ Sau hợp nhất Regex/LLM, nếu có mã phường và bài nhắc đơn vị c
 
 `lexicon/provinces.yaml` lưu nguyên tên/mã 34 đơn vị cấp tỉnh từ [dịch vụ danh mục NSO](https://danhmuchanhchinh.nso.gov.vn/DMDVHC.asmx), phương thức `DanhMucTinh`, ngày dữ liệu và ngày lấy 13/11/2026. Bài nhắc đơn vị cấp tỉnh ngoài mã `79` (có/không dấu, có/không tiền tố) bị bỏ phường và chuyển `needs_review` với lý do `outside_hcm_province`, kể cả khi chưa nhận được mã phường. Không coi từ ngay trong tên phường/xã là tỉnh. Bình Dương và Bà Rịa - Vũng Tàu cũ tính là TP.HCM; tên tỉnh cũ đầy đủ cũng không bị hiểu thành tên thành phố cũ nằm bên trong. Đây là guard bảo thủ theo toàn bài, chưa phân biệt phủ định hoặc địa danh dùng làm mốc. Demo không áp dụng hai guard này.
 
-`districts.yaml` chỉ sao chép 155 quan hệ có nguồn của 30 đơn vị từ bộ bàn giao D1 `districts-hcm.yaml`; nguồn là [toàn văn Nghị quyết 1685/NQ-UBTVQH15](https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-quyet-so-1685-nq-ubtvqh15-sap-xep-cac-dvhc-cap-xa-cua-thanh-pho-ho-chi-minh-nam-2025-119250616211341304.htm). Quan hệ chứng minh có địa bàn đóng góp, không chứng minh toàn bộ phường mới nằm trong một huyện cũ. Không sao chép phần chưa có nguồn. Kiểm ngữ cảnh toàn bài, áp dụng cho mọi listing, là lựa chọn bảo thủ: bài nhiều địa chỉ có thể phải duyệt thêm. Bộ demo không áp dụng kiểm tra mới này. Từ điển đường/mốc thật `places.yaml` hiện rỗng; danh mục hành chính không tự bổ sung khả năng trích xuất tên không tiền tố, phường số, tên không dấu hoặc tên viết tắt.
+`districts.yaml` giữ 155 quan hệ có nguồn của 30 đơn vị từ bộ bàn giao D1 `districts-hcm.yaml`; nguồn là [toàn văn Nghị quyết 1685/NQ-UBTVQH15](https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-quyet-so-1685-nq-ubtvqh15-sap-xep-cac-dvhc-cap-xa-cua-thanh-pho-ho-chi-minh-nam-2025-119250616211341304.htm). Khi nạp dữ liệu thật, bổ sung các quan hệ cấp huyện có nguồn từ `former_wards.yaml`. Quan hệ chứng minh có địa bàn đóng góp, không chứng minh toàn bộ phường mới nằm trong một huyện cũ. Kiểm ngữ cảnh toàn bài, áp dụng cho mọi listing, là lựa chọn bảo thủ: bài nhiều địa chỉ có thể phải duyệt thêm. Bộ demo giữ bộ trích xuất và từ điển riêng. Từ điển đường/mốc thật `places.yaml` hiện rỗng; không bổ sung khớp tên phường trần.
+
+### 5.1. Phường/xã cũ và tiền tố thường dùng ở TP.HCM
+
+`lexicon/former_wards.yaml` nối [danh mục NSO](https://danhmuchanhchinh.nso.gov.vn/DMDVHC.asmx), phương thức `DanhMucPhuongXa`, ngày dữ liệu 30/06/2025, tỉnh 79/74/77, với Điều 1 khoản 1–164 của bản Nghị quyết Chính phủ nêu trên. Truy vấn lại ngày 13/11/2026 cho 273/91/77 dòng, bằng các bản lưu `old_79.xml`, `old_74.xml`, `old_77.xml` của nghiên cứu D1. Bảng có 440 đơn vị cấp xã cũ: 393 đơn vị chuyển toàn bộ vào một đích, 47 đơn vị chia địa bàn; mỗi quan hệ có điều/khoản và `portion = full / part / remainder`. Năm đơn vị không sắp xếp dùng khoản 164. Huyện Côn Đảo tại khoản 163 không phải đơn vị cấp xã cũ nên không được đếm trong bảng này.
+
+Giữ nguyên tên của cả hai nguồn; khác vị trí dấu `Hoà/Hòa` được nối khi dựng dữ liệu và lưu hai cách viết để kiểm chứng. Riêng NSO ghi `Xã Quy Đức`, Nghị quyết khoản 118 ghi `xã Qui Đức`: chưa có nguồn xác nhận đồng nhất, để ngoài bảng 1 đơn vị. Nhận định trước đây rằng các danh sách lịch sử thiếu đơn vị không được phép dùng làm căn cứ: đã đối chiếu đủ 441 mã cấp xã cũ; các trường hợp tưởng thiếu do cách viết tên được kê rõ. Khoản 5 và 8 có dãy phường số cùng quận ghi trong chính khoản; không suy quận từ khoản lân cận.
+
+Chỉ phân giải từ đơn vị cũ khi có tiền tố phường/xã và đúng một ngữ cảnh cấp huyện cũ khớp bảng, quan hệ có đúng một đích và `portion = full`. Ghi `resolution = from_former_unit`, `old_ward_name` và `old_district_name` theo tên nguồn; giữ nguyên văn cách viết trong `evidence`. Phường số thiếu huyện không bao giờ nhận mã, kể cả khi số đó chỉ xuất hiện một lần trong bảng. Đơn vị bị chia không chọn một đích bất kỳ. Chuyển duyệt bằng lý do `former_ward_split`, `former_ward_district_required` hoặc `former_ward_unverified`; `location.abstain_reason = ambiguous_source` theo schema hiện có. Các lý do này được giữ sau hợp nhất Regex/LLM, kể cả khi có tên đường. Nhiều ngữ cảnh huyện trong một bài không dùng để tự chọn một huyện thuận lợi.
+
+Tên đồng thời là tên chính thức hiện tại vẫn theo quy tắc hiện tại và kiểm tra huyện cũ: `phường An Phú, TP Thuận An` giữ `25975`; `phường An Phú, Thủ Đức` để rỗng. Alias lịch sử đã có khi không kèm huyện vẫn giữ hành vi trước; nhánh mới không thêm alias tên trần. Nhận tiền tố có/không dấu, không phân biệt hoa/thường, dấu chấm/khoảng trắng: `phường 25`, `P25`, `P.25`, `P 25`, `F25`, `phuong 25`; tên cũ như `P.Đa Kao`; huyện như `Q10`, `Q.10`, `Q.Bình Thạnh`, `TP Thủ Đức`, `Thủ Đức`, `Dĩ An`, `TP. Thuận An`. Không tự phát minh `Q.BT`. Tiền tố hiện tại nhận thêm `phuong`, `p`, `p.`, `xa`, `x.` rồi áp dụng quy tắc dấu và khóa bỏ dấu duy nhất ở trên. `không xa trường` không được coi là tiền tố xã; từ đứng ngay sau đường/hẻm/ngõ không được coi là phường. `P1/P2` đánh dấu các phòng có giá riêng vẫn là dấu phân đoạn phòng.
+
+| Đầu vào địa chỉ | Kết quả |
+|---|---|
+| `P25 Q.Bình Thạnh` | `26956`, Phường Thạnh Mỹ Tây; từ Phường 25, Quận Bình Thạnh, Điều 1 khoản 45 |
+| `phường Hiệp Bình Chánh, Thủ Đức` | `26809`, Phường Hiệp Bình; toàn bộ phường cũ thuộc Thành phố Thủ Đức, Điều 1 khoản 67 |
+| `P.Đa Kao Q1` | Rỗng, duyệt vì chia vào hai đích theo khoản 1 và 2 |
+| `P25` | Rỗng, duyệt vì thiếu huyện |
+| `P25 Q10` | Rỗng, không có cặp đơn vị cũ này trong bảng |
+| `phuong ben thanh`, `p ben thanh` | `26743`, theo tên hiện tại |
+| `p. tan dinh` | `26737`, theo tên hiện tại |
+| `xa binh chanh`, `x. bình chánh` | `27637`, theo tên hiện tại |
+| `Bình Thạnh`, `quận 10`, `Tân Định`, `đường Tân Định` | Không có mã phường |
+
+Giới hạn: chỉ TP.HCM hợp nhất; chưa dùng bản đồ để phân giải phần địa bàn bị chia, chưa khớp tên trần hay chữ viết tắt huyện tự đặt; ngữ cảnh toàn bài có thể làm giảm độ phủ ở bài nhiều địa chỉ. Việc thay đổi danh mục không khẳng định độ chính xác trên mọi bài thực.
+
+Khi có huyện ghi riêng, tên huyện nằm bên trong tên phường có tiền tố và khớp từ điển không tạo thêm ngữ cảnh huyện: “Bình Chánh” trong “phường Hiệp Bình Chánh” không phải huyện thứ hai bên cạnh “Thủ Đức”. Huyện ghi riêng, nhiều huyện, sai huyện và đơn vị bị chia vẫn áp dụng các điều kiện trên; không mở thêm trường hợp chấp nhận alias lịch sử thiếu huyện. API, lược đồ OpenAPI và màn hình duyệt đều nhận `from_former_unit`; người duyệt có thể giữ nguyên hoặc sửa căn cứ này khi phê duyệt.
 
 ## 6. Luật ngữ cảnh (được phép suy ra, có ghi lại)
 

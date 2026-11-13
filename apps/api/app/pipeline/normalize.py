@@ -349,8 +349,8 @@ def parse_room(quote: str) -> dict:
 
 # --- location (§5) --------------------------------------------------------------
 
-_WARD_PREFIX = re.compile(r"^(?:p\.\s?|phường\s+|phuong\s+|xã\s+)", re.IGNORECASE)
-_DISTRICT_PREFIX = re.compile(r"^(?:q\.\s?|quận\s+|huyện\s+|quan\s+|huyen\s+|tx\.\s?|thị xã\s+)", re.IGNORECASE)
+_WARD_PREFIX = re.compile(r"^(?:[pf]\.\s*|[pf]\s+(?=\w)|[pf](?=\d)|phường\s+|phuong\s+|xã\s+|xa\s+|x\.\s*)", re.IGNORECASE)
+_DISTRICT_PREFIX = re.compile(r"^(?:q\.\s*|q\s*(?=\d)|quận\s+|huyện\s+|quan\s+|huyen\s+|tx\.\s*|thị xã\s+|thi xa\s+|tp\.?\s*|thành phố\s+|thanh pho\s+)", re.IGNORECASE)
 _STREET_PREFIX = re.compile(r"^(?:đường|ngõ|ngách|hẻm|kiệt|phố|duong|ngo|ngach|hem|kiet|pho)\s+", re.IGNORECASE)
 
 

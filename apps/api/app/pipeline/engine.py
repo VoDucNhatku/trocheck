@@ -78,8 +78,12 @@ def run_pipeline(text: str, *, mode: str = "production", llm: LlmClient | None =
         raise ValueError(f"unknown mode {mode}")
     places = places or real_places()
     view = TextView.build(text)
-    spans = find_spans(view)
+    spans = find_spans(view, demo=places.is_demo)
     segments = find_segments(view, spans)
+    if segments:
+        # P1/P2 introducing priced listings are room markers, not numbered wards.
+        spans = [sp for sp in spans if not (sp.rule_id == "LOC_WARD" and any(
+            sp.start == seg.marker.start and sp.end == seg.marker.end for seg in segments))]
     count = assign_listings(spans, segments)
     if count == 1:
         count = pair_without_markers(spans)
@@ -124,10 +128,10 @@ def run_pipeline(text: str, *, mode: str = "production", llm: LlmClient | None =
     listings: list[dict] = []
     metas: list[ListingMeta] = []
     if post_type == "rental_offer":
-        regex_drafts = build_listings(spans, count, places) if mode != "eval_llm" else []
+        regex_drafts = build_listings(spans, count, places, text) if mode != "eval_llm" else []
         llm_drafts = None
         if outcome is not None and outcome.status == "ok":
-            llm_drafts = build_listings(llm_spans, _llm_count(llm_spans), places) if llm_spans else []
+            llm_drafts = build_listings(llm_spans, _llm_count(llm_spans), places, text) if llm_spans else []
         if mode == "eval_llm":
             regex_drafts = []
             if not llm_drafts:
@@ -141,6 +145,14 @@ def run_pipeline(text: str, *, mode: str = "production", llm: LlmClient | None =
         for listing, meta in zip(listings, metas):
             _apply_context_rules(listing, post_type=post_type, listing_count=total, text=text)
             loc = listing["location"]
+            # Reconciliation must not erase an abstention when a street is also present.
+            location_reasons = {d.location_reason
+                               for d in [*regex_drafts, *(llm_drafts or [])]
+                               if d.listing_index == listing["listing_index"]}
+            for reason in sorted(r for r in location_reasons if r and r.startswith("former_ward_")):
+                loc.update(ward_code=None, ward_name=None, resolution="unresolved", decision="needs_review",
+                           abstain_reason="ambiguous_source")
+                meta.review_reasons.append(reason)
             if places.outside_provinces(text):
                 loc.update(ward_code=None, ward_name=None, resolution="unresolved", decision="needs_review")
                 meta.review_reasons.append("outside_hcm_province")

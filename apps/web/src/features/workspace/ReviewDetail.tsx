@@ -44,7 +44,7 @@ const CONTROLS: Record<Exclude<Group, 'fees'>, Control[]> = {
   location: [
     { key: 'landmark', label: 'Mốc vị trí' }, { key: 'street', label: 'Đường' }, { key: 'ward_code', label: 'Mã phường chuẩn' }, { key: 'ward_name', label: 'Tên phường chuẩn' },
     { key: 'old_ward_name', label: 'Tên phường cũ trong bài' }, { key: 'old_district_name', label: 'Tên quận cũ trong bài' },
-    { key: 'resolution', label: 'Căn cứ xác định phường', options: { unresolved: 'Chưa xác định', exact: 'Ghi rõ trong bài', from_street: 'Từ tên đường trong từ điển', from_landmark: 'Từ mốc trong từ điển' } },
+    { key: 'resolution', label: 'Căn cứ xác định phường', options: { unresolved: 'Chưa xác định', exact: 'Ghi rõ trong bài', from_street: 'Từ tên đường trong từ điển', from_landmark: 'Từ mốc trong từ điển', from_former_unit: 'Từ phường cũ và quận cũ trong bài' } },
   ],
 };
 const FEE_CONTROLS: Control[] = [

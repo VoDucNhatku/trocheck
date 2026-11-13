@@ -1,0 +1,634 @@
+[
+  {
+    "id": 1,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phường 25, Bình Thạnh.",
+    "expected_ward_code": "26956",
+    "source": {
+      "old_ward_code": "26920",
+      "old_ward_name": "Phường 25",
+      "old_district_name": "Quận Bình Thạnh",
+      "article": 1,
+      "clauses": [
+        45
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 2,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P25 Q.Bình Thạnh.",
+    "expected_ward_code": "26956",
+    "source": {
+      "old_ward_code": "26920",
+      "old_ward_name": "Phường 25",
+      "old_district_name": "Quận Bình Thạnh",
+      "article": 1,
+      "clauses": [
+        45
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 3,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P.25 Bình Thạnh.",
+    "expected_ward_code": "26956",
+    "source": {
+      "old_ward_code": "26920",
+      "old_ward_name": "Phường 25",
+      "old_district_name": "Quận Bình Thạnh",
+      "article": 1,
+      "clauses": [
+        45
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 4,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P 25, Q. Bình Thạnh.",
+    "expected_ward_code": "26956",
+    "source": {
+      "old_ward_code": "26920",
+      "old_ward_name": "Phường 25",
+      "old_district_name": "Quận Bình Thạnh",
+      "article": 1,
+      "clauses": [
+        45
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 5,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, F25 Bình Thạnh.",
+    "expected_ward_code": "26956",
+    "source": {
+      "old_ward_code": "26920",
+      "old_ward_name": "Phường 25",
+      "old_district_name": "Quận Bình Thạnh",
+      "article": 1,
+      "clauses": [
+        45
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 6,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phuong 25, Binh Thanh.",
+    "expected_ward_code": "26956",
+    "source": {
+      "old_ward_code": "26920",
+      "old_ward_name": "Phường 25",
+      "old_district_name": "Quận Bình Thạnh",
+      "article": 1,
+      "clauses": [
+        45
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 7,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, p25 binh thanh.",
+    "expected_ward_code": "26956",
+    "source": {
+      "old_ward_code": "26920",
+      "old_ward_name": "Phường 25",
+      "old_district_name": "Quận Bình Thạnh",
+      "article": 1,
+      "clauses": [
+        45
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 8,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, PHƯỜNG 25, QUẬN BÌNH THẠNH.",
+    "expected_ward_code": "26956",
+    "source": {
+      "old_ward_code": "26920",
+      "old_ward_name": "Phường 25",
+      "old_district_name": "Quận Bình Thạnh",
+      "article": 1,
+      "clauses": [
+        45
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 9,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phường 1, quận 10.",
+    "expected_ward_code": "27190",
+    "source": {
+      "old_ward_code": "27184",
+      "old_ward_name": "Phường 1",
+      "old_district_name": "Quận 10",
+      "article": 1,
+      "clauses": [
+        26
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 10,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P1 Q10.",
+    "expected_ward_code": "27190",
+    "source": {
+      "old_ward_code": "27184",
+      "old_ward_name": "Phường 1",
+      "old_district_name": "Quận 10",
+      "article": 1,
+      "clauses": [
+        26
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 11,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P.1 Q.10.",
+    "expected_ward_code": "27190",
+    "source": {
+      "old_ward_code": "27184",
+      "old_ward_name": "Phường 1",
+      "old_district_name": "Quận 10",
+      "article": 1,
+      "clauses": [
+        26
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 12,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phuong 1, quan 10.",
+    "expected_ward_code": "27190",
+    "source": {
+      "old_ward_code": "27184",
+      "old_ward_name": "Phường 1",
+      "old_district_name": "Quận 10",
+      "article": 1,
+      "clauses": [
+        26
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 13,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P9, Quận 3.",
+    "expected_ward_code": "27142",
+    "source": {
+      "old_ward_code": "27142",
+      "old_ward_name": "Phường 9",
+      "old_district_name": "Quận 3",
+      "article": 1,
+      "clauses": [
+        7
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 14,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, F1 Q11.",
+    "expected_ward_code": "27238",
+    "source": {
+      "old_ward_code": "27247",
+      "old_ward_name": "Phường 1",
+      "old_district_name": "Quận 11",
+      "article": 1,
+      "clauses": [
+        28
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 15,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P. Linh Chiểu, TP Thủ Đức.",
+    "expected_ward_code": "26824",
+    "source": {
+      "old_ward_code": "26815",
+      "old_ward_name": "Phường Linh Chiểu",
+      "old_district_name": "Thành phố Thủ Đức",
+      "article": 1,
+      "clauses": [
+        68
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 16,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phuong linh chieu, Thu Duc.",
+    "expected_ward_code": "26824",
+    "source": {
+      "old_ward_code": "26815",
+      "old_ward_name": "Phường Linh Chiểu",
+      "old_district_name": "Thành phố Thủ Đức",
+      "article": 1,
+      "clauses": [
+        68
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 17,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P.Linh Chiểu Thủ Đức.",
+    "expected_ward_code": "26824",
+    "source": {
+      "old_ward_code": "26815",
+      "old_ward_name": "Phường Linh Chiểu",
+      "old_district_name": "Thành phố Thủ Đức",
+      "article": 1,
+      "clauses": [
+        68
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 18,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phường Bến Nghé, Q1.",
+    "expected_ward_code": "26740",
+    "source": {
+      "old_ward_code": "26740",
+      "old_ward_name": "Phường Bến Nghé",
+      "old_district_name": "Quận 1",
+      "article": 1,
+      "clauses": [
+        1
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 19,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, p ben nghe, quan 1.",
+    "expected_ward_code": "26740",
+    "source": {
+      "old_ward_code": "26740",
+      "old_ward_name": "Phường Bến Nghé",
+      "old_district_name": "Quận 1",
+      "article": 1,
+      "clauses": [
+        1
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 20,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P.Bình An, Dĩ An.",
+    "expected_ward_code": "25951",
+    "source": {
+      "old_ward_code": "25951",
+      "old_ward_name": "Phường Bình An",
+      "old_district_name": "Thành phố Dĩ An",
+      "article": 1,
+      "clauses": [
+        79
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 21,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phuong binh an, TP. Di An.",
+    "expected_ward_code": "25951",
+    "source": {
+      "old_ward_code": "25951",
+      "old_ward_name": "Phường Bình An",
+      "old_district_name": "Thành phố Dĩ An",
+      "article": 1,
+      "clauses": [
+        79
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 22,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P. Bình Thắng, TP Dĩ An.",
+    "expected_ward_code": "25951",
+    "source": {
+      "old_ward_code": "25954",
+      "old_ward_name": "Phường Bình Thắng",
+      "old_district_name": "Thành phố Dĩ An",
+      "article": 1,
+      "clauses": [
+        79
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 23,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P. Phú Cường, TP. Thủ Dầu Một.",
+    "expected_ward_code": "25747",
+    "source": {
+      "old_ward_code": "25747",
+      "old_ward_name": "Phường Phú Cường",
+      "old_district_name": "Thành phố Thủ Dầu Một",
+      "article": 1,
+      "clauses": [
+        87
+      ]
+    },
+    "trap": null
+  },
+  {
+    "id": 24,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phuong ben thanh.",
+    "expected_ward_code": "26743",
+    "source": {
+      "current_ward_code": "26743",
+      "current_ward_name": "Phường Bến Thành",
+      "reference": "QĐ 19/2025/QĐ-TTg, Phụ lục II, mục 79"
+    },
+    "trap": null
+  },
+  {
+    "id": 25,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, p ben thanh.",
+    "expected_ward_code": "26743",
+    "source": {
+      "current_ward_code": "26743",
+      "current_ward_name": "Phường Bến Thành",
+      "reference": "QĐ 19/2025/QĐ-TTg, Phụ lục II, mục 79"
+    },
+    "trap": null
+  },
+  {
+    "id": 26,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P. BEN THANH.",
+    "expected_ward_code": "26743",
+    "source": {
+      "current_ward_code": "26743",
+      "current_ward_name": "Phường Bến Thành",
+      "reference": "QĐ 19/2025/QĐ-TTg, Phụ lục II, mục 79"
+    },
+    "trap": null
+  },
+  {
+    "id": 27,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, p. tan dinh.",
+    "expected_ward_code": "26737",
+    "source": {
+      "current_ward_code": "26737",
+      "current_ward_name": "Phường Tân Định",
+      "reference": "QĐ 19/2025/QĐ-TTg, Phụ lục II, mục 79"
+    },
+    "trap": null
+  },
+  {
+    "id": 28,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, PHUONG TAN DINH.",
+    "expected_ward_code": "26737",
+    "source": {
+      "current_ward_code": "26737",
+      "current_ward_name": "Phường Tân Định",
+      "reference": "QĐ 19/2025/QĐ-TTg, Phụ lục II, mục 79"
+    },
+    "trap": null
+  },
+  {
+    "id": 29,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, xa binh chanh.",
+    "expected_ward_code": "27637",
+    "source": {
+      "current_ward_code": "27637",
+      "current_ward_name": "Xã Bình Chánh",
+      "reference": "QĐ 19/2025/QĐ-TTg, Phụ lục II, mục 79"
+    },
+    "trap": null
+  },
+  {
+    "id": 30,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, x. bình chánh.",
+    "expected_ward_code": "27637",
+    "source": {
+      "current_ward_code": "27637",
+      "current_ward_name": "Xã Bình Chánh",
+      "reference": "QĐ 19/2025/QĐ-TTg, Phụ lục II, mục 79"
+    },
+    "trap": null
+  },
+  {
+    "id": 31,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phường Đa Kao, Quận 1.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "split"
+  },
+  {
+    "id": 32,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P.Đa Kao Q1.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "split"
+  },
+  {
+    "id": 33,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phuong da kao, quan 1.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "split"
+  },
+  {
+    "id": 34,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P4 Q3.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "split"
+  },
+  {
+    "id": 35,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P14 Q10.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "split"
+  },
+  {
+    "id": 36,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phường Bình Hưng Hòa A, Bình Tân.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "split"
+  },
+  {
+    "id": 37,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phường 25.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "no_district"
+  },
+  {
+    "id": 38,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P25.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "no_district"
+  },
+  {
+    "id": 39,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P.25.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "no_district"
+  },
+  {
+    "id": 40,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P 25.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "no_district"
+  },
+  {
+    "id": 41,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, F25.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "no_district"
+  },
+  {
+    "id": 42,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phuong 25.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "no_district"
+  },
+  {
+    "id": 43,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P25 Q10.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "wrong_district"
+  },
+  {
+    "id": 44,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P25 Q3.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "wrong_district"
+  },
+  {
+    "id": 45,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P. Bến Nghé, Q10.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "wrong_district"
+  },
+  {
+    "id": 46,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P.Linh Chiểu, Dĩ An.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "wrong_district"
+  },
+  {
+    "id": 47,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phường Thảo Điền, Bình Thạnh.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "wrong_district"
+  },
+  {
+    "id": 48,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phuong ben thanh, Ha Noi.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "other_province"
+  },
+  {
+    "id": 49,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phường An Phú, Đà Nẵng.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "other_province"
+  },
+  {
+    "id": 50,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phường Thanh Xuân, Hà Nội.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "other_province"
+  },
+  {
+    "id": 51,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, phuong tan dinh, Nghe An.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "other_province"
+  },
+  {
+    "id": 52,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, P25, Bình Thạnh, Hà Nội.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "other_province"
+  },
+  {
+    "id": 53,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, đường Tân Định, Bình Thạnh.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "street"
+  },
+  {
+    "id": 54,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, đường Bến Thành.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "street"
+  },
+  {
+    "id": 55,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, đường Phường 25, Bình Thạnh.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "street"
+  },
+  {
+    "id": 56,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, hẻm P25, Bình Thạnh.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "street"
+  },
+  {
+    "id": 57,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, Bình Thạnh.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "bare"
+  },
+  {
+    "id": 58,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, quận 10.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "bare"
+  },
+  {
+    "id": 59,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, Tân Định.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "bare"
+  },
+  {
+    "id": 60,
+    "text": "Cho thuê CCMN 30m2 giá 3tr/tháng, Thủ Đức.",
+    "expected_ward_code": null,
+    "source": null,
+    "trap": "bare"
+  }
+]

@@ -88,7 +88,7 @@
         "ward_name": {"type": ["string", "null"]},
         "old_ward_name": {"type": ["string", "null"]},
         "old_district_name": {"type": ["string", "null"]},
-        "resolution": {"enum": ["exact", "from_street", "from_landmark", "unresolved"]}
+        "resolution": {"enum": ["exact", "from_street", "from_landmark", "from_former_unit", "unresolved"]}
       }
     },
     "fee": {
