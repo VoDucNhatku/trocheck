@@ -20,6 +20,8 @@ from app.models import User
 from app.schemas import IngestBatch, IngestPost, LabRunRequest, LoginRequest, RegisterRequest, ReviewDecision, TokenCreate
 from app.schemas.public import Comparison, ErrorResponse, ListingDetail, ListingsResponse, StatsOverview
 from app.schemas import workspace as dto
+from app.schemas import my_posts as mine
+from app.services import my_posts
 from app.services import analyses, bot_reviews, evaluation, images, ingest, lab, listings, market, reviews, team, users
 
 router = APIRouter(prefix="/api/v1")
@@ -91,6 +93,24 @@ def who_am_i(user: User = Depends(current_user)):
 
 
 # --- extension -> API ----------------------------------------------------------------
+
+@router.get("/me/posts/summary", tags=["account"], response_model=mine.MyPostsSummary,
+            responses={401: {"model": ErrorResponse}})
+def my_posts_summary(response: Response, user: User = Depends(current_user), session: Session = Depends(get_session),
+                     settings: Settings = Depends(settings_dep)):
+    response.headers["Cache-Control"] = "private, no-store"
+    response.headers["Vary"] = "Cookie, Authorization"
+    return my_posts.summary(session, user, settings)
+
+
+@router.get("/me/posts", tags=["account"], response_model=mine.MyPosts,
+            responses={401: {"model": ErrorResponse}})
+def my_submitted_posts(response: Response, group: mine.StatusGroup = "all", page: int = Query(1, ge=1),
+                       limit: int = Query(20, ge=1, le=50), user: User = Depends(current_user),
+                       session: Session = Depends(get_session), settings: Settings = Depends(settings_dep)):
+    response.headers["Cache-Control"] = "private, no-store"
+    response.headers["Vary"] = "Cookie, Authorization"
+    return my_posts.search(session, user, settings, group=group, page=page, limit=limit)
 
 @router.post("/ingest/batch", tags=["extension"])
 def ingest_batch(body: IngestBatch, user: User = Depends(current_user),

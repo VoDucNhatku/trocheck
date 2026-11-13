@@ -67,6 +67,65 @@ Không trả traceback hay khóa API trong lỗi.
 
 ## 2. Extension → API
 
+### Bài của tôi — đọc riêng theo phiên đăng nhập (13/11/2026)
+
+`GET /api/v1/me/posts?group=all&page=1&limit=20`: mọi vai trò đã đăng nhập, gồm `renter`;
+ẩn danh trả 401. `group`: `all`, `published`, `waiting`, `other`; `page >= 1`, `1 <= limit <= 50`,
+tham số sai trả 422. Sắp xếp `post_submissions.first_sent_at DESC, post_id DESC` để ổn định khi trùng giờ.
+Chỉ đọc lượt gửi có `user_id` là tài khoản hiện tại, luôn loại `posts.is_demo=true`, không nhận ID người khác.
+Bài phân tích riêng (`mode=assess`, chưa đóng góp) không nằm trong danh sách bài gửi về kho;
+nếu sau đó được gửi qua ingest hoặc được đóng góp thì xuất hiện, kể cả khi mode gốc vẫn là assess.
+Không thay đổi quyền của `/team/posts` hoặc quyền xem tin chưa công khai ở các endpoint khác.
+
+Trả `{items, total, page, limit, comparison_baseline: "real_accepted"}`. Mỗi item có `post_id`,
+`received_at` (lần gửi đầu của tài khoản), `source_group_name`, `permalink`, `excerpt` (tối đa 200 ký tự
+của phiên bản hiện tại), `status`, `reason_codes`, `photo_count` và `listings` (có thể nhiều tin trong bài).
+Không trả danh tính người thu ban đầu, người cùng gửi, người duyệt hoặc nội dung nhật ký duyệt.
+Mỗi listing trả `listing_id`, `review_status`, các `reason_codes` đã lưu, `public_url` khi thực sự công khai;
+`price_vnd`, `price_min_vnd`, `price_form`, `price_basis`, `price_period`, `area_m2`, `room_type`,
+`ward_code`, `ward_name`, `resolution`, `comparison` theo schema so sánh hiện hữu.
+Không suy giá của khoảng thành một giá chính xác. Số ảnh là tổng ảnh đã tải của bài, không phải URL ngoài bài.
+
+Ánh xạ trạng thái theo thứ tự ưu tiên dưới đây, dùng công việc extract/reprocess mới nhất của **phiên bản hiện tại**.
+Các listing phải `is_current=true` và thuộc extraction run của cùng phiên bản, tránh đưa kết quả cũ vào bài vừa sửa.
+
+| Điều kiện dữ liệu thật | `status` trả về | Nhóm lọc |
+|---|---|---|
+| Job mới nhất `queued` / `running` | `received` | `waiting` |
+| Job mới nhất `failed`, hoặc `posts.status=failed` | `failed` | `other` |
+| `posts.status=rejected_type` (phân loại không phải `rental_offer`) | `not_rental` | `other` |
+| Có listing `auto_accepted` / `approved` và bài `contributed=true` | `published` | `published` |
+| Có listing `needs_review` | `needs_review` | `waiting` |
+| Có listing `rejected` / `duplicate`, không có tin công khai hoặc chờ duyệt ở trên | `rejected` | `other` |
+| Còn lại, gồm bài vừa nhận/chưa có kết quả | `received` | `waiting` |
+
+`finalize_status` tạo `auto_accepted`/`needs_review`; quyết định duyệt cập nhật `listings.review_status`
+thành `approved`/`rejected`/`duplicate`. Không tạo một trạng thái lưu trữ mới.
+Bài nhiều tin ưu tiên công khai nếu có ít nhất một tin đủ điều kiện; liên kết công khai chỉ có trên tin đủ điều kiện.
+Lý do chờ lấy nguyên `review_reasons` (ví dụ `basis_unknown`, `former_ward_split`, `outside_hcm_province`);
+web dịch sang câu tiếng Việt, hoặc giải thích thiếu phường/cách tính giá từ các trường đã trích xuất.
+
+So sánh gọi lại `services.market.comparison` → `pipeline.market.compare`: chỉ lấy **tin thật được chấp nhận**,
+được đóng góp và đủ điều kiện về giá, cách tính, phường, loại phòng, cửa sổ thời gian; loại cả cụm của tin đang xét.
+Không dùng demo ngay cả khi `DEMO_MODE=true`; `comparison.is_demo=false`.
+Tỷ lệ hiện hữu so với **trung bình**, không phải trung vị. `insufficient_data` / `not_comparable` giữ lý do thật,
+không sinh giá hoặc phần trăm giả. Web ghi rõ nguồn so sánh và tính chất giá chào thuê.
+
+`GET /api/v1/me/posts/summary`: cùng xác thực và phạm vi sở hữu, trả
+`{counts: {all, published, waiting, other}, quota: {used, limit, remaining, timezone}}`.
+`timezone="Asia/Ho_Chi_Minh"`; `used` dùng đúng bộ đếm ingest hiện hữu: số bài **mới**
+`collector_id=user.id`, `mode=collect`, `first_seen_at >= vn_day_start()`.
+Bài trùng của người khác không dùng thêm lượt, dù có trong danh sách cá nhân. Không đổi chính sách ingest.
+`limit`/`remaining` là null khi `INGEST_DAILY_LIMIT=0` hoặc có quyền collector (gồm admin theo quy tắc hiện hữu).
+
+Migration `0007` thêm khóa chính `(post_id,user_id)` trong `post_submissions`, với `first_sent_at`,
+khóa ngoại cascade và chỉ mục `(user_id,first_sent_at)`; INSERT SELECT dùng kiểu SQLAlchemy tương thích
+SQLite/PostgreSQL, không dựng lại posts. Backfill từ `collector_id`/`first_seen_at`, giữ nguyên collector.
+Ingest dùng UPSERT theo dialect, không đổi thời điểm đầu khi gửi lại. Trước thay đổi, gửi trùng chỉ cập nhật
+post/version và idempotency key của người thứ hai; không có quan hệ sở hữu bền vững của người thứ hai.
+Không tự quét để khôi phục toàn bộ lượt gửi cũ của người thứ hai từ các idempotency key có thời hạn lưu.
+Khi người dùng gửi lại với key cũ còn hiệu lực, ghi nhận lượt gửi bằng thời điểm của key; key mới ghi thời điểm gửi lại.
+
 ### `POST /ingest/batch` — chế độ Thu thập
 
 Vai trò: mọi tài khoản đã đăng nhập (từ 2026-11-12; trước đó chỉ `collector`). Tối đa 20 bài/lô. Schema từng bài: [ingest-post.schema.json](../../spec/schemas/ingest-post.schema.json).
