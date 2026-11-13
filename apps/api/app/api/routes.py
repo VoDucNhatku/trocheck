@@ -224,7 +224,7 @@ def export(format: Literal["csv", "json"] = "csv", include_demo: bool = False,
 @router.get("/team/bot-reviews/summary", tags=["team"])
 def bot_review_summary(user: User = Depends(require_roles("reviewer")), session: Session = Depends(get_session),
                        settings: Settings = Depends(settings_dep)):
-    return bot_reviews.summary(session, settings)
+    return bot_reviews.summary(session, settings, include_auto_approve="admin" in user.roles)
 
 
 @router.get("/team/bot-reviews", tags=["team"])
@@ -235,8 +235,9 @@ def bot_review_page(page: int = Query(1, ge=1), page_size: int = Query(50, ge=1,
 
 @router.get("/team/reviews", tags=["team"], response_model=dto.ReviewQueue)
 def review_queue(reason: str | None = None, page: int = Query(1, ge=1), page_size: int = Query(50, ge=1, le=200),
+                 status: Literal["needs_review", "bot_approved"] = "needs_review",
                  user: User = Depends(require_roles("reviewer")), session: Session = Depends(get_session)):
-    return reviews.queue(session, reason=reason, page=page, page_size=page_size)
+    return reviews.queue(session, reason=reason, page=page, page_size=page_size, status=status)
 
 
 @router.get("/team/reviews/{listing_id}", tags=["team"], response_model=dto.ReviewDetail, response_model_exclude_unset=True)

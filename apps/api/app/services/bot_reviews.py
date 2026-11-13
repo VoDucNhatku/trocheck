@@ -1,4 +1,4 @@
-"""Queue and persist shadow reviews; never change listings or human review events."""
+"""Persist grounded reviews and optionally approve through the shared decision service."""
 from __future__ import annotations
 
 from collections import Counter
@@ -6,13 +6,95 @@ from datetime import timedelta
 
 from sqlalchemy import exists, func, select, update
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app.core.config import Settings
 from app.core.ids import iso, utcnow, vn_day_start
-from app.models import BotReview, ExtractionRun, Job, Listing, Post, PostVersion, ReviewEvent
+from app.models import BotReview, ExtractionRun, Job, Listing, Post, PostVersion, ReviewEvent, User
 from app.pipeline import review_bot
 from app.pipeline.llm_extractor import LlmClient
+from app.pipeline.normalize import parse_rent
+from app.pipeline.places import real_places
+from app.schemas import ReviewDecision
 from app.services import jobs, serialize
+
+AUTO_APPROVE_REASONS = frozenset({"rent_llm_only"})
+
+
+def auto_approved_today(session: Session) -> int:
+    from app.services.reviews import BOT_USER_ID
+
+    day_start = vn_day_start()
+    return session.scalar(select(func.count()).select_from(ReviewEvent).where(
+        ReviewEvent.user_id == BOT_USER_ID, ReviewEvent.action == "approve",
+        ReviewEvent.created_at >= day_start,
+        ReviewEvent.created_at < day_start + timedelta(days=1)))
+
+
+def _auto_approve(session: Session, listing: Listing, outcome: review_bot.BotOutcome, settings: Settings) -> None:
+    from app.services import reviews
+
+    if not (settings.review_bot_enabled and settings.review_bot_auto_approve
+            and outcome.status == "ok" and outcome.verdict == "approve" and outcome.confidence == 1.0):
+        return
+    # The reserved identity is also the cross-worker mutex for the daily cap (including SQLite).
+    actor = session.get(User, reviews.BOT_USER_ID)
+    if actor is None:
+        try:
+            with session.begin_nested():
+                session.add(User(id=reviews.BOT_USER_ID, username="review-bot", password_hash="!",
+                                 roles=[]))
+                session.flush()
+        except IntegrityError:
+            pass
+    session.execute(update(User).where(User.id == reviews.BOT_USER_ID).values(auth_version=User.auth_version))
+    actor = session.get(User, reviews.BOT_USER_ID, populate_existing=True)
+    if actor is None or actor.username != "review-bot" or actor.password_hash != "!" or actor.roles:
+        return  # Never adopt a registered account or grant the system identity login permissions.
+    snapshot_version = listing.version
+    session.execute(update(Listing).where(Listing.id == listing.id).values(version=Listing.version))
+    session.refresh(listing)
+    if (listing.version != snapshot_version or listing.review_status != "needs_review" or not listing.is_current
+            or listing.run.post_version_id != listing.post.current_version_id or listing.post.is_demo):
+        return
+    sender = session.get(User, listing.post.collector_id, populate_existing=True)
+    if sender is None or not sender.roles or "blocked" in sender.roles:
+        return
+    if auto_approved_today(session) >= settings.review_bot_auto_approve_daily_limit:
+        return
+    reasons = set(listing.review_reasons or [])
+    if not reasons or not reasons <= AUTO_APPROVE_REASONS:
+        return
+    if session.scalar(select(func.count()).select_from(Listing).where(
+            Listing.run_id == listing.run_id)) != 1:
+        return
+    fields = serialize.listing_dict(listing)
+    rent, location, room = fields["rent"], fields["location"], fields["room"]
+    if (rent.get("visibility") != "disclosed" or rent.get("amount_form") != "exact"
+            or not rent.get("amount_vnd") or rent["amount_vnd"] <= 0
+            or rent.get("period") != "month" or rent.get("basis") != "per_unit"
+            or room.get("property_type") not in ("phong_tro", "ccmn", "can_ho_dich_vu", "nha_nguyen_can")
+            or rent.get("agreement") != "llm_only"):
+        return
+    # Allow only the price uncertainty resolved by this review; other unresolved fields stay human.
+    if any(value.get("decision") == "needs_review" or value.get("agreement") == "conflict"
+           for value in (location, room, fields["area"], *fields.get("fees", []))):
+        return
+    places = real_places()
+    if (not location.get("ward_code") or location["ward_code"] not in {w.code for w in places.wards.values()}
+            or location.get("resolution") == "unresolved" or places.outside_provinces(listing.post.current_version.text)):
+        return
+    text = listing.post.current_version.text
+    if not all(check.get("passed") is True and check.get("quote") and check["quote"].strip()
+               and check["quote"] in text for check in outcome.checks.values()) or len(outcome.checks) != 4:
+        return
+    quoted = parse_rent(outcome.checks["rent_supported"]["quote"])
+    if (quoted["amount_form"] != "exact" or quoted["amount_vnd"] != rent["amount_vnd"]
+            or quoted["period"] != "month" or quoted["basis"] not in ("unknown", rent["basis"])):
+        return
+    reviews.decide(session, actor, listing.id, ReviewDecision(
+        action="approve", expected_version=listing.version, reason="Bot đã duyệt: " + outcome.reason[:480]),
+        settings, commit=False)
 
 
 def enabled(settings: Settings) -> bool:
@@ -130,6 +212,8 @@ def process_job(session: Session, job: Job, *, llm: LlmClient | None, settings: 
             error_code=outcome.error_code, llm_calls=outcome.calls,
             tokens_in=outcome.tokens_in, tokens_out=outcome.tokens_out, created_at=started_at))
         session.flush()
+        if current is not None and current.version == listing_version:
+            _auto_approve(session, current, outcome, settings)
         if outcome.retryable:
             jobs.mark_failed(session, job.id, code=outcome.error_code or "llm_error",
                              message=outcome.reason, max_attempts=settings.job_max_attempts)
@@ -160,14 +244,15 @@ def _human_decisions(session: Session, rows: list[BotReview]) -> dict[str, str |
         for index, event in enumerate(events.get(row.listing_id, []), start=1):
             version = (event.before_json or {}).get("version", index)
             if version == row.listing_version and event.created_at >= row.created_at:
-                if event.action in ("approve", "reject"):
+                from app.services.reviews import BOT_USER_ID
+                if event.user_id != BOT_USER_ID and event.action in ("approve", "reject"):
                     decision = event.action
                 break
         result[row.id] = decision
     return result
 
 
-def summary(session: Session, settings: Settings) -> dict:
+def summary(session: Session, settings: Settings, *, include_auto_approve: bool = False) -> dict:
     rows = session.scalars(select(BotReview).join(Listing).join(Post, Listing.post_id == Post.id)
                            .where(Post.is_demo.is_(False)).order_by(BotReview.created_at, BotReview.id)).all()
     by_status = dict.fromkeys(("ok", "error"), 0)
@@ -181,7 +266,7 @@ def summary(session: Session, settings: Settings) -> dict:
     decisions = _human_decisions(session, list(latest.values()))
     paired = [(row.verdict, decisions[row.id]) for row in latest.values() if decisions[row.id] is not None]
     agree = sum(bot == human for bot, human in paired)
-    return {
+    result = {
         "enabled": settings.review_bot_enabled, "by_status": by_status, "by_verdict": by_verdict,
         "compared": len(paired), "agreed": agree,
         "agreement_rate": agree / len(paired) if paired else None,
@@ -189,6 +274,11 @@ def summary(session: Session, settings: Settings) -> dict:
         "bot_reject_human_approve": paired.count(("reject", "approve")),
         "unsure_share": by_verdict["unsure"] / by_status["ok"] if by_status["ok"] else None,
     }
+    if include_auto_approve:
+        result.update(auto_approve_enabled=settings.review_bot_auto_approve,
+                      auto_approved_today=auto_approved_today(session),
+                      auto_approve_daily_limit=settings.review_bot_auto_approve_daily_limit)
+    return result
 
 
 def page(session: Session, *, page: int = 1, page_size: int = 50) -> dict:

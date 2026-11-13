@@ -50,3 +50,7 @@ services:
 # REVIEW_BOT_ENABLED=false
 # REVIEW_BOT_MODEL_ID=  # Rỗng thì dùng GEMINI_MODEL_ID.
 # REVIEW_BOT_DAILY_CALL_LIMIT=500  # 0 = không có hạn mức riêng, vẫn tính hạn mức chung.
+# Optional publication permission; owner opt-in only (ADR-0009). Both flags must be true.
+# REVIEW_BOT_AUTO_APPROVE=false
+# REVIEW_BOT_AUTO_APPROVE_DAILY_LIMIT=200  # Vietnam day; 0 blocks all auto-approvals.
+# One normal review = one Gemini call; approving adds no call. Cap exhaustion keeps shadow reviews running.

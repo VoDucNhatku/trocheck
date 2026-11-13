@@ -141,3 +141,5 @@ def finalize_status(listing: dict, meta: ListingMeta, listing_count: int) -> Non
           and all(listing[f].get("agreement") in ("both_agree", "regex_only")
                   and listing[f]["decision"] == "answered" for f in ("rent", "location")))
     meta.review_status = "auto_accepted" if ok else "needs_review"
+    if meta.review_status == "needs_review" and rent.get("agreement") == "llm_only":
+        meta.review_reasons.append("rent_llm_only")

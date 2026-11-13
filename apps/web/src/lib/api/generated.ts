@@ -1591,7 +1591,7 @@ export interface components {
              * Action
              * @enum {string}
              */
-            action: "approve" | "reject" | "split" | "merge";
+            action: "approve" | "reject" | "split" | "merge" | "undo";
             /** Expected Version */
             expected_version: number;
             /** Fields */
@@ -1626,6 +1626,12 @@ export interface components {
         };
         /** ReviewHistory */
         ReviewHistory: {
+            /**
+             * Source
+             * @default human
+             * @enum {string}
+             */
+            source?: "human" | "bot";
             /** Action */
             action: string;
             /** User Id */
@@ -1657,6 +1663,11 @@ export interface components {
         };
         /** ReviewQueueItem */
         ReviewQueueItem: {
+            /**
+             * Bot Approved
+             * @default false
+             */
+            bot_approved?: boolean;
             /** Listing Id */
             listing_id: string;
             /** Reasons */
@@ -2662,6 +2673,7 @@ export interface operations {
                 reason?: string | null;
                 page?: number;
                 page_size?: number;
+                status?: "needs_review" | "bot_approved";
             };
             header?: never;
             path?: never;
