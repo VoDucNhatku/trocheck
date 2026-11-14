@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from sqlalchemy import (JSON, Boolean, DateTime, Float, ForeignKey, Index, Integer, String, Text,
-                        UniqueConstraint, text)
+                        UniqueConstraint, false, text)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base
@@ -211,6 +211,9 @@ class Listing(Base):
     property_type: Mapped[str | None] = mapped_column(String(20))
     ward_code: Mapped[str | None] = mapped_column(String(40))
     ward_name: Mapped[str | None] = mapped_column(String(100))
+    # The post names MULTI_AREA_MIN or more districts as its own place: an agency / multi-area ad. Set with
+    # the listing_districts rows (services.processing, migration 0009).
+    multi_area: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false())
     observed_at: Mapped[datetime] = mapped_column(DateTime)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 

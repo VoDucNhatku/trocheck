@@ -306,3 +306,111 @@ def test_listing_districts_migration_backfills_existing_listings(database_url):
     assert "listing_districts" not in inspect(engine).get_table_names()
     command.upgrade(cfg, "head")
     engine.dispose()
+
+
+TIERS = {
+    "multi": "Cho thuê phòng trọ 20m2 nhiều quận: Quận 3, Quận 10, Bình Thạnh, Phú Nhuận, giá 2tr/tháng/phòng. Bài thử nghiệm.",
+    "mention": "Cho thuê phòng trọ 25m2 Bình Thạnh giá 3tr/tháng/phòng. Bài thử nghiệm.",
+    "ward": "Cho thuê phòng trọ 30m2 phường 25, Bình Thạnh, giá 4tr/tháng/phòng. Bài thử nghiệm.",
+    "near": "Cho thuê phòng trọ 18m2 Quận 7, gần Bình Thạnh, giá 1tr5/tháng/phòng. Bài thử nghiệm.",
+}
+
+
+def test_area_filter_ranks_ward_then_mention_then_multi_area_and_keeps_the_sort_inside_a_tier(api):
+    c = api.client("renter")
+    ids = {key: send(c, key, text) for key, text in TIERS.items()}
+    api.drain()
+    names = {pid: key for key, pid in ids.items()}
+    # "near" only mentions Bình Thạnh as a neighbour of Quận 7: it never matches Bình Thạnh.
+    for sort in ("newest", "price_asc", "price_desc", "area_desc"):
+        body = read(c, area="binh-thanh", sort=sort)
+        assert keys(body, names)[0] == "ward" and keys(body, names)[-1] == "multi", sort
+        assert "near" not in keys(body, names)
+    body = read(c, area="binh-thanh")
+    tiers = {names[i["post_id"]]: i["listings"][0]["area_match"] for i in body["items"]}
+    assert tiers == {"ward": "ward", "mention": "mention", "multi": "multi_area"}
+    assert read(c, area="quan-7")["items"][0]["listings"][0]["area_match"] == "mention"
+    assert read(c, area="quan-3")["items"][0]["listings"][0]["area_match"] == "multi_area"
+    # Without an area filter there is no tier and no reordering by it.
+    assert {i["listings"][0]["area_match"] for i in read(c)["items"]} == {None}
+    assert keys(read(c, sort="price_asc"), names) == ["near", "multi", "mention", "ward"]
+    # Several areas: the best tier of any listing counts.
+    assert keys(read(c, area=["binh-thanh", "quan-3"], sort="price_desc"), names) == ["ward", "mention", "multi"]
+    # The multi-area ad is persisted as a flag on the listing.
+    with api.session() as s:
+        flags = {names[l.post_id]: l.multi_area for l in s.scalars(select(Listing))}
+    assert flags == {"multi": True, "mention": False, "ward": False, "near": False}
+
+
+def test_tier_pagination_total_and_options_stay_consistent(api):
+    c = api.client("renter")
+    ids = {key: send(c, key, text) for key, text in TIERS.items()}
+    api.drain()
+    names = {pid: key for key, pid in ids.items()}
+    pages = [read(c, area="binh-thanh", sort="price_asc", page=p, limit=2) for p in (1, 2)]
+    assert [keys(p, names) for p in pages] == [["ward", "mention"], ["multi"]] and pages[0]["total"] == 3
+    area = {a["key"]: a for a in c.get(V1 + "/me/posts/filters").json()["areas"]}
+    assert area["binh-thanh"]["listing_count"] == 3 == read(c, area="binh-thanh")["matched_listings"]
+    assert area["quan-7"]["listing_count"] == 1 and "quan-1" not in area
+
+
+def test_migration_0009_recomputes_districts_flags_multi_area_and_clears_tiny_areas(database_url):
+    from alembic import command
+    from alembic.config import Config
+    from sqlalchemy import MetaData, Table, inspect
+
+    from app.core.db import make_engine
+    from app.core.ids import utcnow
+
+    cfg = Config(str(Path(__file__).resolve().parents[1] / "alembic.ini"))
+    cfg.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
+    command.upgrade(cfg, "0008")
+    engine = make_engine(database_url)
+    meta, now = MetaData(), utcnow()
+    t = {name: Table(name, meta, autoload_with=engine) for name in
+         ("users", "posts", "post_versions", "extraction_runs", "listings", "listing_districts")}
+    posts = (  # id, text, area_m2, stale district rows written by the old matcher
+        ("p1", "Phòng Bình Thạnh (gần Q1), 20m2", 20.0, ["binh-thanh", "quan-1"]),
+        ("p2", "Phòng quận 3, quận 10, Tân Bình, Phú Nhuận giá 3tr", 2.7, ["quan-3"]),
+        ("p3", "1PN D10 giá 4tr", None, []),
+        ("p4", "Phòng trọ có gác", None, ["quan-5"]),
+    )
+    with engine.begin() as conn:
+        conn.execute(t["users"].insert().values(id="u", username="m", password_hash="x", roles=["renter"], created_at=now))
+        for pid, text, area, stale in posts:
+            conn.execute(t["posts"].insert().values(id=pid, collector_id="u", source_type="facebook_group", mode="collect",
+                                                   contributed=True, is_demo=False, status="extracted", first_seen_at=now,
+                                                   last_seen_at=now))
+            conn.execute(t["post_versions"].insert().values(id="v" + pid, post_id=pid, text=text, text_hash=pid,
+                                                           text_complete=True, created_at=now))
+            conn.execute(t["extraction_runs"].insert().values(
+                id="r" + pid, post_version_id="v" + pid, created_at=now, mode="production", pipeline_version="t",
+                regex_version="t", prompt_version="t", normalizer_version="t", llm_status="not_run", llm_calls=0,
+                latency_ms=0, tokens_in=0, tokens_out=0, dropped_quotes=0, regex_spans=[], llm_spans=[]))
+            conn.execute(t["listings"].insert().values(
+                id="l" + pid, run_id="r" + pid, post_id=pid, listing_index=0, review_status="needs_review",
+                review_reasons=[], version=1, is_current=True, area_from_dimensions=False, area_m2=area,
+                observed_at=now, created_at=now))
+            for key in stale:
+                conn.execute(t["listing_districts"].insert().values(listing_id="l" + pid, district_key=key))
+
+    def state():
+        listings = Table("listings", MetaData(), autoload_with=engine)
+        districts = Table("listing_districts", MetaData(), autoload_with=engine)
+        with engine.connect() as conn:
+            rows = sorted(conn.execute(select(districts.c.listing_id, districts.c.district_key)).all())
+            flags = dict(conn.execute(select(listings.c.id, listings.c.multi_area)).all())
+            areas = dict(conn.execute(select(listings.c.id, listings.c.area_m2)).all())
+        return rows, flags, areas
+
+    command.upgrade(cfg, "head")
+    rows, flags, areas = state()
+    assert rows == [("lp1", "binh-thanh"), ("lp2", "phu-nhuan"), ("lp2", "quan-10"), ("lp2", "quan-3"),
+                    ("lp2", "tan-binh"), ("lp3", "quan-10")]
+    assert flags == {"lp1": False, "lp2": True, "lp3": False, "lp4": False}
+    assert areas == {"lp1": 20.0, "lp2": None, "lp3": None, "lp4": None}
+    command.downgrade(cfg, "0008")  # drops the flag column, keeps the recomputed rows
+    assert "multi_area" not in {c["name"] for c in inspect(engine).get_columns("listings")}
+    command.upgrade(cfg, "head")  # idempotent: same result from the same data
+    assert state() == (rows, flags, areas)
+    engine.dispose()

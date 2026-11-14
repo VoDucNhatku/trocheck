@@ -15,6 +15,9 @@ class OldDistrictRef(BaseModel):
     name: str
 
 
+AreaMatch = Literal["ward", "mention", "multi_area"]
+
+
 class ExtractedListing(BaseModel):
     listing_id: str
     review_status: str
@@ -30,6 +33,9 @@ class ExtractedListing(BaseModel):
     ward_code: str | None
     ward_name: str | None
     resolution: str | None
+    # Only with an area filter: "ward" the resolved ward is in the district, "mention" the post names it,
+    # "multi_area" the post lists many districts (agency ad). None without an area filter.
+    area_match: AreaMatch | None
     old_districts: list[OldDistrictRef]
     comparison: Comparison
 

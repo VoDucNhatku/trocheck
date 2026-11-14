@@ -2,7 +2,7 @@
 import re
 from dataclasses import dataclass
 
-from sqlalchemy import case, exists, func, or_, select
+from sqlalchemy import case, exists, func, literal, or_, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.config import Settings
@@ -92,6 +92,19 @@ def _area_condition(keys):
     return or_(Listing.ward_code.in_(area_ward_codes(keys)), Listing.id.in_(mentioned))
 
 
+def _area_tier(keys):
+    """Match quality of one listing for an area filter: 0 its resolved ward belongs to the district, 1 the
+    post names the district as its own place, 2 the post is a multi-area ad that names it among others."""
+    return case((Listing.ward_code.in_(area_ward_codes(keys)), 0), (Listing.multi_area.is_(False), 1), else_=2)
+
+
+def area_match(listing, keys) -> str:
+    """The same tiers as _area_tier, as the API value for one loaded listing."""
+    if listing.ward_code in area_ward_codes(keys):
+        return "ward"
+    return "multi_area" if listing.multi_area else "mention"
+
+
 def _listing_conditions(f: Filters) -> list:
     """AND across filters; repeated area/ward/type values are OR within their own filter.
 
@@ -124,10 +137,13 @@ def _current_of(user: User):
                    ExtractionRun.post_version_id == Post.current_version_id))
 
 
-def _matching(user: User, cond: list):
-    """Per post: matching current listings and the price/area extremes used for sorting."""
+def _matching(user: User, cond: list, areas: tuple[str, ...] = ()):
+    """Per post: matching current listings, the price/area extremes used for sorting and, with an area
+    filter, the best match tier of its listings."""
     price = monthly_price()
+    tier = func.min(_area_tier(areas)) if areas else literal(0)
     return (select(Listing.post_id.label("post_id"), func.count(Listing.id).label("matched"),
+                   tier.label("tier"),
                    func.min(price).label("min_price"), func.max(price).label("max_price"),
                    func.max(Listing.area_m2).label("max_area"))
             .join(ExtractionRun, ExtractionRun.id == Listing.run_id)
@@ -140,11 +156,11 @@ def _matching(user: User, cond: list):
 
 def _filtered(user: User, group: str, f: Filters):
     owned = _owned(user)
-    matching = _matching(user, _listing_conditions(f))
+    matching = _matching(user, _listing_conditions(f), f.areas)
     # Posts without listings (just received, no ward) stay visible unless a listing filter is set.
     joined = owned.join(matching, matching.c.post_id == owned.c.post_id, isouter=not f.narrows_listings)
     query = select(owned, matching.c.matched, matching.c.min_price, matching.c.max_price,
-                   matching.c.max_area).select_from(joined)
+                   matching.c.max_area, matching.c.tier).select_from(joined)
     if group != "all":
         query = query.where(owned.c.status.in_(GROUPS[group]))
     if f.rental_only:
@@ -163,7 +179,10 @@ def _order(query, f: Filters):
         first = (sub.c.max_area.is_(None), sub.c.max_area.desc())
     else:
         first = ()
-    return sub, (*first, *newest)
+    # With an area filter: resolved-ward matches, then posts naming the district, then multi-area ads; the
+    # chosen sort applies inside each tier.
+    tier = (sub.c.tier.asc(),) if f.areas else ()
+    return sub, (*tier, *first, *newest)
 
 
 def validate(f: Filters) -> None:
@@ -224,6 +243,7 @@ def search(session: Session, user: User, settings: Settings, *, group: str, page
             "price_form": lst.rent_form, "price_basis": lst.rent_basis, "price_period": lst.rent_period,
             "area_m2": lst.area_m2, "room_type": lst.property_type,
             "ward_code": lst.ward_code, "ward_name": lst.ward_name, "resolution": location.get("resolution"),
+            "area_match": area_match(lst, f.areas) if f.areas else None,
             "old_districts": [{"key": key, "name": area_catalog()[key].name} for key in mentions.get(lst.id, [])
                               if key in area_catalog()],
             # market.comparison chooses the target's dataset. Owned posts are always non-demo.
