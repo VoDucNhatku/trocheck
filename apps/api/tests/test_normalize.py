@@ -245,3 +245,23 @@ def test_dimension_area_through_the_regex_rule_and_the_pipeline():
     assert absent["value_m2"] is None and absent["amount_form"] == "none"
     tiny = areas("Cho thuê phòng trọ Quận 7, DT 2.7m, giá 3tr/tháng.")[0]
     assert tiny["value_m2"] is None and tiny["amount_form"] == "none"
+
+
+@pytest.mark.parametrize("span,value", [
+    ("2tr8.", 2_800_000), ("giá 3tr2, có gác", 3_200_000), ("2tr8;", 2_800_000), ("5 triệu 5.", 5_500_000),
+    ("3tr5", 3_500_000), ("3tr5.000", 3_000_000),
+])
+def test_last_digit_of_a_price_survives_a_following_full_stop_or_comma(span, value):
+    assert n.parse_rent(span)["amount_vnd"] == value
+
+
+@pytest.mark.parametrize("span", ["1tr/tuần", "12tr/năm", "30k/giờ", "2tr5/tuan"])
+def test_prices_per_week_year_or_hour_are_unsupported_not_monthly(span):
+    rent = n.parse_rent(span)
+    assert rent["unsupported"] is True and rent["amount_form"] == "none" and rent["amount_vnd"] is None
+    assert rent["period"] == "unknown"
+
+
+@pytest.mark.parametrize("span,period", [("250k/ngày", "day"), ("150k/đêm", "day"), ("3tr/tháng", "month")])
+def test_daily_and_nightly_prices_are_day_prices(span, period):
+    assert n.parse_rent(span)["period"] == period

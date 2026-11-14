@@ -18,7 +18,7 @@ NORMALIZER_VERSION = "1.0.0"
 _NUM = r"\d+(?:[.,]\d+)*"
 MONEY_TOKEN_RE = re.compile(
     rf"(?P<num>{_NUM})\s?"
-    r"(?:(?P<big>trieu|tr|cu)(?:\s?(?P<tail>\d{1,3})(?![\d.,]))?"
+    r"(?:(?P<big>trieu|tr|cu)(?:\s?(?P<tail>\d{1,3})(?!\d|[.,]\d))?"
     r"|(?P<small>k|nghin|ngan)(?P<ktail>\d)?(?![a-z\d])"
     r"|(?P<vnd>vnd|dong|d)\b)?"
 )
@@ -71,7 +71,7 @@ def _unit_of(token: str) -> str | None:
 
 
 _MONEY_FIND_RE = re.compile(
-    rf"{_NUM}\s?(?:(?:trieu|tr|cu)(?:\s?\d{{1,3}}(?![\d.,])(?!\s?(?:m2|m\b|met|k\b|tr|nguoi|ng\b|pn|wc|phong|x\b|%)))?(?![a-z])"
+    rf"{_NUM}\s?(?:(?:trieu|tr|cu)(?:\s?\d{{1,3}}(?!\d|[.,]\d)(?!\s?(?:m2|m\b|met|k\b|tr|nguoi|ng\b|pn|wc|phong|x\b|%)))?(?![a-z])"
     r"|(?:k|nghin|ngan)\d?(?![a-z\d])|(?:vnd|dong|d)\b)?"
 )
 
@@ -94,8 +94,10 @@ def _suffixes(folded: str) -> tuple[str, str]:
     for part in re.findall(r"/\s?([a-z]+)", folded):
         if part in {"th", "thang", "t"}:
             period = "month"
-        elif part == "ngay":
+        elif part in {"ngay", "dem"}:
             period = "day"
+        elif part in {"tuan", "nam", "gio"}:  # not per month and not per day: never a monthly price
+            period = "other"
         elif part in {"nguoi", "ng"}:
             basis = "per_person"
         elif part in {"phong", "can", "p"}:
@@ -122,7 +124,18 @@ def _money_tokens(folded: str) -> list[str]:
 
 
 def parse_rent(quote: str) -> dict:
-    """Rent value from one PRICE span (quy-tac-chuan-hoa §1)."""
+    """Rent value from one PRICE span (quy-tac-chuan-hoa §1).
+
+    A price per week, year or hour is unsupported: it is neither a monthly nor a daily price, so no
+    amount is kept (it would pass monthly price filters) and the listing goes to review."""
+    rent = _parse_rent(quote)
+    if rent["period"] == "other":
+        rent.update(amount_form="none", amount_vnd=None, min_vnd=None, max_vnd=None, period="unknown",
+                    includes=[], unsupported=True)
+    return rent
+
+
+def _parse_rent(quote: str) -> dict:
     folded = fold(quote)
     rent = {
         "visibility": "disclosed", "amount_form": "none", "amount_vnd": None,

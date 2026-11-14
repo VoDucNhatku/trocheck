@@ -1,7 +1,7 @@
 # M2 keyword rules (pipeline-xu-ly §M2), folded text (no diacritics, lowercase).
 # The earliest keyword in the post decides. When no keyword matches, the post type is
 # "uncertain" and the LLM decides in the same M3b call; without an LLM the fallback below applies.
-version: "1.0.0"
+version: "1.1.0"
 keywords:
   roommate:
     - 'tim (?:nguoi|ban|nu|nam) (?:o )?ghep'
@@ -19,6 +19,9 @@ keywords:
     - '\bban (?:nha|dat|can ho|chung cu|gap)\b'
     - '\bcan ban\b'
     - '\bthanh ly\b'
+  other:  # job ads carry a salary like a price; they are not rental offers
+    - '\btuyen (?:nhan vien|dung|cong tac vien|lao dong)\b'
+    - '\b(?:luong|thu nhap) tu \d+\b'
   rental_offer:
     - '\bcho thue\b'
     - '\bcon (?:\d+ )?(?:phong|can|ccmn)\b'
