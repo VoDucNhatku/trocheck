@@ -18,6 +18,9 @@
 .facts dt { color:var(--muted); font-size:12px; margin-bottom:5px; }
 .facts dd { margin:0; font-size:15px; font-weight:600; }
 .comparison { margin-top:18px; color:var(--on-night2); }
+.match { display:block; width:fit-content; margin-top:8px; padding:3px 10px; border:1px solid var(--edge2); border-radius:var(--r-md); font-size:12px; font-weight:500; font-style:normal; color:var(--on-night2); }
+.match[data-match=ward] { color:var(--hl-text); border-color:var(--accent); background:var(--accent-subtle); }
+.match[data-match=multi_area] { border-style:dashed; color:var(--muted); }
 .phrase { white-space:nowrap; }
 .emptyActions { display:flex; justify-content:center; gap:20px; flex-wrap:wrap; margin-top:16px; }
 .pager { display:flex; justify-content:space-between; align-items:center; gap:10px; margin:24px 0; }

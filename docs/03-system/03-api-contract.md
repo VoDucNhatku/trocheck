@@ -146,6 +146,30 @@ không có dòng nào nên không khớp quận nào. `ward` vẫn chỉ khớp 
 Bài chưa có phường và chưa nêu quận không khớp `area`/`ward`, nhưng vẫn hiện khi không đặt bộ lọc tin nào.
 Mỗi tin trả thêm `old_districts: [{key, name}]` (quận cũ đã đọc được) để web ghi nguồn vị trí.
 
+Bộ khớp quận (`app.pipeline.old_districts.district_scan`, từ migration `0009`) chỉ giữ quận là **nơi của tin**, không giữ mọi
+lần nhắc tên quận:
+
+- Quận đứng sau từ chỉ khoảng cách (gần, giáp, giáp ranh, sát, cách, kế, cạnh, tiện đi, thuận tiện đi/di chuyển, qua, sang, ra,
+  về, xuống, lên, giao giữa, "5 phút tới/đến/ra"...; có hoặc không dấu), kể cả cả danh sách nối bằng dấu phẩy, `/`, "và", "hoặc",
+  bị bỏ. Tên không có tiền tố quận (ví dụ "Aeon mall Tân Phú") cũng bị bỏ nếu chỉ cách từ chỉ khoảng cách tối đa 3 từ; "quận N"
+  rõ ràng chỉ bị bỏ khi đứng ngay sau từ đó. Mệnh đề kết thúc ở dấu phẩy, chấm, chấm phẩy hoặc ngoặc.
+- Tên chỉ khớp khi bỏ dấu thì không khớp: "Bình Thành" không phải Bình Thạnh. Chữ không dấu hoặc dấu ở một phần ("Binh Thanh",
+  "Bình Thanh") vẫn khớp. Kiểm tra mọi tên quận trong từ điển: không tên quận nào trùng không dấu với tên phường, địa danh
+  hay tỉnh khác trong `lexicon/`.
+- D10, D.10, D 10, Q10, Q.10, quan10 và hashtag như `#phongtroquan10` tính cho quận 1 đến 12 (số lớn hơn 12 thì không).
+- Bài nêu từ 3 quận khác nhau trở lên (sau khi bỏ quận nhắc như lân cận) là bài nhiều khu vực (môi giới đăng nhiều khu):
+  `listings.multi_area = true`. Các dòng `listing_districts` vẫn lưu đủ để bộ lọc khu vực tìm thấy bài.
+
+Khi đặt `area`, mỗi tin có `area_match`: `"ward"` (mã phường đã xác định thuộc quận), `"mention"` (bài nêu quận đó) hoặc
+`"multi_area"` (bài nhiều khu vực nêu quận đó); không đặt `area` thì `area_match` là `null`. Mọi kiểu `sort` đều xếp **theo tầng
+trước**: bài có tin `ward` trước, rồi `mention`, rồi `multi_area` (bài lấy tầng tốt nhất của các tin khớp), và giữ `sort` đã chọn
+trong từng tầng. Không đặt `area` thì thứ tự như trước. Web ghi tầng trên thẻ: "Ở đúng phường", "Bài nhắc tên quận", "Bài nhiều khu vực".
+
+Migration `0009` thêm `listings.multi_area`, tính lại toàn bộ `listing_districts` và cờ từ văn bản bài đã lưu (cùng cách `0008`: không gọi
+LLM, bỏ bài demo và tin `outside_hcm_province`, chạy lại nhiều lần cho cùng kết quả, SQLite và PostgreSQL), và đặt `area_m2` null
+cho giá trị dưới 6 m² (kích thước như 2,7 m đọc nhầm thành diện tích). Giá và kỳ hạn đã lưu không bị đọc lại; chỉ bài trích xuất lại mới có
+cách đọc giá mới (số cuối của "2tr8.", giá theo tuần, năm, giờ chuyển sang duyệt tay).
+
 Phân trang và `total` tính **sau** lọc, lọc và sắp xếp thực hiện trong SQL; `limit <= 50`. Thêm vào phản hồi:
 `matched_listings` (số tin khớp trên toàn bộ kết quả, không chỉ trang hiện tại) và `total_sent` (mọi bài đã gửi, không phụ thuộc lọc).
 

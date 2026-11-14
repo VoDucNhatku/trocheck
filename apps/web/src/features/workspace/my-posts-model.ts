@@ -139,6 +139,14 @@ export const hasAnyFilter = (q: MyPostsQuery) => activeFilterCount(q) > 0 || q.i
 
 export function areaLabel(name: string): string { return `${name} (cũ)`; }
 
+/** How a listing matched the area filter: the resolved ward, a district the post names, or an ad listing many districts. */
+export const AREA_MATCH_LABEL: Record<NonNullable<ExtractedListing['area_match']>, string> = {
+  ward: 'Ở đúng phường', mention: 'Bài nhắc tên quận', multi_area: 'Bài nhiều khu vực',
+};
+export function areaMatchLabel(match: ExtractedListing['area_match'] | undefined): string | null {
+  return match ? AREA_MATCH_LABEL[match] ?? null : null;
+}
+
 /** Where the place comes from: the ward when known, else the old district the post names. */
 export function placeText(listing: Pick<ExtractedListing, 'ward_name' | 'old_districts'>): string {
   if (listing.ward_name) return listing.ward_name;

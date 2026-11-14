@@ -9,7 +9,7 @@ import { chromium, expect } from '@playwright/test';
 const comparison = { status: 'insufficient_data', reason_codes: [], criteria: {}, n: 1, message: 'Chưa đủ tin.', similar: [], is_demo: false };
 const listing = (id, extra) => ({ listing_id: id, review_status: 'needs_review', reason_codes: [], public_url: null, price_vnd: 4000000,
   price_min_vnd: null, price_form: 'exact', price_basis: 'per_unit', price_period: 'month', area_m2: 22, room_type: 'phong_tro',
-  ward_code: null, ward_name: null, resolution: null, old_districts: [], comparison, ...extra });
+  ward_code: null, ward_name: null, resolution: null, old_districts: [], area_match: null, comparison, ...extra });
 const post = (id, listings, total = listings.length) => ({ post_id: id, received_at: '2026-11-13T08:00:00', source_group_name: 'Nhóm thử nghiệm',
   permalink: null, excerpt: 'Bài thử nghiệm đã được tạo riêng cho kiểm tra.', status: 'needs_review', reason_codes: [], photo_count: 0,
   listing_total: total, listings });
@@ -44,8 +44,10 @@ test('My posts filter bar keeps filters in the URL, shows counts, place source a
       else {
         const url = new URL(req.url, 'http://x');
         const none = url.searchParams.getAll('area').includes('quan-7');
-        res.end(JSON.stringify({ items: none ? [] : [post('p1', [listing('l1', { old_districts: [{ key: 'quan-10', name: 'Quận 10' }] })]),
-          post('p2', [listing('l2', { ward_name: 'Phường Sài Gòn', ward_code: '26740' })], 2)],
+        const tier = url.searchParams.getAll('area').length > 0;
+        res.end(JSON.stringify({ items: none ? [] : [post('p1', [listing('l1', { old_districts: [{ key: 'quan-10', name: 'Quận 10' }], area_match: tier ? 'mention' : null }),
+          listing('l3', { ward_name: 'Phường Chợ Quán', area_match: tier ? 'multi_area' : null })]),
+          post('p2', [listing('l2', { ward_name: 'Phường Sài Gòn', ward_code: '26740', area_match: tier ? 'ward' : null })], 2)],
           total: none ? 0 : 2, page: 1, limit: 20, comparison_baseline: 'real_accepted', matched_listings: none ? 0 : 2, total_sent: 200 }));
       }
       return;
@@ -73,6 +75,10 @@ test('My posts filter bar keeps filters in the URL, shows counts, place source a
     await expect(page.getByText('Quận 10 (cũ) · chưa rõ phường')).toBeVisible();
     await expect(page.getByText('Phường Sài Gòn', { exact: true })).toBeVisible();
     await expect(page.getByText('2 phòng khớp')).toBeVisible();
+    // With an area filter each card says why it matched; without one it says nothing.
+    await expect(page.getByText('Ở đúng phường', { exact: true })).toBeVisible();
+    await expect(page.getByText('Bài nhắc tên quận', { exact: true })).toBeVisible();
+    await expect(page.getByText('Bài nhiều khu vực', { exact: true })).toBeVisible();
     await expect(page.getByText('200 bài đã gửi')).toBeVisible();
     await expect(page.getByText('Bài có 2 tin, đang hiện 1 tin khớp bộ lọc.')).toBeVisible();
     await expect(page.getByRole('checkbox', { name: /Quận 10 \(cũ\)/ })).toBeChecked();
@@ -89,6 +95,8 @@ test('My posts filter bar keeps filters in the URL, shows counts, place source a
   // Apply writes the URL, clear resets it.
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto(base);
+  await expect(page.getByText('Ở đúng phường', { exact: true })).toHaveCount(0);
+  await expect(page.getByText('Bài nhiều khu vực', { exact: true })).toHaveCount(0);
   await page.getByRole('checkbox', { name: /Quận 1 \(cũ\)/ }).check();
   await page.locator('input[name=gia_min]').fill('2.5');
   await page.getByLabel('Hiện cả bài không phải cho thuê').check();

@@ -1052,6 +1052,8 @@ export interface components {
             ward_name: string | null;
             /** Resolution */
             resolution: string | null;
+            /** Area Match */
+            area_match: ("ward" | "mention" | "multi_area") | null;
             /** Old Districts */
             old_districts: components["schemas"]["OldDistrictRef"][];
             comparison: components["schemas"]["Comparison"];

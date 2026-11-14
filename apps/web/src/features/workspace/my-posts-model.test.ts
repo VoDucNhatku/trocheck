@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { activeFilterCount, areaLabel, comparisonText, DEFAULT_QUERY, hasAnyFilter, myPostsApiQuery, myPostsUrlQuery,
+import { activeFilterCount, areaLabel, areaMatchLabel, comparisonText, DEFAULT_QUERY, hasAnyFilter, myPostsApiQuery, myPostsUrlQuery,
   parseMyPostsQuery, placeText, resultPhrases, safeOriginalLink, STATUS_LABEL, statusExplanation, wideningAdvice, type MyPost } from './my-posts-model';
 import { workspaceRouteAllowed } from '../../lib/workspace/safe-path';
 
@@ -83,4 +83,12 @@ test('place text names the ward, else the old district with its source, else say
   assert.equal(placeText({ ward_name: null, old_districts: [{ key: 'quan-10', name: 'Quận 10' }, { key: 'quan-11', name: 'Quận 11' }] }),
     'Quận 10 (cũ), Quận 11 (cũ) · chưa rõ phường');
   assert.equal(placeText({ ward_name: null, old_districts: [] }), 'Chưa rõ phường');
+});
+
+test('the match tier of a card is named only when an area filter produced it', () => {
+  assert.equal(areaMatchLabel('ward'), 'Ở đúng phường');
+  assert.equal(areaMatchLabel('mention'), 'Bài nhắc tên quận');
+  assert.equal(areaMatchLabel('multi_area'), 'Bài nhiều khu vực');
+  assert.equal(areaMatchLabel(null), null);
+  assert.equal(areaMatchLabel(undefined), null);
 });

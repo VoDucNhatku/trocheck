@@ -8,7 +8,7 @@ import { AtomicText } from '@/features/landing/examples';
 import { Button, Empty, ErrorNotice, Intro, Loading, s } from './ui';
 import { PersonalNav } from './PersonalNav';
 import { MyPostsFilterBar } from './MyPostsFilterBar';
-import { activeFilterCount, comparisonText, DEFAULT_QUERY, GROUP_LABEL, hasAnyFilter, myPostsApiQuery, myPostsUrlQuery,
+import { activeFilterCount, areaMatchLabel, comparisonText, DEFAULT_QUERY, GROUP_LABEL, hasAnyFilter, myPostsApiQuery, myPostsUrlQuery,
   parseMyPostsQuery, placeText, resultPhrases, safeOriginalLink, STATUS_LABEL, statusExplanation, wideningAdvice,
   type ExtractedListing, type MyPostsData, type MyPostsFilters, type MyPostsQuery, type MyPostsSummary, type StatusGroup } from './my-posts-model';
 import a from './account-notices.module.css';
@@ -118,7 +118,7 @@ export function MyPosts() {
                 <div><dt>Giá đã đọc{lst.price_basis === 'per_unit' ? ' · theo phòng' : lst.price_basis === 'per_person' ? ' · theo người' : ''}</dt><dd><span className={styles.phrase}>{price(lst)}</span></dd></div>
                 <div><dt>Diện tích</dt><dd className={styles.phrase}>{lst.area_m2 == null ? 'Chưa rõ diện tích' : `${lst.area_m2.toLocaleString('vi-VN')} m²`}</dd></div>
                 <div><dt>Loại phòng</dt><dd><AtomicText text={PROPERTY_LABEL[lst.room_type as keyof typeof PROPERTY_LABEL] || 'Chưa rõ loại phòng'} /></dd></div>
-                <div><dt>Vị trí</dt><dd><AtomicText text={placeText(lst)} /></dd></div>
+                <div><dt>Vị trí</dt><dd><span><AtomicText text={placeText(lst)} /></span>{areaMatchLabel(lst.area_match) && <span className={styles.match} data-match={lst.area_match}>{areaMatchLabel(lst.area_match)}</span>}</dd></div>
               </dl>
               <p className={styles.comparison}><AtomicText text={comparisonText(lst.comparison)} /></p>
               {lst.comparison.status !== 'ok' && <p className={s.muted}><AtomicText text={lst.comparison.status === 'insufficient_data' ? lst.comparison.message : 'Cần giá theo tháng, cách tính giá, loại phòng và phường rõ ràng để đối chiếu.'} /></p>}
