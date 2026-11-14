@@ -8,6 +8,7 @@ import { AtomicText } from '@/features/landing/examples';
 import { Button, Empty, ErrorNotice, Intro, Loading, s } from './ui';
 import { PersonalNav } from './PersonalNav';
 import { MyPostsFilterBar } from './MyPostsFilterBar';
+import { comparisonScopeNote } from './comparison-scope';
 import { activeFilterCount, areaMatchLabel, comparisonText, DEFAULT_QUERY, GROUP_LABEL, hasAnyFilter, myPostsApiQuery, myPostsUrlQuery,
   parseMyPostsQuery, placeText, resultPhrases, safeOriginalLink, STATUS_LABEL, statusExplanation, wideningAdvice,
   type ExtractedListing, type MyPostsData, type MyPostsFilters, type MyPostsQuery, type MyPostsSummary, type StatusGroup } from './my-posts-model';
@@ -121,6 +122,7 @@ export function MyPosts() {
                 <div><dt>Vị trí</dt><dd><span><AtomicText text={placeText(lst)} /></span>{areaMatchLabel(lst.area_match) && <span className={styles.match} data-match={lst.area_match}>{areaMatchLabel(lst.area_match)}</span>}</dd></div>
               </dl>
               <p className={styles.comparison}><AtomicText text={comparisonText(lst.comparison)} /></p>
+              {comparisonScopeNote(lst.comparison) && <p className={styles.scope} data-scope={lst.comparison.scope} data-pool={lst.comparison.pool}><AtomicText text={comparisonScopeNote(lst.comparison)!} /></p>}
               {lst.comparison.status !== 'ok' && <p className={s.muted}><AtomicText text={lst.comparison.status === 'insufficient_data' ? lst.comparison.message : 'Cần giá theo tháng, cách tính giá, loại phòng và phường rõ ràng để đối chiếu.'} /></p>}
               {lst.public_url && <Link className={s.textLink} href={lst.public_url}>Xem tin công khai{post.listings.length > 1 ? ` ${index + 1}` : ''}</Link>}
             </section>)}

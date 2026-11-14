@@ -18,7 +18,7 @@ function illustration(id: string): { detail: ListingDetail; comparison: Comparis
       post: { ...p.post, post_type: 'rental_offer' },
       sibling_count: p.sibling_count, cluster_id: null, price_history: [], is_demo: true,
     },
-    comparison: { ...c, message: c.status === 'ok'
+    comparison: { ...c, scope: 'ward', scope_label: c.criteria.ward_name, pool: 'accepted', message: c.status === 'ok'
       ? 'Minh họa tự tạo: giá gần trung vị nhóm tin tương tự.'
       : 'Minh họa tự tạo: chưa đủ dữ liệu để nhận định.',
       disclaimer: 'Số liệu minh họa tự tạo, không phải thống kê kho.', is_demo: true },

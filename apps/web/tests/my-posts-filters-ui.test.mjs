@@ -7,6 +7,8 @@ import { build } from 'esbuild';
 import { chromium, expect } from '@playwright/test';
 
 const comparison = { status: 'insufficient_data', reason_codes: [], criteria: {}, n: 1, message: 'Chưa đủ tin.', similar: [], is_demo: false };
+const tier2 = { status: 'ok', reason_codes: [], criteria: {}, n: 23, scope: 'old_district', scope_label: 'Bình Thạnh (cũ)', pool: 'auto_checked', similar: [], is_demo: false,
+  message: 'Thấp hơn mức trung bình (-8,0%) của 23 tin phòng trọ ở Bình Thạnh (cũ) (không cùng phường, gồm tin chưa duyệt, đã qua kiểm tra tự động).' };
 const listing = (id, extra) => ({ listing_id: id, review_status: 'needs_review', reason_codes: [], public_url: null, price_vnd: 4000000,
   price_min_vnd: null, price_form: 'exact', price_basis: 'per_unit', price_period: 'month', area_m2: 22, room_type: 'phong_tro',
   ward_code: null, ward_name: null, resolution: null, old_districts: [], area_match: null, comparison, ...extra });
@@ -47,7 +49,7 @@ test('My posts filter bar keeps filters in the URL, shows counts, place source a
         const tier = url.searchParams.getAll('area').length > 0;
         res.end(JSON.stringify({ items: none ? [] : [post('p1', [listing('l1', { old_districts: [{ key: 'quan-10', name: 'Quận 10' }], area_match: tier ? 'mention' : null }),
           listing('l3', { ward_name: 'Phường Chợ Quán', area_match: tier ? 'multi_area' : null })]),
-          post('p2', [listing('l2', { ward_name: 'Phường Sài Gòn', ward_code: '26740', area_match: tier ? 'ward' : null })], 2)],
+          post('p2', [listing('l2', { ward_name: 'Phường Sài Gòn', ward_code: '26740', area_match: tier ? 'ward' : null, comparison: tier2 })], 2)],
           total: none ? 0 : 2, page: 1, limit: 20, comparison_baseline: 'real_accepted', matched_listings: none ? 0 : 2, total_sent: 200 }));
       }
       return;
@@ -79,6 +81,9 @@ test('My posts filter bar keeps filters in the URL, shows counts, place source a
     await expect(page.getByText('Ở đúng phường', { exact: true })).toBeVisible();
     await expect(page.getByText('Bài nhắc tên quận', { exact: true })).toBeVisible();
     await expect(page.getByText('Bài nhiều khu vực', { exact: true })).toBeVisible();
+    await expect(page.getByText('Thấp hơn mức trung bình (-8,0%) của 23 tin phòng trọ ở Bình Thạnh (cũ)', { exact: false })).toBeVisible();
+    await expect(page.getByText('So với tin ở Bình Thạnh (cũ) · không cùng phường · gồm tin chưa duyệt, đã qua kiểm tra tự động', { exact: true })).toBeVisible();
+    await expect(page.getByText('So với tin ở', { exact: false })).toHaveCount(1);  // only the tier 2 card carries a scope line
     await expect(page.getByText('200 bài đã gửi')).toBeVisible();
     await expect(page.getByText('Bài có 2 tin, đang hiện 1 tin khớp bộ lọc.')).toBeVisible();
     await expect(page.getByRole('checkbox', { name: /Quận 10 \(cũ\)/ })).toBeChecked();

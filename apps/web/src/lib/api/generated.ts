@@ -788,6 +788,18 @@ export interface components {
             /** Reason Codes */
             reason_codes: ("too_few_samples" | "price_not_exact" | "basis_unknown" | "ward_unresolved" | "area_missing_broad_group")[];
             criteria: components["schemas"]["ComparisonCriteria"];
+            /**
+             * Scope
+             * @enum {string}
+             */
+            scope: "ward" | "old_district";
+            /** Scope Label */
+            scope_label: string | null;
+            /**
+             * Pool
+             * @enum {string}
+             */
+            pool: "accepted" | "auto_checked";
             /** N */
             n: number;
             /** Mean Vnd */
@@ -837,6 +849,8 @@ export interface components {
             window_days: number;
             /** Broad Group */
             broad_group: boolean;
+            /** Old District Key */
+            old_district_key?: string | null;
         };
         /** Contributed */
         Contributed: {

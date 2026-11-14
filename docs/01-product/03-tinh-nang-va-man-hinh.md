@@ -59,7 +59,7 @@ Mỗi màn hình ghi: mục đích, nội dung, hành động, các trạng thá
 
 - **Mục đích:** J2 — tìm tin theo nhu cầu.
 - **Bộ lọc:** phường (nhiều lựa chọn), loại phòng, khoảng giá (triệu/tháng), khoảng diện tích, "chỉ tin có giá". Sắp xếp: giá tăng/giảm, mới nhất. Bộ lọc lưu trên URL.
-- **Thẻ tin:** loại phòng · phường · giá thuê (hoặc "Chưa có giá" / "Từ 3 triệu" / "1,5 tr/người") · diện tích (hoặc "Chưa rõ") · dòng phí ("Điện 3,5k/số · Nước 100k/người · Cọc 1 tháng" hoặc "Chưa rõ phí") · ngày đăng · nhãn nhận định nếu có ("Thấp hơn trung vị 8%").
+- **Thẻ tin:** loại phòng · phường · giá thuê (hoặc "Chưa có giá" / "Từ 3 triệu" / "1,5 tr/người") · diện tích (hoặc "Chưa rõ") · dòng phí ("Điện 3,5k/số · Nước 100k/người · Cọc 1 tháng" hoặc "Chưa rõ phí") · ngày đăng · nhãn nhận định nếu có ("Thấp hơn trung vị 8%"). Khi nhóm so sánh là quận cũ chứ không phải phường ([ADR-0010](../decisions/ADR-0010-so-gia-theo-quan-cu.md)), nhãn luôn ghi quận cũ, "không cùng phường" và nguồn tin: "Thấp hơn 8% so với trung bình 23 tin phòng trọ ở Bình Thạnh (cũ) · không cùng phường · gồm tin chưa duyệt" (nguồn "chỉ gồm tin đã duyệt" khi nhóm chỉ có tin đã duyệt). Chênh lệch tính so với trung bình theo hợp đồng API hiện hữu.
 - **Trạng thái:** đang tải (khung xám) · không có kết quả (nêu điều kiện nào làm rỗng, nút bỏ từng điều kiện) · lỗi API (nút thử lại) · kho rỗng.
 - **API:** `GET /listings`.
 
