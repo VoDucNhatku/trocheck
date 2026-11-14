@@ -271,6 +271,15 @@ Cấu trúc listing theo [listing-extraction.schema.json](../../spec/schemas/lis
 | `GET /market/summary` | `ward`/`type` key lặp, `basis` | Bảng phường × loại: `n`, `median`, `p25`, `p75`, `median_per_m2`, `n_per_m2`, `excluded_counts` |
 | `GET /stats/overview` | — | Tổng tin, tin đủ điều kiện, ngày cập nhật |
 
+#### Kho chung (14/11/2026, ADR-0010)
+
+Bổ sung tương thích ngược; mặc định của API không đổi, web truyền tham số mới.
+
+- `GET /listings`: thêm `area` (khóa quận cũ lặp, ví dụ `thu-duc`; khóa lạ trả 422) và `pool` = `accepted` (mặc định, như cũ) | `all`. Với `all`, danh sách gồm thêm tin thật đang chờ duyệt đã qua kiểm tra tự động: bài dùng được (không `rejected_type`/`failed`), có giá (`exact`/`range`/`starting_from`), không mang mã chặn (`conflict`, `multi_listing`, `outside_hcm_province`, `possible_duplicate`, `llm_error`, `rent_llm_only`). Thẻ tin thêm `old_district_key` và `old_district` ("Thủ Đức (cũ)") khi tin thuộc đúng một quận cũ; `review_status = needs_review` cho biết tin chưa duyệt. `GET /listings/{id}` và `/comparison` mở được các tin này.
+- `GET /market/summary`: thêm `group_by` = `ward` (mặc định, như cũ) | `old_district`; `area` (khóa quận cũ); `pool` = `auto_checked` (mặc định khi `old_district`) | `accepted`. `pool=auto_checked` với `group_by=ward` trả 422. Ô theo quận cũ có `district_key`, `district_name`, `ward_code`/`ward_name` là `null`; phản hồi có `group_by` và `pool`. Điều kiện vào nhóm theo quận cũ giống tầng 2 của so giá (ADR-0010): đúng một quận cũ, không bài nhiều khu vực, giá chính xác theo tháng, rõ cách tính và loại phòng, trong cửa sổ, một tin mỗi cụm, N ≥ 10 mới có trung bình.
+- `GET /stats/overview`: thêm `store_listings` (tin dùng để so giá trong kho chung), `accepted_listings` (phần đã duyệt của nó), `store_districts` (số quận cũ có tin).
+- Lệnh vận hành `python -m app.cli reprocess-real [--limit N]`: đọc lại bằng luật trích hiện hành các bài thật có lần trích cũ hơn (khác phiên bản pipeline/regex/normalizer/lexicon). Chỉ dùng biểu thức chính quy, chạy lại không đổi gì; bỏ qua bài demo, bài đang có việc chờ, bài trích bằng LLM thành công và bài có tin đã được người hoặc bot quyết định (`approved`/`rejected`/`duplicate`). `deploy/start.sh` gọi lệnh này sau migration; lỗi không chặn khởi động. Chỉ in số đếm.
+
 **`GET /listings/{id}/comparison`**
 
 ```json

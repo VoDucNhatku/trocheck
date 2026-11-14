@@ -55,3 +55,13 @@ Trang chủ đọc số liệu ở máy chủ và dùng `revalidate: 60`. Sau kh
 - Phút 45–60: nếu đã bật bot, xem số lần gọi, 429, lỗi mô hình, thời gian chờ, ý kiến đã lưu và công việc bị hoãn sang ngày sau. Xác nhận hạn mức riêng và chung. Xem lỗi HTTP, chi phí và tải Neon; mức polling hiện có không bảo đảm Neon ngủ.
 
 Ghi lại thời điểm chuyển chế độ, số bài thật đã nhận, số tin công khai/chờ duyệt, lỗi và quyết định tiếp tục hay khôi phục. Chủ dự án quyết định mô hình được phép dùng, mức hạn gọi lâu dài và thời điểm bật tự quyết định nếu chức năng đó được bổ sung.
+
+## Kho chung và đọc lại bài cũ (14/11/2026)
+
+Sau khi đặt `DEMO_MODE=false`, kho thật có 259 tin nhưng chỉ 8 tin đủ điều kiện thống kê theo phường (đa số thiếu cách tính giá, phường hoặc loại phòng, và 244 tin chưa duyệt). Bản cập nhật này:
+
+- Mỗi lần khởi động, `start.sh` chạy `python -m app.cli reprocess-real --limit 1000` sau migration: đọc lại bằng luật hiện hành các bài thật trích bằng luật cũ, chỉ biểu thức chính quy, giữ nguyên mọi tin đã được người hoặc bot quyết định. Lần đầu sau khi triển khai sẽ đọc lại phần lớn bài; các lần sau không làm gì. Log chỉ in số đếm (`reprocess-real: {...}`).
+- Thị trường mặc định xem theo quận cũ trên kho chung (tin đã duyệt và tin chưa duyệt đã qua kiểm tra tự động, có nhãn); Tìm trọ trên web dùng `pool=all`. Quy tắc ở ADR-0010 và hợp đồng API §3 "Kho chung".
+- Nên tạo một nhánh Neon (bản chụp) trước khi triển khai lần đầu, vì bước đọc lại ghi đè kết quả trích của các tin chưa quyết định. Cách làm ở [sao lưu Neon](27-sao-luu-neon.md).
+
+Kiểm tra sau triển khai: log Render có dòng `reprocess-real:` với `errors: 0`; `/api/v1/stats/overview` có `store_listings` lớn hơn trước; `/thi-truong` hiện bảng theo quận cũ. Kịch bản trình bày: [31-kich-ban-thuyet-trinh.md](31-kich-ban-thuyet-trinh.md).
