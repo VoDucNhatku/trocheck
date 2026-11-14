@@ -264,6 +264,83 @@ test('a daily cap waits until the store says, keeps the rest local and still sen
   assert.match((await bg.save([rawPost('901')])).note, /sau 0 giờ/);
 });
 
+const capAnswer = (message, seconds) => ({ ok: false, status: 429, headers: { get: name => name === 'Retry-After' ? String(seconds) : null },
+  json: async () => ({ error: { code: 'daily_limit', message } }) });
+const PHOTO_CAP = 'Hôm nay tài khoản này đã gửi đủ 600 ảnh.';
+const withPhoto = bg => { bg.context.TroStorage.readImagesToUpload = async () => [{ image: { id: 'i1', data: new Blob(['x'], { type: 'image/jpeg' }) }, record: rawPost('900') }]; };
+
+test('a photo daily cap pauses only photos: new posts still go on the next automatic run, photos wait for Retry-After', async () => {
+  const config = connected();
+  const paths = [];
+  const bg = worker({ config, fetcher: async (url, options) => {
+    const path = new URL(url).pathname.split('/').pop();
+    paths.push(path);
+    return path === 'images' ? capAnswer(PHOTO_CAP, 7200) : ingestAnswer(options);
+  } });
+  withPhoto(bg);
+  await bg.save(); bg.alarm('send-to-trocheck');
+  await until(() => config.trocheckSync?.imagesNextAttempt);
+  assert.deepEqual(paths, ['batch', 'images']);
+  assert.equal(config.trocheckSync.blocked, undefined);
+  assert.equal(config.trocheckSync.daily, undefined);
+  assert.equal(config.trocheckSync.nextAttempt, undefined);
+  assert.equal((await bg.context.TroStorage.readUnsent()).length, 0);
+  const wait = config.trocheckSync.imagesNextAttempt - Date.now();
+  assert.ok(wait > 7200 * 1000 && wait < 7200 * 1000 + 70000, String(wait));
+  assert.equal(config.trocheckSync.imagesError, `${PHOTO_CAP} Bài vẫn gửi bình thường; ảnh còn lại sẽ gửi tiếp sau 0 giờ.`);
+  assert.equal(bg.alarms.get('send-to-trocheck').when, config.trocheckSync.imagesNextAttempt);
+  // The note is informative and the badge stays a count, not "!".
+  assert.match((await bg.save([rawPost('901')])).note, /Bài vẫn gửi bình thường.*sau 0 giờ/);
+  assert.ok(bg.alarms.get('send-to-trocheck').when < Date.now() + 10000);
+  await until(async () => bg.badges.get(1) === '2');
+  // The next automatic run sends the new post and does not touch the photo endpoint.
+  paths.length = 0;
+  bg.alarm('send-to-trocheck');
+  await until(() => paths.length);
+  await until(async () => (await bg.context.TroStorage.readUnsent()).length === 0);
+  assert.deepEqual(paths, ['batch']);
+  assert.ok(config.trocheckSync.imagesNextAttempt > Date.now() + 7000 * 1000);
+  assert.equal(bg.alarms.get('send-to-trocheck').when, config.trocheckSync.imagesNextAttempt);
+});
+
+test('photos are tried again once the photo Retry-After has passed', async () => {
+  const config = connected();
+  let photoCalls = 0;
+  const bg = worker({ config, fetcher: async (url, options) => {
+    if (!url.includes('/ingest/images?')) return ingestAnswer(options);
+    photoCalls++;
+    return photoCalls === 1 ? capAnswer(PHOTO_CAP, 7200) : json({ status: 'created' });
+  } });
+  withPhoto(bg);
+  await bg.save(); bg.alarm('send-to-trocheck');
+  await until(() => config.trocheckSync?.imagesNextAttempt);
+  bg.alarm('send-to-trocheck'); await new Promise(resolve => setTimeout(resolve, 50));
+  assert.equal(photoCalls, 1, 'no retry before Retry-After');
+  config.trocheckSync.imagesNextAttempt = Date.now() - 1;
+  bg.alarm('send-to-trocheck');
+  await until(() => photoCalls === 2);
+  await until(() => config.trocheckSync?.lastSent && config.trocheckSync.imagesNextAttempt === undefined);
+  assert.equal(config.trocheckSync.imagesError, undefined);
+});
+
+test('both caps together: posts wait for the post cap, photos for the photo cap, each with its own time', async () => {
+  const config = connected();
+  const bg = worker({ config, fetcher: async url => url.includes('/ingest/images?')
+    ? capAnswer(PHOTO_CAP, 3600) : capAnswer('Hôm nay tài khoản này đã gửi đủ 200 bài mới.', 7200) });
+  withPhoto(bg);
+  await bg.save(); bg.alarm('send-to-trocheck');
+  await until(() => config.trocheckSync?.nextAttempt);
+  assert.equal(config.trocheckSync.daily, true);
+  assert.match(config.trocheckSync.error, /200 bài mới/);
+  assert.ok(config.trocheckSync.nextAttempt - Date.now() > 7200 * 1000);
+  assert.ok(config.trocheckSync.imagesNextAttempt - Date.now() > 3600 * 1000);
+  assert.ok(config.trocheckSync.imagesNextAttempt < config.trocheckSync.nextAttempt);
+  assert.equal(config.trocheckSync.blocked, false);
+  assert.equal((await bg.context.TroStorage.readUnsent()).length, 1);
+  assert.equal(bg.alarms.get('send-to-trocheck').when, config.trocheckSync.imagesNextAttempt);
+  assert.match((await bg.save([rawPost('902')])).note, /200 bài mới/);
+});
+
 test('auto-send off and disconnect keep local data, while manual send remains available', async () => {
   let calls = 0;
   const bg = worker({ config: { ...connected(), trocheckAutoSend: false }, fetcher: async (url, options) => { calls++; return ingestAnswer(options); } });

@@ -62,6 +62,8 @@ test('My posts empty state offers installation and connection, filters and error
     await expect(page.getByRole('link', { name: 'Cài tiện ích' })).toHaveAttribute('href', '/extension');
     await expect(page.getByRole('link', { name: 'Kết nối tài khoản' })).toHaveAttribute('href', '/tai-khoan');
     await expect(page.getByText('0/200 bài')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Bắt đầu trong 4 bước' })).toBeVisible();
+    assert.equal(await page.locator('ol li[data-done=false]').count(), 4, 'no step is done for an account with no posts');
     await expect(page.getByText(/không dùng dữ liệu demo/)).toBeVisible();
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
     assert.equal(await page.locator('em,i').count(), 0);
