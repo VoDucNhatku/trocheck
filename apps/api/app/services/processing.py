@@ -8,11 +8,13 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.core.config import Settings
 from app.core.ids import vn_day_start
-from app.models import BotReview, Cluster, ExtractionRun, Job, Listing, LlmCache, Post, PostVersion
+from app.models import (BotReview, Cluster, ExtractionRun, Job, Listing, ListingDistrict, LlmCache, Post,
+                        PostVersion)
 from app.pipeline import dedup
 from app.pipeline.engine import PipelineResult, run_pipeline
 from app.pipeline.llm_extractor import LlmClient, prompt_version
 from app.pipeline.normalize import location_key
+from app.pipeline.old_districts import district_scan
 from app.pipeline.places import places_for
 from app.services import jobs
 from app.services.serialize import field_rows, lookup_columns
@@ -84,6 +86,15 @@ def store_run(session: Session, post: Post, version: PostVersion, result: Pipeli
             listing.cluster_id = old.cluster_id
         session.add(listing)
         new_listings.append(listing)
+    session.flush()
+    # Old districts named in the text (many posts give a district but no ward). Real posts only; a listing
+    # flagged outside_hcm_province is never offered under an HCMC district.
+    scan = None if post.is_demo else district_scan(version.text)
+    mentioned = scan.keys if scan else ()
+    for listing in new_listings:
+        if mentioned and "outside_hcm_province" not in (listing.review_reasons or []):
+            listing.multi_area = scan.multi_area
+            session.add_all(ListingDistrict(listing_id=listing.id, district_key=key) for key in mentioned)
     session.flush()
     for listing in new_listings:
         if listing.cluster_id is None:

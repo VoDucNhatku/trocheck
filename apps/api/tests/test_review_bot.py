@@ -21,7 +21,9 @@ from app.services import bot_reviews, jobs, maintenance, processing, serialize
 from app.worker import run as worker
 from tests.conftest import batch, post_payload
 
-TEXT = "Cho thuê phòng trọ 20m2 giá 3tr/tháng gần chợ Láng. LH [SĐT]"
+# Without a per-person signal this post would now get basis per_unit (CTX_BASIS_UNIT_WHOLE) and be auto_accepted; the
+# bot tests need a listing that waits for review because its basis stays unknown, so the post also mentions shared occupancy (ở ghép).
+TEXT = "Cho thuê phòng trọ 20m2 giá 3tr/tháng gần chợ Láng, có chỗ ở ghép. LH [SĐT]"
 V1 = "/api/v1"
 
 

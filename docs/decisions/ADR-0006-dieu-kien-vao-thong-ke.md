@@ -18,3 +18,7 @@ Tin vào thống kê khi `review_status ∈ {auto_accepted, approved}` và thỏ
 ## Xem lại khi
 
 Kiểm tay cho thấy tỉ lệ sai trong `auto_accepted` cao → siết điều kiện hoặc duyệt tay nhiều hơn.
+
+## Sửa đổi
+
+[ADR-0010](ADR-0010-so-gia-theo-quan-cu.md) (đề xuất) cho tầng 2 dùng thêm nguồn "tin thật đã qua kiểm tra tự động" khi tin đã duyệt chưa đủ N ≥ 10, kèm nhãn nguồn. Điều kiện tầng 1 của ADR này không đổi.

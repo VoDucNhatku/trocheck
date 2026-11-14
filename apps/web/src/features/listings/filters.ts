@@ -34,6 +34,10 @@ export function parseFilters(sp: SearchParams): ListingQuery {
     page: Math.max(1, Math.floor(num(sp.trang) ?? 1)),
     page_size: 20,
     sort: SORTS.includes(sort as (typeof SORTS)[number]) ? sort : 'newest',
+    // Old districts (khu_vuc=thu-duc) and the shared store: unreviewed but auto-checked listings are shown
+    // unless the reader asks for reviewed ones only (chi_da_duyet=1).
+    area: list(sp.khu_vuc).filter(key => /^[a-z0-9-]{1,40}$/.test(key)),
+    pool: (Array.isArray(sp.chi_da_duyet) ? sp.chi_da_duyet[0] : sp.chi_da_duyet) === '1' ? 'accepted' : 'all',
   };
 }
 

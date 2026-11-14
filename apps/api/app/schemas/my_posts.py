@@ -3,10 +3,19 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from app.schemas.public import Comparison
+from app.schemas.public import Comparison, PropertyType
 
 PostStatus = Literal["received", "needs_review", "published", "rejected", "not_rental", "failed"]
 StatusGroup = Literal["all", "published", "waiting", "other"]
+SortKey = Literal["newest", "price_asc", "price_desc", "area_desc"]
+
+
+class OldDistrictRef(BaseModel):
+    key: str
+    name: str
+
+
+AreaMatch = Literal["ward", "mention", "multi_area"]
 
 
 class ExtractedListing(BaseModel):
@@ -24,6 +33,10 @@ class ExtractedListing(BaseModel):
     ward_code: str | None
     ward_name: str | None
     resolution: str | None
+    # Only with an area filter: "ward" the resolved ward is in the district, "mention" the post names it,
+    # "multi_area" the post lists many districts (agency ad). None without an area filter.
+    area_match: AreaMatch | None
+    old_districts: list[OldDistrictRef]
     comparison: Comparison
 
 
@@ -36,6 +49,7 @@ class MyPost(BaseModel):
     status: PostStatus
     reason_codes: list[str]
     photo_count: int
+    listing_total: int
     listings: list[ExtractedListing]
 
 
@@ -45,6 +59,8 @@ class MyPosts(BaseModel):
     page: int
     limit: int
     comparison_baseline: Literal["real_accepted"] = "real_accepted"
+    matched_listings: int
+    total_sent: int
 
 
 class StatusCounts(BaseModel):
@@ -64,3 +80,33 @@ class DailyQuota(BaseModel):
 class MyPostsSummary(BaseModel):
     counts: StatusCounts
     quota: DailyQuota
+
+
+class AreaOption(BaseModel):
+    key: str
+    name: str
+    listing_count: int
+    post_count: int
+
+
+class WardOption(BaseModel):
+    code: str
+    name: str | None
+    listing_count: int
+    post_count: int
+
+
+class TypeOption(BaseModel):
+    type: str
+    listing_count: int
+
+
+class MyPostsFilters(BaseModel):
+    areas: list[AreaOption]
+    wards: list[WardOption]
+    types: list[TypeOption]
+    price_min_vnd: int | None
+    price_max_vnd: int | None
+    area_min_m2: float | None
+    area_max_m2: float | None
+    total_listings: int

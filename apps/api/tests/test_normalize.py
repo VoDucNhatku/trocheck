@@ -2,6 +2,7 @@
 import pytest
 
 from app.pipeline import normalize as n
+from app.pipeline.engine import run_pipeline
 
 # §1 rent: (span, amount_form, amount|min, max, basis, period, includes)
 RENT_ROWS = [
@@ -216,3 +217,115 @@ def test_ctx_basis_not_applied_to_multi_listing():
     rent = n.parse_rent("5tr")
     n.ctx_basis_unit_single(rent, property_type="ccmn", listing_count=2, text="CCMN P1 5tr P2 6tr")
     assert rent["basis"] == "unknown"
+
+
+@pytest.mark.parametrize("span,value", [
+    ("2.7x10", 27), ("2,7 x 10", 27), ("2.7m x 10m", 27), ("2.7mx10m", 27), ("4m x 8m", 32), ("3.5 x 12m", 42),
+    ("30m2", 30), ("6m2", 6), ("DT 30m", 30),
+])
+def test_area_from_dimensions_is_the_product_never_the_first_number(span, value):
+    area = n.parse_area(span)
+    assert area["amount_form"] == "exact" and area["value_m2"] == value
+
+
+@pytest.mark.parametrize("span", ["2.7m2", "5m2", "DT 2.7m", "diện tích 3m", "2x2", "1.5 x 3m", "3-5m2"])
+def test_area_below_six_square_metres_is_not_stored(span):
+    area = n.parse_area(span)
+    assert area == {"amount_form": "none", "value_m2": None, "min_m2": None, "max_m2": None,
+                    "from_dimensions": False}
+
+
+def test_dimension_area_through_the_regex_rule_and_the_pipeline():
+    from app.pipeline.engine import run_pipeline
+
+    def areas(text):
+        return [listing["area"] for listing in run_pipeline(text).extraction["listings"]]
+
+    assert [a["value_m2"] for a in areas("Cho thuê nhà nguyên căn Quận 7, ngang 2.7m x 10m, giá 9tr/tháng.")] == [27]
+    absent = areas("Cho thuê phòng trọ Quận 7, giá 3tr/tháng.")[0]
+    assert absent["value_m2"] is None and absent["amount_form"] == "none"
+    tiny = areas("Cho thuê phòng trọ Quận 7, DT 2.7m, giá 3tr/tháng.")[0]
+    assert tiny["value_m2"] is None and tiny["amount_form"] == "none"
+
+
+@pytest.mark.parametrize("span,value", [
+    ("2tr8.", 2_800_000), ("giá 3tr2, có gác", 3_200_000), ("2tr8;", 2_800_000), ("5 triệu 5.", 5_500_000),
+    ("3tr5", 3_500_000), ("3tr5.000", 3_000_000),
+])
+def test_last_digit_of_a_price_survives_a_following_full_stop_or_comma(span, value):
+    assert n.parse_rent(span)["amount_vnd"] == value
+
+
+@pytest.mark.parametrize("span", ["1tr/tuần", "12tr/năm", "30k/giờ", "2tr5/tuan"])
+def test_prices_per_week_year_or_hour_are_unsupported_not_monthly(span):
+    rent = n.parse_rent(span)
+    assert rent["unsupported"] is True and rent["amount_form"] == "none" and rent["amount_vnd"] is None
+    assert rent["period"] == "unknown"
+
+
+@pytest.mark.parametrize("span,period", [("250k/ngày", "day"), ("150k/đêm", "day"), ("3tr/tháng", "month")])
+def test_daily_and_nightly_prices_are_day_prices(span, period):
+    assert n.parse_rent(span)["period"] == period
+
+
+# --- CTX_BASIS_UNIT_WHOLE (task N): whole-unit rents without a per-person signal are per unit ------------
+
+WHOLE_UNIT_POSTS = [
+    "Cho thuê phòng trọ 25m2 Quận 7 giá 3tr5/tháng.",
+    "Phòng trọ mới xây 22m2 Bình Thạnh, 3tr5.",
+    "Cho thuê phòng giá phòng 4tr, nước 100k/người",
+    "Phòng trọ 3tr5, điện 3k5/số, nước 100k/người, xe 100k/người.",
+    "Cho thuê studio full nội thất 6tr/tháng, ở tối đa 2 người.",
+    "Cho thuê duplex 30m2 Gò Vấp 7tr5/tháng, phù hợp 2 người ở.",
+    "Cho thuê căn hộ 7tr/tháng, gửi xe 100k/người",
+    "Nhà nguyên căn 4x12 Tân Phú 9tr/tháng, rác 20k/người.",
+    "Cho thuê CCMN 30m2 5tr/tháng, internet 50k/người.",
+    "Cho thuê phòng 20m2 Quận 12 giá 2tr8, có gác.",
+    "Phòng trọ khép kín 3 triệu/tháng, cọc 1 tháng, điện nước theo giá nhà nước.",
+    "Cho thuê phòng 25m2 giá 3tr, vệ sinh 50k/người/tháng.",
+]
+PER_PERSON_POSTS = [
+    "Tìm người ở ghép phòng 1tr5/tháng Quận 7.",
+    "Cho thuê phòng 2tr5 ở ghép nữ.",
+    "Cho thuê giường tầng KTX 800k/tháng.",
+    "Phòng share 1tr2/tháng gần chợ.",
+    "Còn 2 slot phòng trọ 1tr8/tháng.",
+    "Phòng trọ 1 người 2tr5, 2 người 3tr.",
+    "Phòng 3tr/2 người ở.",
+    "Phòng trọ 2tr5 mỗi người/tháng.",
+    "Cho thuê phòng 1tr2 theo đầu người.",
+    "Cho thuê 3 giường trống trong phòng 1tr/giường.",
+    "Ký túc xá sinh viên 700k/tháng phòng 6 bạn.",
+    "Cho thuê phòng 1tr8 một người, điện nước chia đều.",
+]
+
+
+@pytest.mark.parametrize("text", WHOLE_UNIT_POSTS)
+def test_whole_unit_rent_without_a_person_signal_is_per_unit(text):
+    result = run_pipeline(text, mode="production")
+    rent = result.extraction["listings"][0]["rent"]
+    assert rent["basis"] == "per_unit", text
+    assert "basis_unknown" not in result.listing_meta[0].review_reasons
+    assert "CTX_BASIS_UNIT_WHOLE" in rent["evidence"][0]["rule_id"]
+
+
+@pytest.mark.parametrize("text", PER_PERSON_POSTS)
+def test_person_or_bed_signal_never_becomes_per_unit(text):
+    result = run_pipeline(text, mode="production")
+    listings = result.extraction["listings"]
+    for listing in listings:
+        assert listing["rent"]["basis"] != "per_unit", text
+
+
+def test_inferred_basis_is_not_applied_to_multi_listing_or_without_a_price():
+    rent = n.parse_rent("inbox")
+    assert n.ctx_basis_unit_whole(rent, property_type="phong_tro", listing_count=1, text="phòng trọ inbox") is None
+    rent = n.parse_rent("5tr")
+    assert n.ctx_basis_unit_whole(rent, property_type="phong_tro", listing_count=2, text="P1 5tr P2 6tr") is None
+    assert rent["basis"] == "unknown"
+
+
+def test_explicit_suffix_is_never_overridden_by_the_inference():
+    rent = n.parse_rent("2tr5/người")
+    assert n.ctx_basis_unit_whole(rent, property_type="phong_tro", listing_count=1, text="phòng 2tr5/người") is None
+    assert rent["basis"] == "per_person"

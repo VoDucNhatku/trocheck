@@ -125,6 +125,13 @@ Worker lấy job bằng một câu UPDATE có điều kiện (`status = 'queued'
 | `version` | Tăng mỗi lần người duyệt sửa; dùng chống ghi đè |
 | Cột tra cứu nhanh (sao chép từ field_values để lọc): `rent_amount_vnd`, `rent_form`, `rent_basis`, `rent_period`, `area_m2`, `property_type`, `ward_code`, `observed_at` | Index trên (`ward_code`, `property_type`, `rent_basis`, `observed_at`) |
 
+### `listing_districts` — quận cũ đã đọc được trong bài
+
+Migration `0008` (SQLite và PostgreSQL). Khóa chính `(listing_id, district_key)`, `listing_id` FK `listings.id` xóa theo listing,
+chỉ mục `ix_listing_districts_key`. `district_key` là khóa quận/huyện cũ (`quan-10`, `go-vap`...) do
+`app.pipeline.old_districts.district_mentions` tìm trong văn bản bằng bộ khớp quận hiện hữu. Ghi lúc trích xuất; migration tự điền
+cho các listing đã có (bài thật, không gọi LLM) và bỏ qua listing gắn cờ `outside_hcm_province`. Dùng cho bộ lọc `area` của `/me/posts`.
+
 ### `field_values`, `evidence`
 
 | Bảng | Cột chính |

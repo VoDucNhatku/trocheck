@@ -15,7 +15,7 @@ from app.pipeline.reconcile import ListingMeta, finalize_status, reconcile
 from app.pipeline.regex_extractor import (Span, assign_listings, find_segments, find_spans,
                                           pair_without_markers, regex_version)
 
-PIPELINE_VERSION = "1.0.0"
+PIPELINE_VERSION = "1.1.0"
 MODES = ("production", "eval_regex", "eval_llm", "eval_hybrid")
 
 
@@ -177,9 +177,17 @@ def run_pipeline(text: str, *, mode: str = "production", llm: LlmClient | None =
 
 def _apply_context_rules(listing: dict, *, post_type: str, listing_count: int, text: str) -> None:
     rent = listing["rent"]
+    room = listing["room"]
+    if post_type == "rental_offer":
+        inferred = n.ctx_room_type(room, listing_count=listing_count, text=text)
+        if inferred and room.get("evidence"):
+            first = room["evidence"][0]
+            first["rule_id"] = ";".join([first.get("rule_id") or first["method"], inferred])
     applied = [n.ctx_period_month(rent, post_type=post_type),
                n.ctx_basis_unit_single(rent, property_type=listing["room"]["property_type"],
-                                       listing_count=listing_count, text=text)]
+                                       listing_count=listing_count, text=text),
+               n.ctx_basis_unit_whole(rent, property_type=listing["room"]["property_type"],
+                                      listing_count=listing_count, text=text)]
     applied = [a for a in applied if a]
     if applied and rent.get("evidence"):
         # Record context rules on the evidence so reviewers see what was inferred (§6).

@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from sqlalchemy import (JSON, Boolean, DateTime, Float, ForeignKey, Index, Integer, String, Text,
-                        UniqueConstraint, text)
+                        UniqueConstraint, false, text)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base
@@ -211,6 +211,9 @@ class Listing(Base):
     property_type: Mapped[str | None] = mapped_column(String(20))
     ward_code: Mapped[str | None] = mapped_column(String(40))
     ward_name: Mapped[str | None] = mapped_column(String(100))
+    # The post names MULTI_AREA_MIN or more districts as its own place: an agency / multi-area ad. Set with
+    # the listing_districts rows (services.processing, migration 0009).
+    multi_area: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false())
     observed_at: Mapped[datetime] = mapped_column(DateTime)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
@@ -321,3 +324,16 @@ class EvalResult(Base):
     metric: Mapped[str] = mapped_column(String(40))
     value: Mapped[float | None] = mapped_column(Float)
     support: Mapped[int | None] = mapped_column(Integer)
+
+
+class ListingDistrict(Base):
+    """Old-district keys (quan-1, binh-thanh...) the pipeline found in the post text for a listing.
+
+    Many posts name only an old district, not a ward; this makes "Quận 1" filterable for them.
+    Absent for listings flagged outside_hcm_province. Written at extraction (services.processing)
+    and backfilled for older rows by migration 0008.
+    """
+    __tablename__ = "listing_districts"
+    __table_args__ = (Index("ix_listing_districts_key", "district_key"),)
+    listing_id: Mapped[str] = mapped_column(ForeignKey("listings.id", ondelete="CASCADE"), primary_key=True)
+    district_key: Mapped[str] = mapped_column(String(40), primary_key=True)

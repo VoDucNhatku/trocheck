@@ -111,12 +111,83 @@ Không dùng demo ngay cả khi `DEMO_MODE=true`; `comparison.is_demo=false`.
 Tỷ lệ hiện hữu so với **trung bình**, không phải trung vị. `insufficient_data` / `not_comparable` giữ lý do thật,
 không sinh giá hoặc phần trăm giả. Web ghi rõ nguồn so sánh và tính chất giá chào thuê.
 
+Hai tầng so sánh ([ADR-0010](../decisions/ADR-0010-so-gia-theo-quan-cu.md), đề xuất): `Comparison` (đường dẫn
+`GET /listings/{id}/comparison` và `comparison` trong `/me/posts`) có thêm ba trường bắt buộc.
+`scope`: `ward` (nhóm cùng phường, như trên) hoặc `old_district` (nhóm cùng một quận cũ, chỉ khi tầng phường
+thiếu phường hoặc N < 10). `scope_label`: tên phường, hoặc quận cũ kèm "(cũ)", ví dụ "Bình Thạnh (cũ)".
+`pool`: `accepted` (tin đã duyệt) hoặc `auto_checked` (thêm tin thật chưa duyệt đã qua kiểm tra tự động; chỉ
+xảy ra ở `old_district` khi tin đã duyệt chưa đủ N ≥ 10). `criteria.old_district_key` có giá trị ở tầng quận cũ,
+`null` ở tầng phường. Tầng quận cũ không dùng vùng lân cận, bài nhiều khu vực (`multi_area`) hay dữ liệu demo;
+`message` luôn ghi quận cũ, "không cùng phường" và nguồn tin. `similar` chỉ chứa tin đã duyệt (công khai), kể cả khi
+`pool = auto_checked`; số liệu tổng hợp không lộ nội dung hay người gửi của tin khác. Các trường cũ không đổi.
+
 `GET /api/v1/me/posts/summary`: cùng xác thực và phạm vi sở hữu, trả
 `{counts: {all, published, waiting, other}, quota: {used, limit, remaining, timezone}}`.
 `timezone="Asia/Ho_Chi_Minh"`; `used` dùng đúng bộ đếm ingest hiện hữu: số bài **mới**
 `collector_id=user.id`, `mode=collect`, `first_seen_at >= vn_day_start()`.
 Bài trùng của người khác không dùng thêm lượt, dù có trong danh sách cá nhân. Không đổi chính sách ingest.
 `limit`/`remaining` là null khi `INGEST_DAILY_LIMIT=0` hoặc có quyền collector (gồm admin theo quy tắc hiện hữu).
+
+#### Lọc bài của tôi (14/11/2026)
+
+`GET /api/v1/me/posts` nhận thêm các tham số tùy chọn, kết hợp bằng AND (giá trị lặp của `area`, `ward`, `type` là OR trong
+chính bộ lọc đó). Các bộ lọc tin áp lên **từng tin** (listing hiện hành); bài khớp khi có ít nhất một tin khớp **toàn bộ**
+điều kiện, và `listings` chỉ trả các tin khớp, kèm `listing_total` là tổng số tin của bài.
+
+| Tham số | Ý nghĩa |
+|---|---|
+| `area` (lặp) | Khóa quận/huyện **cũ**: `quan-1`, `quan-3`, `quan-7`, `binh-thanh`, `thu-duc`... Tin khớp nếu phường mới của nó nằm trong quận cũ đó **hoặc** pipeline đã đọc thấy tên quận cũ trong bài (bảng `listing_districts`, xem dưới). Khóa lạ trả 422. |
+| `ward` (lặp) | Mã phường/xã **mới** đúng 5 chữ số. |
+| `price_min`, `price_max` | VND/tháng, `>= 0`, `price_min <= price_max`. So trên giá tháng của tin: giá chính xác, nếu là khoảng hoặc "từ" thì lấy đầu thấp (`rent_amount_vnd`, rồi `rent_min_vnd`). Tin giá theo ngày (`rent_period=day`) không khớp bộ lọc giá; kỳ hạn chưa rõ vẫn được giữ vì đa số bài không ghi "/tháng". Tin không công khai giá ("giá inbox") không có giá nên không bao giờ khớp bộ lọc giá, nhưng vẫn hiện khi không đặt bộ lọc giá. |
+| `area_min`, `area_max` | m², `area_min <= area_max`. |
+| `type` (lặp) | `phong_tro`, `ccmn`, `can_ho_dich_vu`, `nha_nguyen_can`, `unknown` (giá trị đã lưu). |
+| `rental_only` | Mặc định `true`: ẩn bài `not_rental` và `failed`. `false` hiện tất cả. Không đổi `summary`. |
+| `sort` | `newest` (mặc định, như cũ), `price_asc`, `price_desc`, `area_desc`. Bài xếp theo tin khớp thấp nhất (`price_asc`) hoặc cao nhất (`price_desc`, `area_desc`); bài không có giá/diện tích xếp cuối; hòa thì theo lượt gửi mới nhất rồi `post_id`. Tin trong từng bài cũng xếp theo khóa đó. |
+
+Ánh xạ `area` -> phường mới được dựng một lần từ `former_wards.yaml` (không viết tay): với mỗi phường cũ, mọi
+`new_ward_code` trong `relations` (nhận trọn hoặc một phần) thuộc quận/huyện cũ đó. Một phường mới có thể nhận phần của hai
+quận cũ (ví dụ `27364` thuộc cả `quan-6` và `quan-8`), khi đó khớp **cả hai** khóa; vì vậy lọc theo quận cũ là gần đúng ở ranh giới,
+không khẳng định toàn bộ phường mới nằm trong quận cũ. Phần lớn bài thật chỉ ghi quận cũ (Q10, quận 9 cũ, Gò Vấp...) mà không có phường, nên `area` còn khớp theo **tên quận cũ
+đã đọc được trong bài**: bảng `listing_districts(listing_id, district_key)` (migration `0008`) lưu các khóa mà bộ khớp quận
+hiện hữu `Places.unconfirmed_districts` tìm thấy trong văn bản (gồm viết tắt Q1, Q.1, quận 1, không dấu; thêm Quận 2 và
+Quận 9 vốn không có phường cũ trong từ điển). Ghi một lần lúc trích xuất (`services/processing.store_run`) và migration
+`0008` tự điền cho dữ liệu cũ khi chạy `init-db` (không gọi LLM, bỏ qua bài demo). Tin gắn cờ `outside_hcm_province`
+không có dòng nào nên không khớp quận nào. `ward` vẫn chỉ khớp theo mã phường: tin chưa rõ phường không khớp `ward`.
+Bài chưa có phường và chưa nêu quận không khớp `area`/`ward`, nhưng vẫn hiện khi không đặt bộ lọc tin nào.
+Mỗi tin trả thêm `old_districts: [{key, name}]` (quận cũ đã đọc được) để web ghi nguồn vị trí.
+
+Bộ khớp quận (`app.pipeline.old_districts.district_scan`, từ migration `0009`) chỉ giữ quận là **nơi của tin**, không giữ mọi
+lần nhắc tên quận:
+
+- Quận đứng sau từ chỉ khoảng cách (gần, giáp, giáp ranh, sát, cách, kế, cạnh, tiện đi, thuận tiện đi/di chuyển, qua, sang, ra,
+  về, xuống, lên, giao giữa, "5 phút tới/đến/ra"...; có hoặc không dấu), kể cả cả danh sách nối bằng dấu phẩy, `/`, "và", "hoặc",
+  bị bỏ. Tên không có tiền tố quận (ví dụ "Aeon mall Tân Phú") cũng bị bỏ nếu chỉ cách từ chỉ khoảng cách tối đa 3 từ; "quận N"
+  rõ ràng chỉ bị bỏ khi đứng ngay sau từ đó. Mệnh đề kết thúc ở dấu phẩy, chấm, chấm phẩy hoặc ngoặc.
+- Tên chỉ khớp khi bỏ dấu thì không khớp: "Bình Thành" không phải Bình Thạnh. Chữ không dấu hoặc dấu ở một phần ("Binh Thanh",
+  "Bình Thanh") vẫn khớp. Kiểm tra mọi tên quận trong từ điển: không tên quận nào trùng không dấu với tên phường, địa danh
+  hay tỉnh khác trong `lexicon/`.
+- D10, D.10, D 10, Q10, Q.10, quan10 và hashtag như `#phongtroquan10` tính cho quận 1 đến 12 (số lớn hơn 12 thì không).
+- Bài nêu từ 3 quận khác nhau trở lên (sau khi bỏ quận nhắc như lân cận) là bài nhiều khu vực (môi giới đăng nhiều khu):
+  `listings.multi_area = true`. Các dòng `listing_districts` vẫn lưu đủ để bộ lọc khu vực tìm thấy bài.
+
+Khi đặt `area`, mỗi tin có `area_match`: `"ward"` (mã phường đã xác định thuộc quận), `"mention"` (bài nêu quận đó) hoặc
+`"multi_area"` (bài nhiều khu vực nêu quận đó); không đặt `area` thì `area_match` là `null`. Mọi kiểu `sort` đều xếp **theo tầng
+trước**: bài có tin `ward` trước, rồi `mention`, rồi `multi_area` (bài lấy tầng tốt nhất của các tin khớp), và giữ `sort` đã chọn
+trong từng tầng. Không đặt `area` thì thứ tự như trước. Web ghi tầng trên thẻ: "Ở đúng phường", "Bài nhắc tên quận", "Bài nhiều khu vực".
+
+Migration `0009` thêm `listings.multi_area`, tính lại toàn bộ `listing_districts` và cờ từ văn bản bài đã lưu (cùng cách `0008`: không gọi
+LLM, bỏ bài demo và tin `outside_hcm_province`, chạy lại nhiều lần cho cùng kết quả, SQLite và PostgreSQL), và đặt `area_m2` null
+cho giá trị dưới 6 m² (kích thước như 2,7 m đọc nhầm thành diện tích). Giá và kỳ hạn đã lưu không bị đọc lại; chỉ bài trích xuất lại mới có
+cách đọc giá mới (số cuối của "2tr8.", giá theo tuần, năm, giờ chuyển sang duyệt tay).
+
+Phân trang và `total` tính **sau** lọc, lọc và sắp xếp thực hiện trong SQL; `limit <= 50`. Thêm vào phản hồi:
+`matched_listings` (số tin khớp trên toàn bộ kết quả, không chỉ trang hiện tại) và `total_sent` (mọi bài đã gửi, không phụ thuộc lọc).
+
+`GET /api/v1/me/posts/filters`: cùng xác thực và phạm vi sở hữu (chỉ dữ liệu của chính tài khoản, bỏ bài demo,
+`not_rental`, `failed`), trả `{areas: [{key, name, listing_count, post_count}], wards: [{code, name, listing_count,
+post_count}], types: [{type, listing_count}], price_min_vnd, price_max_vnd, area_min_m2, area_max_m2, total_listings}`.
+`areas` suy từ phường của từng tin theo ánh xạ trên và từ quận cũ đã đọc được trong bài, mỗi tin tính một lần cho mỗi quận (một phường chung hai quận cũ được đếm ở cả hai); sắp xếp theo
+số bài giảm dần. Giá/diện tích là biên trên các tin đó, null khi không có số liệu.
 
 Migration `0007` thêm khóa chính `(post_id,user_id)` trong `post_submissions`, với `first_sent_at`,
 khóa ngoại cascade và chỉ mục `(user_id,first_sent_at)`; INSERT SELECT dùng kiểu SQLAlchemy tương thích
@@ -199,6 +270,15 @@ Cấu trúc listing theo [listing-extraction.schema.json](../../spec/schemas/lis
 | `GET /listings/{id}/comparison` | — | Xem bên dưới |
 | `GET /market/summary` | `ward`/`type` key lặp, `basis` | Bảng phường × loại: `n`, `median`, `p25`, `p75`, `median_per_m2`, `n_per_m2`, `excluded_counts` |
 | `GET /stats/overview` | — | Tổng tin, tin đủ điều kiện, ngày cập nhật |
+
+#### Kho chung (14/11/2026, ADR-0010)
+
+Bổ sung tương thích ngược; mặc định của API không đổi, web truyền tham số mới.
+
+- `GET /listings`: thêm `area` (khóa quận cũ lặp, ví dụ `thu-duc`; khóa lạ trả 422) và `pool` = `accepted` (mặc định, như cũ) | `all`. Với `all`, danh sách gồm thêm tin thật đang chờ duyệt đã qua kiểm tra tự động: bài dùng được (không `rejected_type`/`failed`), có giá (`exact`/`range`/`starting_from`), không mang mã chặn (`conflict`, `multi_listing`, `outside_hcm_province`, `possible_duplicate`, `llm_error`, `rent_llm_only`). Thẻ tin thêm `old_district_key` và `old_district` ("Thủ Đức (cũ)") khi tin thuộc đúng một quận cũ; `review_status = needs_review` cho biết tin chưa duyệt. `GET /listings/{id}` và `/comparison` mở được các tin này.
+- `GET /market/summary`: thêm `group_by` = `ward` (mặc định, như cũ) | `old_district`; `area` (khóa quận cũ); `pool` = `auto_checked` (mặc định khi `old_district`) | `accepted`. `pool=auto_checked` với `group_by=ward` trả 422. Ô theo quận cũ có `district_key`, `district_name`, `ward_code`/`ward_name` là `null`; phản hồi có `group_by` và `pool`. Điều kiện vào nhóm theo quận cũ giống tầng 2 của so giá (ADR-0010): đúng một quận cũ, không bài nhiều khu vực, giá chính xác theo tháng, rõ cách tính và loại phòng, trong cửa sổ, một tin mỗi cụm, N ≥ 10 mới có trung bình.
+- `GET /stats/overview`: thêm `store_listings` (tin dùng để so giá trong kho chung), `accepted_listings` (phần đã duyệt của nó), `store_districts` (số quận cũ có tin).
+- Lệnh vận hành `python -m app.cli reprocess-real [--limit N]`: đọc lại bằng luật trích hiện hành các bài thật có lần trích cũ hơn (khác phiên bản pipeline/regex/normalizer/lexicon). Chỉ dùng biểu thức chính quy, chạy lại không đổi gì; bỏ qua bài demo, bài đang có việc chờ, bài trích bằng LLM thành công và bài có tin đã được người hoặc bot quyết định (`approved`/`rejected`/`duplicate`). `deploy/start.sh` gọi lệnh này sau migration; lỗi không chặn khởi động. Chỉ in số đếm.
 
 **`GET /listings/{id}/comparison`**
 

@@ -103,14 +103,36 @@ def my_posts_summary(response: Response, user: User = Depends(current_user), ses
     return my_posts.summary(session, user, settings)
 
 
-@router.get("/me/posts", tags=["account"], response_model=mine.MyPosts,
+@router.get("/me/posts/filters", tags=["account"], response_model=mine.MyPostsFilters,
             responses={401: {"model": ErrorResponse}})
+def my_posts_filters(response: Response, user: User = Depends(current_user), session: Session = Depends(get_session)):
+    response.headers["Cache-Control"] = "private, no-store"
+    response.headers["Vary"] = "Cookie, Authorization"
+    return my_posts.filter_options(session, user)
+
+
+@router.get("/me/posts", tags=["account"], response_model=mine.MyPosts,
+            responses={401: {"model": ErrorResponse}, 422: {"model": ErrorResponse}})
 def my_submitted_posts(response: Response, group: mine.StatusGroup = "all", page: int = Query(1, ge=1),
-                       limit: int = Query(20, ge=1, le=50), user: User = Depends(current_user),
+                       limit: int = Query(20, ge=1, le=50),
+                       area: list[str] = Query(default=[], max_length=40, description="Old-district keys, e.g. quan-1."),
+                       ward: list[str] = Query(default=[], max_length=40, description="New ward codes."),
+                       type: list[mine.PropertyType] = Query(default=[], max_length=5),
+                       price_min: int | None = Query(None, ge=0, le=10_000_000_000),
+                       price_max: int | None = Query(None, ge=0, le=10_000_000_000),
+                       area_min: float | None = Query(None, ge=0, le=100_000),
+                       area_max: float | None = Query(None, ge=0, le=100_000),
+                       rental_only: bool = True, sort: mine.SortKey = "newest",
+                       user: User = Depends(current_user),
                        session: Session = Depends(get_session), settings: Settings = Depends(settings_dep)):
     response.headers["Cache-Control"] = "private, no-store"
     response.headers["Vary"] = "Cookie, Authorization"
-    return my_posts.search(session, user, settings, group=group, page=page, limit=limit)
+    filters = my_posts.Filters(areas=tuple(dict.fromkeys(area)), wards=tuple(dict.fromkeys(ward)),
+                               types=tuple(dict.fromkeys(type)), price_min=price_min, price_max=price_max,
+                               area_min=area_min, area_max=area_max, rental_only=rental_only, sort=sort)
+    my_posts.validate(filters)
+    return my_posts.search(session, user, settings, group=group, page=page, limit=limit, filters=filters)
+
 
 @router.post("/ingest/batch", tags=["extension"])
 def ingest_batch(body: IngestBatch, user: User = Depends(current_user),
@@ -162,11 +184,15 @@ def list_listings(ward: list[str] = Query(default=[]), type: list[str] = Query(d
                   area_min: float | None = None, area_max: float | None = None, has_price: bool | None = None,
                   sort: Literal["price_asc", "price_desc", "newest"] = "newest",
                   page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100),
+                  area: list[str] = Query(default=[], max_length=40, description="Old-district keys, e.g. thu-duc."),
+                  pool: Literal["all", "accepted"] = Query("accepted", description="all: shared store incl. auto-checked listings"),
                   demo: bool = Depends(demo_flag), session: Session = Depends(get_session),
                   settings: Settings = Depends(settings_dep)):
+    areas = tuple(dict.fromkeys(area))
+    my_posts.validate(my_posts.Filters(areas=areas))
     return listings.search(session, settings, wards=ward, types=type, price_min=price_min, price_max=price_max,
                            area_min=area_min, area_max=area_max, has_price=has_price, sort=sort, page=page,
-                           page_size=page_size, demo=demo)
+                           page_size=page_size, demo=demo, pool=pool, areas=list(areas))
 
 
 @router.get("/listings/{listing_id}", tags=["renter"], response_model=ListingDetail, response_model_exclude_unset=True,
@@ -185,9 +211,20 @@ def get_comparison(listing_id: str, user: User | None = Depends(optional_user), 
 
 @router.get("/market/summary", tags=["renter"], response_model=dto.MarketSummaryDTO)
 def market_summary(ward: list[str] = Query(default=[]), type: list[str] = Query(default=[]),
-                   basis: Literal["per_unit", "per_person"] = "per_unit", demo: bool = Depends(demo_flag),
+                   basis: Literal["per_unit", "per_person"] = "per_unit",
+                   group_by: Literal["ward", "old_district"] = "ward",
+                   area: list[str] = Query(default=[], max_length=40, description="Old-district keys (group_by=old_district)."),
+                   pool: Literal["accepted", "auto_checked"] | None = Query(
+                       None, description="old_district only: auto_checked (default) or accepted"),
+                   demo: bool = Depends(demo_flag),
                    session: Session = Depends(get_session), settings: Settings = Depends(settings_dep)):
-    return market.summary(session, settings, wards=ward, types=type, basis=basis, demo=demo)
+    areas = tuple(dict.fromkeys(area))
+    my_posts.validate(my_posts.Filters(areas=areas))
+    if group_by == "ward" and pool == "auto_checked":
+        raise ApiError(422, message="Bộ lọc không hợp lệ",
+                       field_errors={"pool": "Nguồn tin chưa duyệt chỉ dùng khi xem theo quận cũ"})
+    return market.summary(session, settings, wards=ward, types=type, basis=basis, demo=demo, group_by=group_by,
+                          areas=list(areas), pool_name=pool)
 
 
 @router.get("/stats/overview", tags=["renter"], response_model=StatsOverview,

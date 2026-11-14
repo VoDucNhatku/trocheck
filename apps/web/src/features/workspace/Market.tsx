@@ -12,20 +12,20 @@ import { Field } from '@/components/Field/Field';
 import { PhraseText } from '@/components/PhraseText/PhraseText';
 import { ThemeToggle } from '@/components/ThemeToggle/ThemeToggle';
 import { DataBadge } from './ui';
-import { MARKET_TYPES, marketAreaReady, marketMeanReady, marketMinimum, marketQuery, marketSearchUrl, marketWards, type MarketCell, type MarketFilters } from './Market.model';
+import { MARKET_TYPES, marketAreaReady, marketDistrictSearchUrl, marketDistricts, marketMeanReady, marketMinimum, marketPageHref, marketSearchUrl, marketWards, type MarketCell, type MarketFilters, type MarketView } from './Market.model';
 import styles from './Market.module.css';
 
-const EXCLUDED: Record<string, string> = { not_contributed: 'Chưa đóng góp', not_approved: 'Chưa được chấp nhận', not_accepted: 'Chưa được chấp nhận', rejected: 'Đã loại', duplicate: 'Trùng tin', non_exact_price: 'Giá không cụ thể', price_not_exact: 'Giá không cụ thể', basis_unknown: 'Chưa rõ cách tính giá', property_type_unknown: 'Chưa rõ loại phòng', period_not_month: 'Giá không theo tháng', not_monthly: 'Giá không theo tháng', ward_unresolved: 'Chưa xác định phường', outside_window: 'Ngoài cửa sổ thời gian', old: 'Ngoài thời gian', not_rental_offer: 'Không phải bài cho thuê', demo_mismatch: 'Khác bộ dữ liệu' };
+const EXCLUDED: Record<string, string> = { not_contributed: 'Chưa đóng góp', not_approved: 'Chưa được chấp nhận', not_accepted: 'Chưa được chấp nhận', rejected: 'Đã loại', review_rejected: 'Đã loại khi duyệt', duplicate: 'Trùng tin', non_exact_price: 'Giá không cụ thể', price_not_exact: 'Giá không cụ thể', basis_unknown: 'Chưa rõ cách tính giá', property_type_unknown: 'Chưa rõ loại phòng', period_not_month: 'Giá không theo tháng', not_monthly: 'Giá không theo tháng', ward_unresolved: 'Chưa xác định phường', old_district_unresolved: 'Chưa xác định quận cũ', blocking_reason: 'Cần người duyệt xem lại', post_not_usable: 'Không phải bài cho thuê', outside_window: 'Ngoài cửa sổ thời gian', old: 'Ngoài thời gian', not_rental_offer: 'Không phải bài cho thuê', demo_mismatch: 'Khác bộ dữ liệu', demo_data: 'Dữ liệu demo', real_data: 'Dữ liệu thật', older_in_cluster: 'Tin cũ hơn trong cùng cụm' };
 
-function WardName({ name }: { name: string }) {
+function PlaceName({ name }: { name: string }) {
   const parts = name.match(/^(phường|xã|đặc khu)\s+(.+)$/iu);
   if (parts && parts[2].length <= 22) return <>{parts[1]} <span className={styles.phrase}>{parts[2]}</span></>;
   return name.length <= 22 && name.trim().split(/\s+/u).length <= 3 ? <span className={styles.phrase}>{name}</span> : <PhraseText text={name} />;
 }
 
-function Cell({ cell, type, ward, minimum, demo }: { cell?: MarketCell; type: MarketCell['property_type']; ward: string; minimum: number; demo: boolean }) {
+function Cell({ cell, type, href, minimum }: { cell?: MarketCell; type: MarketCell['property_type']; href: string; minimum: number }) {
   const ready = marketMeanReady(cell, minimum);
-  return <Link className={styles.cell} data-ready={ready} href={marketSearchUrl(ward, type, demo)}>
+  return <Link className={styles.cell} data-ready={ready} href={href}>
     <span className={styles.cellType}><PhraseText text={PROPERTY_LABEL[type]} /></span>
     {ready ? <>
       <strong className={styles.price}><PhraseText text={formatVnd(cell.mean_vnd)} /></strong>
@@ -38,7 +38,7 @@ function Cell({ cell, type, ward, minimum, demo }: { cell?: MarketCell; type: Ma
   </Link>;
 }
 
-export function Market({ query, filters, wards = [], showThemeToggle = true }: { query: string; filters: MarketFilters; wards?: string[]; showThemeToggle?: boolean }) {
+export function Market({ query, filters, view = { view: 'phuong', area: '', accepted: false }, wards = [], showThemeToggle = true }: { query: string; filters: MarketFilters; view?: MarketView; wards?: string[]; showThemeToggle?: boolean }) {
   const router = useRouter();
   const [result, setResult] = useState<{ query: string; data?: MarketSummary; error?: string }>({ query });
   const [reload, setReload] = useState(0);
@@ -51,50 +51,67 @@ export function Market({ query, filters, wards = [], showThemeToggle = true }: {
     return () => controller.abort();
   }, [query, reload]);
 
+  const byDistrict = view.view === 'quan';
   const data = result.query === query ? result.data : undefined;
   const error = result.query === query ? result.error : undefined;
   // Keep unlike price bases separate even if an upstream response contains both.
   const cells = data?.cells.filter(cell => cell.basis === filters.basis) ?? [];
-  const grouped = marketWards(cells);
+  const allDistricts = marketDistricts(cells);
+  const grouped = byDistrict ? allDistricts.filter(d => !view.area || d.key === view.area) : marketWards(cells);
   const types: MarketCell['property_type'][] = filters.type ? [filters.type as MarketCell['property_type']] : [...MARKET_TYPES, ...(cells.some(cell => cell.property_type === 'unknown') ? ['unknown' as const] : [])];
   const minimum = marketMinimum(data?.min_n ?? 10);
-  const readyCells = cells.filter(cell => marketMeanReady(cell, minimum));
+  const shownCells = grouped.flatMap(group => group.cells);
+  const readyCells = shownCells.filter(cell => marketMeanReady(cell, minimum));
   const maxPrice = Math.max(1, ...readyCells.map(cell => cell.mean_vnd!));
+  const demo = data?.is_demo ?? filters.demo === 'true';
+  const href = (group: { filter: string }, type: string) => byDistrict ? marketDistrictSearchUrl(group.filter, type, demo, view.accepted) : marketSearchUrl(group.filter, type, demo);
+  const placeHeader = byDistrict ? 'Quận cũ' : 'Phường';
+  const basisLabel = filters.basis === 'per_person' ? 'giá theo người' : 'giá theo phòng';
+  const poolNote = byDistrict ? view.accepted ? 'Chỉ tin đã duyệt.' : 'Kho chung: tin đã duyệt và tin chưa duyệt đã qua kiểm tra tự động.' : 'Chỉ tin đã duyệt, cùng phường mới.';
 
   return <div className={styles.page}>
     <header className={styles.heading}>
-      <div><p className={styles.eyebrow}>Thị trường</p><h1><span className={styles.phrase}>Giá thuê</span>{' '}<span className={styles.phrase}>trung bình</span>{' '}<em className={styles.phrase}>theo phường.</em></h1><p className={styles.lead}>{data ? dataRangeSentence(data.data_from, data.data_to) : 'Giá chào thuê trong bài đăng, không phải giá giao dịch.'}</p></div>
+      <div><p className={styles.eyebrow}>Thị trường</p><h1><span className={styles.phrase}>Giá thuê</span>{' '}<span className={styles.phrase}>trung bình</span>{' '}<em className={styles.phrase}>{byDistrict ? 'theo quận cũ.' : 'theo phường.'}</em></h1><p className={styles.lead}>{data ? dataRangeSentence(data.data_from, data.data_to) : 'Giá chào thuê trong bài đăng, không phải giá giao dịch.'}</p></div>
       <div className={styles.headingTools}>{data && <DataBadge demo={data.is_demo} />}{showThemeToggle && <ThemeToggle />}</div>
     </header>
 
     <section className={styles.controls} aria-label="Bộ lọc thị trường">
-      <div className={styles.basis} role="group" aria-label="Cách tính giá">
-        <Button variant="secondary" aria-pressed={filters.basis === 'per_unit'} onClick={() => router.push('/thi-truong?' + marketQuery({ ...filters, basis: 'per_unit' }))}>Giá theo phòng</Button>
-        <Button variant="secondary" aria-pressed={filters.basis === 'per_person'} onClick={() => router.push('/thi-truong?' + marketQuery({ ...filters, basis: 'per_person' }))}>Giá theo người</Button>
+      <div className={styles.basis} role="group" aria-label="Cách xem">
+        <Button variant="secondary" aria-pressed={byDistrict} onClick={() => router.push(marketPageHref(filters, { ...view, view: 'quan' }))}>Theo quận cũ</Button>
+        <Button variant="secondary" aria-pressed={!byDistrict} onClick={() => router.push(marketPageHref(filters, { ...view, view: 'phuong' }))}>Theo phường mới</Button>
       </div>
-      <p className={styles.note}>Cùng cách tính giá mới so sánh với nhau. Các nhóm dưới {minimum} tin ghi “Chưa đủ dữ liệu”.</p>
+      <div className={styles.basis} role="group" aria-label="Cách tính giá">
+        <Button variant="secondary" aria-pressed={filters.basis === 'per_unit'} onClick={() => router.push(marketPageHref({ ...filters, basis: 'per_unit' }, view))}>Giá theo phòng</Button>
+        <Button variant="secondary" aria-pressed={filters.basis === 'per_person'} onClick={() => router.push(marketPageHref({ ...filters, basis: 'per_person' }, view))}>Giá theo người</Button>
+      </div>
+      <p className={styles.note}>Cùng cách tính giá mới so sánh với nhau. Các nhóm dưới {minimum} tin ghi “Chưa đủ dữ liệu”. {poolNote}</p>
       <form key={query} action="/thi-truong" className={styles.filters}>
         <input type="hidden" name="basis" value={filters.basis} />
-        <Field label="Phường (tên hoặc mã)" name="ward" defaultValue={filters.ward} list="market-wards" placeholder="Tất cả phường" />
-        <datalist id="market-wards">{wards.map(ward => <option key={ward} value={ward} />)}</datalist>
+        <input type="hidden" name="xem" value={view.view} />
+        {byDistrict
+          ? <div className={styles.field}><label htmlFor="market-area"><span className={styles.phrase}>Khu vực</span> (quận cũ)</label><select id="market-area" className={styles.select} name="khu_vuc" defaultValue={view.area}><option value="">Tất cả khu vực</option>{allDistricts.map(d => <option key={d.key} value={d.key}>{d.name}</option>)}{view.area && !allDistricts.some(d => d.key === view.area) && <option value={view.area}>{view.area}</option>}</select></div>
+          : <><Field label="Phường (tên hoặc mã)" name="ward" defaultValue={filters.ward} list="market-wards" placeholder="Tất cả phường" /><datalist id="market-wards">{wards.map(ward => <option key={ward} value={ward} />)}</datalist></>}
         <div className={styles.field}><label htmlFor="market-type"><span className={styles.phrase}>Loại phòng</span></label><select id="market-type" className={styles.select} name="type" defaultValue={filters.type}><option value="">Tất cả loại</option>{Object.entries(PROPERTY_LABEL).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></div>
-        <div className={styles.field}><label htmlFor="market-demo">Bộ dữ liệu</label><select key={`${query}-${data?.is_demo}`} id="market-demo" className={styles.select} name="demo" defaultValue={data ? String(data.is_demo) : filters.demo}><option value="">Theo máy chủ</option>{data?.is_demo !== false && <option value="true">Demo tự tạo</option>}<option value="false">Kho thật</option></select></div>
+        {byDistrict && <label className={styles.field}><span><input type="checkbox" name="nguon" value="da-duyet" defaultChecked={view.accepted} /> Chỉ tin đã duyệt</span></label>}
+        {filters.demo === 'true'
+          ? <div className={styles.field}><label htmlFor="market-demo">Bộ dữ liệu</label><select id="market-demo" className={styles.select} name="demo" defaultValue={filters.demo}><option value="true">Demo tự tạo</option><option value="false">Kho thật</option></select></div>
+          : <input type="hidden" name="demo" value="false" />}
         <Button type="submit">Áp dụng bộ lọc</Button>
       </form>
     </section>
 
     {error ? <section className={styles.state} data-state="error" role="alert"><h2>Chưa tải được dữ liệu.</h2><p>{error}</p><p>Các lựa chọn của bạn vẫn được giữ.</p><Button onClick={() => setReload(value => value + 1)}>Thử lại</Button></section>
       : !data ? <section className={styles.state} role="status" aria-live="polite"><h2>Đang tải dữ liệu thị trường…</h2><p>Đang đọc các nhóm giá theo lựa chọn của bạn.</p><div className={styles.skeleton} aria-hidden="true" /><div className={styles.skeleton} aria-hidden="true" /></section>
-        : !grouped.length ? <section className={styles.state}><h2>Chưa có nhóm giá cho lựa chọn này.</h2><p>Thử chọn thêm phường, đổi <span className={styles.phrase}>loại phòng</span> hoặc bộ dữ liệu.</p><Link className={styles.reset} href={'/thi-truong?' + marketQuery({ ...filters, ward: '', type: '' })}>Xóa lọc phường và loại</Link></section>
+        : !grouped.length ? <section className={styles.state}><h2>Chưa có nhóm giá cho lựa chọn này.</h2><p>{byDistrict ? 'Kho chưa có tin đủ điều kiện ở khu vực này. Lướt thêm các nhóm cho thuê trọ bằng extension, hoặc bỏ lọc khu vực.' : <>Thử chọn thêm phường, đổi <span className={styles.phrase}>loại phòng</span> hoặc xem theo quận cũ.</>}</p><Link className={styles.reset} href={marketPageHref({ ...filters, ward: '', type: '' }, { ...view, area: '' })}>Xóa lọc khu vực và loại</Link></section>
           : <div className={styles.layout}>
               <div>
-                <div className={styles.desktopGrid} data-wide={types.length > 4}><table className={styles.table}><caption><span className={styles.phrase}>Giá thuê</span> trung bình theo phường và <span className={styles.phrase}>loại phòng</span> · <span className={styles.phrase}>{filters.basis === 'per_person' ? 'giá theo người' : 'giá theo phòng'}</span></caption><thead><tr><th scope="col">Phường</th>{types.map(type => <th scope="col" key={type}><PhraseText text={PROPERTY_LABEL[type]} /></th>)}</tr></thead><tbody>{grouped.map(ward => <tr key={ward.key}><th scope="row"><WardName name={ward.name} /></th>{types.map(type => <td key={type}><Cell cell={ward.cells.find(cell => cell.property_type === type)} type={type} ward={ward.filter} minimum={minimum} demo={data.is_demo} /></td>)}</tr>)}</tbody></table></div>
-                <div className={styles.mobileGrid} data-wide={types.length > 4}>{grouped.map(ward => <section className={styles.ward} aria-label={ward.name} key={ward.key}><h2><WardName name={ward.name} /></h2>{types.map(type => <Cell key={type} cell={ward.cells.find(cell => cell.property_type === type)} type={type} ward={ward.filter} minimum={minimum} demo={data.is_demo} />)}</section>)}</div>
-                <p className={styles.note}>Bấm một ô để mở Tìm trọ theo phường và <span className={styles.phrase}>loại phòng.</span> Danh sách Tìm trọ có thể gồm các cách tính giá khác nhau.</p>
+                <div className={styles.desktopGrid} data-wide={types.length > 4}><table className={styles.table}><caption><span className={styles.phrase}>Giá thuê</span> trung bình theo {byDistrict ? 'quận cũ' : 'phường'} và <span className={styles.phrase}>loại phòng</span> · <span className={styles.phrase}>{basisLabel}</span></caption><thead><tr><th scope="col">{placeHeader}</th>{types.map(type => <th scope="col" key={type}><PhraseText text={PROPERTY_LABEL[type]} /></th>)}</tr></thead><tbody>{grouped.map(group => <tr key={group.key}><th scope="row"><PlaceName name={group.name} /></th>{types.map(type => <td key={type}><Cell cell={group.cells.find(cell => cell.property_type === type)} type={type} href={href(group, type)} minimum={minimum} /></td>)}</tr>)}</tbody></table></div>
+                <div className={styles.mobileGrid} data-wide={types.length > 4}>{grouped.map(group => <section className={styles.ward} aria-label={group.name} key={group.key}><h2><PlaceName name={group.name} /></h2>{types.map(type => <Cell key={type} cell={group.cells.find(cell => cell.property_type === type)} type={type} href={href(group, type)} minimum={minimum} />)}</section>)}</div>
+                <p className={styles.note}>Bấm một ô để mở Tìm trọ theo {byDistrict ? 'quận cũ' : 'phường'} và <span className={styles.phrase}>loại phòng.</span> Danh sách Tìm trọ có thể gồm các cách tính giá khác nhau.</p>
               </div>
-              <aside className={styles.chart} aria-label="Mức giá trung bình"><h2>Mức <span className={styles.phrase}>trung bình</span></h2><p className={styles.note}>Chỉ các nhóm đủ {minimum} tin · <span className={styles.phrase}>{filters.basis === 'per_person' ? 'giá theo người' : 'giá theo phòng'}</span>.</p>{readyCells.length ? readyCells.map((cell, index) => <div className={styles.bar} key={`${cell.ward_code}-${cell.property_type}-${index}`}><strong><WardName name={cell.ward_name || 'Chưa rõ phường'} /></strong><span><PhraseText text={PROPERTY_LABEL[cell.property_type]} /> · {cell.n.toLocaleString('vi-VN')} tin</span><b><PhraseText text={formatRent(cell.mean_vnd, cell.basis)} /></b><div className={styles.track} aria-hidden="true"><i style={{ width: `${cell.mean_vnd! / maxPrice * 100}%` }} /></div></div>) : <p className={styles.note}>Chưa đủ dữ liệu để vẽ mức <span className={styles.phrase}>trung bình</span>.</p>}</aside>
+              <aside className={styles.chart} aria-label="Mức giá trung bình"><h2>Mức <span className={styles.phrase}>trung bình</span></h2><p className={styles.note}>Chỉ các nhóm đủ {minimum} tin · <span className={styles.phrase}>{basisLabel}</span>.</p>{readyCells.length ? readyCells.map((cell, index) => <div className={styles.bar} key={`${cell.district_key ?? cell.ward_code}-${cell.property_type}-${index}`}><strong><PlaceName name={cell.district_name || cell.ward_name || 'Chưa rõ khu vực'} /></strong><span><PhraseText text={PROPERTY_LABEL[cell.property_type]} /> · {cell.n.toLocaleString('vi-VN')} tin</span><b><PhraseText text={formatRent(cell.mean_vnd, cell.basis)} /></b><div className={styles.track} aria-hidden="true"><i style={{ width: `${cell.mean_vnd! / maxPrice * 100}%` }} /></div></div>) : <p className={styles.note}>Chưa nhóm nào đủ {minimum} tin để vẽ mức <span className={styles.phrase}>trung bình</span>. Mỗi ô ghi số tin hiện có.</p>}</aside>
             </div>}
 
-    {data && <details className={styles.conditions}><summary>Điều kiện thống kê và tin bị loại</summary><p><PhraseText text={`Cửa sổ ${data.window_days.toLocaleString('vi-VN')} ngày. Chỉ giá chính xác theo tháng, cùng cách tính; một tin đại diện mỗi cụm. TrọCheck đọc thống kê từ máy chủ. Giá theo m² cần ít nhất ${minimum} tin có `} /><span className={styles.phrase}>diện tích</span> hợp lệ.</p><ul>{Object.entries(data.excluded_counts).map(([reason, count]) => <li key={reason}>{EXCLUDED[reason] ?? 'Điều kiện khác'}: {count.toLocaleString('vi-VN')} tin</li>)}</ul></details>}
+    {data && <details className={styles.conditions}><summary>Điều kiện thống kê và tin bị loại</summary><p><PhraseText text={`Cửa sổ ${data.window_days.toLocaleString('vi-VN')} ngày. Chỉ giá chính xác theo tháng, cùng cách tính; một tin đại diện mỗi cụm. ${byDistrict ? 'Theo quận cũ: tin xác định được đúng một quận cũ (phường mới hoặc tên quận trong bài); bài nhắc nhiều khu vực hoặc chỉ nói “gần” một quận không được tính. ' : ''}Giá theo m² cần ít nhất ${minimum} tin có `} /><span className={styles.phrase}>diện tích</span> hợp lệ.</p><ul>{Object.entries(data.excluded_counts).map(([reason, count]) => <li key={reason}>{EXCLUDED[reason] ?? 'Điều kiện khác'}: {count.toLocaleString('vi-VN')} tin</li>)}</ul></details>}
   </div>;
 }

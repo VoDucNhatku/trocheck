@@ -7,6 +7,7 @@ import type { TokenCreated, TokenInfo } from '@/lib/workspace/types';
 import { Button, Modal } from './ui';
 import s from './account-notices.module.css';
 import Link from 'next/link';
+import { TOKENS_CHANGED } from './Onboarding';
 import { requestExtension } from '@/lib/workspace/extension-bridge';
 
 /** Manual tokens are shown once; one-click tokens stay in the hand-off only. */
@@ -21,7 +22,7 @@ export function ExtensionTokens() {
   const [missingExtension, setMissingExtension] = useState(false);
 
   async function load() {
-    try { setItems((await api<{ items: TokenInfo[] }>('team/extension-tokens')).items); }
+    try { setItems((await api<{ items: TokenInfo[] }>('team/extension-tokens')).items); window.dispatchEvent(new Event(TOKENS_CHANGED)); }
     catch (caught) { setError(messageOf(caught)); }
   }
   useEffect(() => { void load(); }, []);

@@ -58,6 +58,23 @@ Nhóm mặc định để so một tin đích:
 
 Tin đích thiếu diện tích → so ở **nhóm rộng** (bỏ điều kiện diện tích) và ghi rõ "nhóm rộng, không xét diện tích". Không tự nới thêm điều kiện nào khác để đủ mẫu. Nội thất chưa dùng để chia nhóm ở bản demo vì nhiều bài không ghi; giao diện ghi rõ giới hạn này.
 
+### 3b. Tầng 2: quận cũ ([ADR-0010](../decisions/ADR-0010-so-gia-theo-quan-cu.md), đề xuất)
+
+Nhóm ở §3 là **tầng 1** và luôn được thử trước. **Tầng 2** chỉ chạy khi tầng 1 là `insufficient_data` (N < 10), hoặc `not_comparable` mà lý do duy nhất là thiếu phường. Tin đích không so được vì lý do khác (giá không chính xác, giá không theo tháng, chưa rõ cách tính giá, chưa rõ loại phòng) thì tầng 2 không cứu. Dữ liệu demo không có tầng 2.
+
+| Điều kiện nhóm tầng 2 | Quy tắc |
+|---|---|
+| Quận cũ | Cùng **một** quận cũ. Một tin thuộc quận cũ khi: phường của tin thuộc đúng một quận cũ (khớp phường; phường thuộc hai quận thì bài phải nêu một trong hai), hoặc tin không có phường và bài nêu đúng một quận như nơi của tin (khớp nhắc tên một quận, từ `listing_districts`) |
+| Không dùng | Quận chỉ được nhắc như vùng lân cận ("gần", "giáp"...: đã loại ở `district_scan`); bài nhiều khu vực (`listings.multi_area`); tin nêu hai quận mà không có phường |
+| Giữ nguyên | Cùng loại phòng, cùng cách tính giá, khoảng diện tích khi tin đích có diện tích (không thì nhóm rộng), cửa sổ 30 ngày (`MARKET_WINDOW_DAYS`), loại cả cluster của tin đích, đếm theo cluster, N ≥ 10 |
+
+Hai nguồn so sánh (`pool`), dùng theo thứ tự và luôn được ghi trong phản hồi:
+
+1. `accepted`: tin `auto_accepted`/`approved` thỏa điều kiện §2 (trừ điều kiện có `ward_code`). Nếu N ≥ 10 thì dùng.
+2. `auto_checked` ("tin thật đã qua kiểm tra tự động"): tin thật, đóng góp, hiện hành, `review_status` không phải `rejected`/`duplicate`, bài không phải `rejected_type`/`failed`, có giá chính xác theo tháng, cách tính giá và loại phòng đã biết, trong cửa sổ, và **không** mang mã chặn `conflict`, `multi_listing`, `outside_hcm_province`, `possible_duplicate`, `llm_error`, `rent_llm_only`. Mã vị trí chưa phân giải (`former_ward_*`, `former_district_unverified`) được phép. Nguồn này chứa cả tin `accepted`.
+
+Nếu cả hai nguồn N < 10: khi tầng 1 có phường thì giữ nguyên kết quả tầng 1; khi tầng 1 thiếu phường thì trả `insufficient_data` với `scope = old_district` và N của nguồn lớn hơn. Phản hồi có `scope`, `scope_label` ("Bình Thạnh (cũ)"), `pool`, và `criteria.old_district_key`. Danh sách "tin giống nhất" chỉ gồm tin đã duyệt, kể cả khi số liệu lấy từ nguồn `auto_checked`.
+
 ## 4. Các chỉ số
 
 Tính trên tập listing đủ điều kiện của nhóm, sau gộp trùng:
@@ -83,6 +100,15 @@ Giá/m² là trung vị của các tỉ số, **không** lấy trung vị giá c
 | Chênh lệch < −10% | "Thấp hơn {x}% so với trung vị của {N} tin {loại} {khoảng DT} cùng phường." |
 | −10% đến +10% | "Gần trung vị ({x}%) của {N} tin {loại} {khoảng DT} cùng phường." |
 | > +10% | "Cao hơn {x}% so với trung vị của {N} tin {loại} {khoảng DT} cùng phường." |
+
+Tầng 2 (§3b) dùng cùng ngưỡng nhưng câu luôn ghi quận cũ, "không cùng phường" và nguồn tin, ví dụ:
+
+| Điều kiện | Câu hiển thị |
+|---|---|
+| N < 10 ở tầng 2 (tin thiếu phường) | "Chưa đủ dữ liệu để nhận định: mới có {N} tin tương tự ở {quận} (cũ) (không cùng phường, {nguồn}; cần ít nhất 10)." |
+| Đủ N | "{Thấp hơn/Gần/Cao hơn} mức trung bình ({x}%) của {N} tin {loại} {khoảng DT} ở {quận} (cũ) (không cùng phường, {nguồn})." |
+
+`{nguồn}` là "chỉ gồm tin đã duyệt" (`pool = accepted`) hoặc "gồm tin chưa duyệt, đã qua kiểm tra tự động" (`pool = auto_checked`). Lưu ý: cài đặt hiện tại tính chênh lệch so với **trung bình** của nhóm (hợp đồng API, xem `03-api-contract.md`), nên câu thật ghi "mức trung bình"; các câu "trung vị" ở bảng trên là thiết kế gốc chưa được áp dụng cho phần chênh lệch.
 
 Luôn kèm dòng: "Dữ liệu từ {ngày} đến {ngày}. Đây là giá chào thuê trong bài đăng đã thu, không phải giá giao dịch."
 

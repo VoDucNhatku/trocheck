@@ -108,6 +108,9 @@ class ListingCard(BaseModel):
     review_status: ReviewStatus
     is_demo: bool
     text_complete: bool
+    # "Bình Thạnh (cũ)" when the listing belongs to exactly one old district (ward or single mention).
+    old_district: str | None = None
+    old_district_key: str | None = None
 
 
 class ListingsResponse(BaseModel):
@@ -155,6 +158,7 @@ class ComparisonCriteria(BaseModel):
     area_band: str | None
     window_days: int
     broad_group: bool
+    old_district_key: str | None = None  # tier 2 only (scope = old_district)
 
 
 class SimilarListing(BaseModel):
@@ -167,6 +171,9 @@ class Comparison(BaseModel):
     status: Literal["ok", "insufficient_data", "not_comparable"]
     reason_codes: list[Literal["too_few_samples", "price_not_exact", "basis_unknown", "ward_unresolved", "area_missing_broad_group"]]
     criteria: ComparisonCriteria
+    scope: Literal["ward", "old_district"]
+    scope_label: str | None
+    pool: Literal["accepted", "auto_checked"]
     n: int
     mean_vnd: int | None = None
     mean_per_m2: int | None = None
@@ -188,6 +195,10 @@ class Comparison(BaseModel):
 class StatsOverview(BaseModel):
     total_listings: int
     eligible_listings: int
+    # Shared store (ADR-0010): listings usable for comparison by old district, accepted or auto-checked.
+    store_listings: int = 0
+    accepted_listings: int = 0
+    store_districts: int = 0
     excluded_counts: dict[str, int]
     updated_at: str | None
     is_demo: bool

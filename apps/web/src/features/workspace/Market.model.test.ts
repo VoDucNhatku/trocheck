@@ -39,3 +39,31 @@ test('ward groups stay separate and search links use the public route supported 
   assert.equal(url.searchParams.get('demo'), 'false');
   assert.equal(url.searchParams.has('basis'), false);
 });
+
+test('old-district view is the default on real data, ward view on demo data', async () => {
+  const { marketView, marketApiQuery, marketPageHref, marketDistricts, marketDistrictSearchUrl } = await import('./Market.model');
+  assert.equal(marketView({}).view, 'quan');
+  assert.equal(marketView({}, true).view, 'phuong');
+  assert.equal(marketView({ xem: 'phuong' }).view, 'phuong');
+  assert.equal(marketView({ khu_vuc: 'thu-duc' }).area, 'thu-duc');
+  assert.equal(marketView({ khu_vuc: '<script>' }).area, '');
+  const filters = marketFilters({ ward: 'Linh Xuân', basis: 'per_unit', demo: 'false' });
+  const api = new URLSearchParams(marketApiQuery(filters, marketView({ nguon: 'da-duyet' })));
+  assert.equal(api.get('group_by'), 'old_district');
+  assert.equal(api.get('pool'), 'accepted');
+  assert.equal(api.has('ward'), false);
+  const ward = new URLSearchParams(marketApiQuery(filters, marketView({ xem: 'phuong' })));
+  assert.equal(ward.get('ward'), 'Linh Xuân');
+  assert.equal(ward.has('group_by'), false);
+  const href = new URL(marketPageHref(filters, { view: 'quan', area: 'thu-duc', accepted: true }), 'http://web');
+  assert.equal(href.searchParams.get('xem'), 'quan');
+  assert.equal(href.searchParams.get('khu_vuc'), 'thu-duc');
+  assert.equal(href.searchParams.get('nguon'), 'da-duyet');
+  const districtCell = { ...cell, ward_code: null, ward_name: null, district_key: 'thu-duc', district_name: 'Thủ Đức (cũ)' };
+  const groups = marketDistricts([districtCell, { ...districtCell, property_type: 'phong_tro' as const }, cell]);
+  assert.equal(groups.length, 1);
+  assert.equal(groups[0].name, 'Thủ Đức (cũ)');
+  const search = new URL(marketDistrictSearchUrl('thu-duc', 'phong_tro', false, false), 'http://web');
+  assert.equal(search.searchParams.get('khu_vuc'), 'thu-duc');
+  assert.equal(search.searchParams.has('chi_da_duyet'), false);
+});

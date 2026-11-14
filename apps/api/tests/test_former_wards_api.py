@@ -10,6 +10,9 @@ from tests.conftest import SPEC, batch, post_payload
 
 V1 = "/api/v1"
 TEXT = "Cho thuê phòng 25m2 phường 25, Bình Thạnh, giá 3tr5/tháng/phòng"
+# Without "/phòng" the rent is still for the whole room (task N infers per_unit), so a per-person signal is what
+# keeps the basis unknown and the listing in the review queue.
+BASIS_UNKNOWN_TEXT = TEXT.removesuffix("/phòng") + ", cho ở ghép 2 người"
 
 
 def request_ok(client, method, url, **kwargs):
@@ -63,7 +66,7 @@ def assert_former(location):
     "decision", "export_json", "export_csv", "comparison", "team_posts", "lab",
 ])
 def test_former_listing_http_endpoints(api, entry, endpoint):
-    text = TEXT.removesuffix("/phòng") if endpoint == "review_queue" else TEXT
+    text = BASIS_UNKNOWN_TEXT if endpoint == "review_queue" else TEXT
     collector, post_id, listing_id, version = create_former_listing(api, entry, text)
     reviewer = api.client("reviewer")
     if endpoint in ("public_detail", "public_list", "comparison"):
@@ -118,7 +121,7 @@ def test_former_listing_http_endpoints(api, entry, endpoint):
 @pytest.mark.parametrize("entry", ["analyses", "ingest"])
 @pytest.mark.parametrize("resolution", ["from_former_unit", "exact", "from_street", "from_landmark", "unresolved"])
 def test_reviewer_can_keep_or_change_former_resolution(api, entry, resolution):
-    _, _, listing_id, version = create_former_listing(api, entry, TEXT.removesuffix("/phòng"))
+    _, _, listing_id, version = create_former_listing(api, entry, BASIS_UNKNOWN_TEXT)
     with api.session() as session:
         assert session.get(Listing, listing_id).review_status == "needs_review"
     reviewer = api.client("reviewer")
@@ -137,3 +140,16 @@ def test_reviewer_can_keep_or_change_former_resolution(api, entry, resolution):
         event = session.scalars(select(ReviewEvent).where(ReviewEvent.listing_id == listing_id)).one()
         assert event.before_json["listing"]["location"]["resolution"] == "from_former_unit"
         assert event.after_json["listing"]["location"]["resolution"] == resolution
+
+
+@pytest.mark.parametrize("entry", ["analyses", "ingest"])
+def test_whole_room_price_without_the_room_suffix_gets_an_inferred_basis(api, entry):
+    """Task N: this text used to stay basis_unknown (needs_review); the rent is for the whole room."""
+    _, _, listing_id, _ = create_former_listing(api, entry, TEXT.removesuffix("/phòng"))
+    with api.session() as session:
+        listing = session.get(Listing, listing_id)
+        assert listing.rent_basis == "per_unit" and listing.review_status == "auto_accepted"
+        assert "basis_unknown" not in (listing.review_reasons or [])
+        rent = next(field for field in listing.fields if field.field == "rent")
+        assert rent.value_json["basis"] == "per_unit"
+        assert "CTX_BASIS_UNIT_WHOLE" in rent.evidence[0].rule_id

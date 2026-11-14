@@ -7,6 +7,7 @@
     python -m app.cli import-gold data/gold/gold-v1.jsonl
     python -m app.cli purge                        # retention (co-so-du-lieu §3)
     python -m app.cli remove-post POST_ID          # removal request
+    python -m app.cli reprocess-real [--limit 500] # re-read real posts stored with older extraction rules
 """
 from __future__ import annotations
 
@@ -145,6 +146,17 @@ def bot_review_backlog(args) -> None:
     print(f"Đã đưa {count} công việc duyệt thử vào hàng đợi.")
 
 
+def reprocess_real(args) -> None:
+    from app.services.reprocess import reprocess_real_posts
+
+    if args.limit < 1:
+        raise SystemExit("--limit phải là số nguyên dương")
+    with session_scope() as session:
+        counts = reprocess_real_posts(session, get_settings(), limit=args.limit)
+    # Counts only: no post text, no identifiers.
+    print("reprocess-real:", json.dumps(counts, ensure_ascii=False))
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="python -m app.cli")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -164,9 +176,12 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("post_id")
     p = sub.add_parser("bot-review-backlog")
     p.add_argument("--limit", type=int, default=1000)
+    p = sub.add_parser("reprocess-real")
+    p.add_argument("--limit", type=int, default=500)
     args = parser.parse_args(argv)
     {"init-db": lambda a: init_db(), "ensure-admin": ensure_admin, "create-user": create_user, "seed": seed, "import-gold": import_gold,
-     "purge": purge, "remove-post": remove_post, "bot-review-backlog": bot_review_backlog}[args.cmd](args)
+     "purge": purge, "remove-post": remove_post, "bot-review-backlog": bot_review_backlog,
+     "reprocess-real": reprocess_real}[args.cmd](args)
 
 
 if __name__ == "__main__":

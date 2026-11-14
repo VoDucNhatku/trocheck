@@ -107,7 +107,7 @@
   }
 
   /** Sends every unsent post in batches and marks each one the server answered for. */
-  async function sendUnsent({ storage, apiUrl, token, version, fetcher, onProgress }) {
+  async function sendUnsent({ storage, apiUrl, token, version, fetcher, onProgress, imagesPaused = false }) {
     const unsent = (await storage.readUnsent()).filter(record => String(record.text ?? "").trim());
     const totals = { created: 0, duplicate: 0, rejected: 0 };
     const sessionId = `s-${new Date().toISOString().replace(/[^0-9]/gu, "").slice(0, 14)}`;
@@ -133,9 +133,20 @@
       for (const key of Object.keys(totals)) totals[key] += answer.summary?.[key] ?? 0;
       onProgress?.({ ...totals, total: unsent.length });
     }
-    const images = await sendImages({ storage, apiUrl, token, fetcher });
-    if (capped) throw capped;
-    return { ...totals, total: unsent.length, images };
+    // Today's photo allowance is separate: it pauses photos only, never posts. Other photo errors still fail the run.
+    let images = { uploaded: 0, duplicate: 0, skipped: 0, total: 0, paused: true };
+    let imagesCap = null;
+    if (!imagesPaused) {
+      try {
+        images = await sendImages({ storage, apiUrl, token, fetcher });
+      } catch (error) {
+        if (!error.retryAfter) throw error;
+        imagesCap = error;
+        images = { uploaded: 0, duplicate: 0, skipped: 0, total: 0, capped: true };
+      }
+    }
+    if (capped) { capped.imagesCap = imagesCap; throw capped; }
+    return { ...totals, total: unsent.length, images, imagesCap };
   }
 
   global.TroCheck = { DEFAULT_API_URL, BATCH_SIZE, normalizeApiUrl, toIngestPost, whoAmI, sendUnsent, sendImages };

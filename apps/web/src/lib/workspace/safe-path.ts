@@ -14,7 +14,7 @@ export function safeReturnPath(value: string | null | undefined): string {
 export function workspaceRouteAllowed(path: string, method: string): boolean {
   const id = '[a-zA-Z0-9_-]{1,200}';
   const rules: Record<string, RegExp[]> = {
-    GET: [/^auth\/me$/, /^me\/posts(?:\/summary)?$/, new RegExp('^analyses/' + id + '$'), /^market\/summary$/, /^team\/posts$/, /^team\/reviews$/, /^team\/(users|sources)$/,
+    GET: [/^auth\/me$/, /^me\/posts(?:\/(?:summary|filters))?$/, new RegExp('^analyses/' + id + '$'), /^market\/summary$/, /^team\/posts$/, /^team\/reviews$/, /^team\/(users|sources)$/,
       new RegExp('^team/reviews/' + id + '$'), /^team\/extension-tokens$/, /^team\/export$/,
       new RegExp('^listings/' + id + '/comparison$'), new RegExp('^lab/gold/' + id + '$'), /^eval\/runs$/, new RegExp('^eval/runs/' + id + '$')],
     POST: [/^auth\/(login|logout|register)$/, /^auth\/password\/(forgot|reset)$/, /^analyses$/, new RegExp('^analyses/' + id + '/contribute$'),

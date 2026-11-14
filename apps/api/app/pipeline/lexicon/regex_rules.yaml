@@ -5,13 +5,13 @@
 # view: folded = lowercase without diacritics ("phòng" -> "phong");
 #       lower  = lowercase with diacritics (needed where unaccented text is ambiguous).
 # Shared building blocks are written as {NUM}, {MONEY}, {SUFFIX}, {INCLUDES}, {NAME}.
-version: "1.1.0"
+version: "1.3.0"
 
 blocks:
   NUM: '\d+(?:[.,]\d+)*'
-  MONEY: '(?<![\w.,])\d+(?:[.,]\d+)*\s?(?:(?:trieu|tr|cu)(?:\s?\d{1,3}(?![\d.,])(?!\s?(?:m2|m\b|met|k\b|tr|nguoi|ng\b|pn|wc|phong|p\d|x\b|%)))?(?![a-z])|(?:k|nghin|ngan)\d?(?![a-z\d])|(?:vnd|dong|d)\b)'
+  MONEY: '(?<![\w.,])\d+(?:[.,]\d+)*\s?(?:(?:trieu|tr|cu)(?:\s?\d{1,3}(?!\d|[.,]\d)(?!\s?(?:m2|m\b|met|k\b|tr|nguoi|ng\b|pn|wc|phong|p\d|x\b|%)))?(?![a-z])|(?:k|nghin|ngan)\d?(?![a-z\d])|(?:vnd|dong|d)\b)'
   BIGNUM: '(?<![\w.,])(?:\d{1,3}(?:[.,]\d{3}){2,}|\d{6,9})(?![\d])\s?(?:vnd|dong|d\b)?'
-  SUFFIX: '(?:\s?/\s?(?:thang|th|t|nguoi|ng|phong|p|can|ngay)\b)*'
+  SUFFIX: '(?:\s?/\s?(?:thang|th|t|nguoi|ng|phong|p|can|ngay|dem|tuan|nam|gio)\b)*'
   INCLUDES: '(?:\s+bao\s+(?:dien|nuoc|wifi|internet|mang|dich vu|dv|gui xe)(?:\s*(?:va|\+|&)?\s*(?:dien|nuoc|wifi|internet|mang|dich vu|dv|gui xe))*)?'
   NAME: '[^\W\d_][\w]*(?:\s+(?!(?:giá|full|lh|liên|lien|điện|dien|nước|nuoc|cọc|coc|có|phòng|phong|dt|diện|cho|cần|chỉ|ib|inbox|free|wifi|gần|gan|cách|cach|đối|doi|cạnh|canh|sát|sat|từ|tại|ở|và|cc|nội|noi|giờ|gio|wc|vs|pn|đi|thuận|thuan|tiện|tien|mới|rộng|rong|sạch|sach|đẹp|dep|thoáng|thoang|tự|chính|chinh|chủ|miễn|mien|bao|dịch|dich|xe|gửi|gui|vệ|ve|internet|mạng|mang|ngay|đủ|đầy|nhé|nhe|ạ|mình|minh|chị)\b)[\w]+){0,4}'
   WARD_NAME: '[^\W\d_][\w]*(?:\s+(?!(?:q\d*|quận|quan|huyện|huyen|tp|tx)\b)(?!(?:giá|full|lh|liên|lien|điện|dien|nước|nuoc|cọc|coc|có|phòng|phong|dt|diện|cho|cần|chỉ|ib|inbox|free|wifi|gần|gan|cách|cach|đối|doi|cạnh|canh|sát|sat|từ|tại|ở|và|cc|nội|noi|giờ|gio|wc|vs|pn|đi|thuận|thuan|tiện|tien|mới|rộng|rong|sạch|sach|đẹp|dep|thoáng|thoang|tự|chính|chinh|chủ|miễn|mien|bao|dịch|dich|xe|gửi|gui|vệ|ve|internet|mạng|mang|ngay|đủ|đầy|nhé|nhe|ạ|mình|minh|chị)\b)[\w]+){0,4}'
@@ -91,8 +91,8 @@ rules:
   - id: AREA_DIMENSIONS
     label: AREA
     view: folded
-    pattern: '(?<![\w.,])\d+(?:[.,]\d+)?\s?x\s?\d+(?:[.,]\d+)?(?:\s?m2|\s?m\b)?(?![\d.,])'
-    examples: ["4x8m", "4 x 8", "5x16m2"]
+    pattern: '(?<![\w.,])\d+(?:[.,]\d+)?\s?m?\s?x\s?\d+(?:[.,]\d+)?(?:\s?m2|\s?m\b)?(?![\d.,])'
+    examples: ["4x8m", "4 x 8", "5x16m2", "2.7m x 10m"]
     not_examples: ["2PN1WC"]
   - id: AREA_M2
     label: AREA
@@ -111,8 +111,8 @@ rules:
   - id: ROOM_TYPE
     label: ROOM
     view: folded
-    pattern: '\b(?:ccmn|chung cu mini|can ho dich vu|chdv|nha nguyen can|nha rieng|phong tro(?:\s+khep kin)?|phong khep kin)\b'
-    examples: ["CCMN", "căn hộ dịch vụ", "phòng trọ khép kín", "nhà nguyên căn"]
+    pattern: '\b(?:ccmn|chung cu mini|can ho mini|can ho dich vu|chdv|nha nguyen can|nguyen can|nha rieng|phong tro(?:\s+khep kin)?|phong khep kin|(?:nha|day|khu) tro|duplex|studio)\b'
+    examples: ["CCMN", "căn hộ dịch vụ", "phòng trọ khép kín", "nhà nguyên căn", "nguyên căn", "dãy trọ", "duplex", "căn hộ mini"]
     not_examples: ["phòng 2 người"]
   - id: ROOM_BED_BATH
     label: ROOM

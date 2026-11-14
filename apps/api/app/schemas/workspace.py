@@ -50,6 +50,9 @@ class ExtensionTokens(BaseModel):
 class MarketCellDTO(BaseModel):
     ward_code: str | None
     ward_name: str | None
+    # Set when the summary is grouped by old district (group_by=old_district); ward fields are then null.
+    district_key: str | None = None
+    district_name: str | None = None
     property_type: PropertyType
     basis: Literal["per_unit", "per_person"]
     n: int
@@ -71,6 +74,8 @@ class MarketSummaryDTO(BaseModel):
     data_from: str | None
     data_to: str | None
     is_demo: bool
+    group_by: Literal["ward", "old_district"] = "ward"
+    pool: Literal["accepted", "auto_checked"] = "accepted"
 
 class PostJob(BaseModel):
     status: str

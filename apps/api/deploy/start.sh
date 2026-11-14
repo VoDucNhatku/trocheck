@@ -3,6 +3,10 @@
 set -e
 
 python -m app.cli init-db
+# Re-read real posts stored with older extraction rules (regex only, idempotent, keeps every review decision).
+if ! python -m app.cli reprocess-real --limit 1000; then
+    echo "reprocess-real: lỗi khi đọc lại bài cũ; tiếp tục khởi động, bài giữ kết quả trích cũ."
+fi
 if ! python -m app.cli ensure-admin >/dev/null 2>&1; then
     echo "ensure-admin: không tạo được tài khoản quản trị; tiếp tục khởi động, kiểm tra cấu hình ADMIN_USERNAME/ADMIN_PASSWORD."
 fi

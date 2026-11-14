@@ -11,14 +11,14 @@ from decimal import Decimal
 
 from app.pipeline.preprocess import fold
 
-NORMALIZER_VERSION = "1.0.0"
+NORMALIZER_VERSION = "1.2.0"
 
 # --- money ------------------------------------------------------------------
 
 _NUM = r"\d+(?:[.,]\d+)*"
 MONEY_TOKEN_RE = re.compile(
     rf"(?P<num>{_NUM})\s?"
-    r"(?:(?P<big>trieu|tr|cu)(?:\s?(?P<tail>\d{1,3})(?![\d.,]))?"
+    r"(?:(?P<big>trieu|tr|cu)(?:\s?(?P<tail>\d{1,3})(?!\d|[.,]\d))?"
     r"|(?P<small>k|nghin|ngan)(?P<ktail>\d)?(?![a-z\d])"
     r"|(?P<vnd>vnd|dong|d)\b)?"
 )
@@ -71,7 +71,7 @@ def _unit_of(token: str) -> str | None:
 
 
 _MONEY_FIND_RE = re.compile(
-    rf"{_NUM}\s?(?:(?:trieu|tr|cu)(?:\s?\d{{1,3}}(?![\d.,])(?!\s?(?:m2|m\b|met|k\b|tr|nguoi|ng\b|pn|wc|phong|x\b|%)))?(?![a-z])"
+    rf"{_NUM}\s?(?:(?:trieu|tr|cu)(?:\s?\d{{1,3}}(?!\d|[.,]\d)(?!\s?(?:m2|m\b|met|k\b|tr|nguoi|ng\b|pn|wc|phong|x\b|%)))?(?![a-z])"
     r"|(?:k|nghin|ngan)\d?(?![a-z\d])|(?:vnd|dong|d)\b)?"
 )
 
@@ -94,8 +94,10 @@ def _suffixes(folded: str) -> tuple[str, str]:
     for part in re.findall(r"/\s?([a-z]+)", folded):
         if part in {"th", "thang", "t"}:
             period = "month"
-        elif part == "ngay":
+        elif part in {"ngay", "dem"}:
             period = "day"
+        elif part in {"tuan", "nam", "gio"}:  # not per month and not per day: never a monthly price
+            period = "other"
         elif part in {"nguoi", "ng"}:
             basis = "per_person"
         elif part in {"phong", "can", "p"}:
@@ -122,7 +124,18 @@ def _money_tokens(folded: str) -> list[str]:
 
 
 def parse_rent(quote: str) -> dict:
-    """Rent value from one PRICE span (quy-tac-chuan-hoa §1)."""
+    """Rent value from one PRICE span (quy-tac-chuan-hoa §1).
+
+    A price per week, year or hour is unsupported: it is neither a monthly nor a daily price, so no
+    amount is kept (it would pass monthly price filters) and the listing goes to review."""
+    rent = _parse_rent(quote)
+    if rent["period"] == "other":
+        rent.update(amount_form="none", amount_vnd=None, min_vnd=None, max_vnd=None, period="unknown",
+                    includes=[], unsupported=True)
+    return rent
+
+
+def _parse_rent(quote: str) -> dict:
     folded = fold(quote)
     rent = {
         "visibility": "disclosed", "amount_form": "none", "amount_vnd": None,
@@ -187,6 +200,79 @@ def ctx_basis_unit_single(rent: dict, *, property_type: str, listing_count: int,
             and not _SHARED_RE.search(fold(text))):
         rent["basis"] = "per_unit"
         return "CTX_BASIS_UNIT_SINGLE"
+    return None
+
+
+# Price stated for the whole unit: no per-person signal anywhere outside the fee lines (task N1).
+_UNIT_WORD_RE = re.compile(r"\b(?:phong|can ho|can|studio|duplex|nguyen can|nha|chdv|ccmn)\b")
+_UNIT_TYPES = {"phong_tro", "ccmn", "can_ho_dich_vu", "nha_nguyen_can"}
+_FEE_CLAUSE_RE = re.compile(
+    r"\b(?:dien|nuoc|xe|rac|wifi|internet|mang|dich vu|dv|ve sinh|phi|gui|thang may|truyen hinh|coc)\b")
+_CLAUSE_SPLIT_RE = re.compile(r"[\n;|•·]+|(?<!\d)[.,](?!\d)|\s[-–—]\s|\s\+\s")
+_MONEY_AFTER = r"\d[\d.,]*\s?(?:tr|trieu|cu|k|nghin|ngan|d|vnd)\b"
+_PERSON_SIGNAL_RE = re.compile("|".join([
+    r"/\s?(?:\d+\s*)?(?:nguoi|ng)\b",                                    # 2tr/nguoi, 3tr/2 nguoi
+    r"\b(?:moi|tung|dau)\s*nguoi\b|\btheo\s+(?:dau\s+)?nguoi\b|\btinh\s+(?:theo\s+)?(?:dau\s+)?nguoi\b",
+    r"\d\s?(?:tr|trieu|cu|k|nghin|d)\d{0,3}\s*/?\s*(?:1\s*|mot\s*)(?:nguoi|ng)\b",   # 1tr2 1 nguoi
+    rf"\b\d{{1,2}}\s*(?:nguoi|ng)\b\s*[:=\-]?\s*(?:gia\s*)?{_MONEY_AFTER}",  # "1 nguoi 2tr5, 2 nguoi 3tr"
+    r"\bo\s*ghep\b|\bghep\b|\bshare\b|\bsharing\b|\bslot\b|\bktx\b|\bky\s*tuc\s*xa\b",
+    r"\bdorm\b|\bhostel\b|\bsleep\s?box\b|\bcapsule\b",
+    r"\bgiuong\s+tang\b|\b(?:thue|con|trong|tim|can|gia)\s+(?:\d+\s+)?giuong\b|\b\d+\s*giuong\s+(?:trong|con)\b|\bgiuong\s*/",
+]))
+
+
+def per_person_signal(text: str) -> bool:
+    """True when the post prices heads or beds, not the whole unit. Clauses about fees (điện, nước, xe,
+    rác, wifi, dịch vụ, cọc...) are skipped: '100k/người' there is a fee unit, not the rent's."""
+    for clause in _CLAUSE_SPLIT_RE.split(fold(text)):
+        if clause and not _FEE_CLAUSE_RE.search(clause) and _PERSON_SIGNAL_RE.search(clause):
+            return True
+    return False
+
+
+def ctx_basis_unit_whole(rent: dict, *, property_type: str, listing_count: int, text: str) -> str | None:
+    """Rent of a whole room/flat/house with no per-person signal is per unit (inferred, recorded as
+    CTX_BASIS_UNIT_WHOLE). Covers phòng trọ and unknown types that CTX_BASIS_UNIT_SINGLE leaves out."""
+    if rent["basis"] != "unknown" or listing_count != 1 or rent["amount_form"] == "none":
+        return None
+    if property_type not in _UNIT_TYPES and not _UNIT_WORD_RE.search(fold(text)):
+        return None
+    if per_person_signal(text):
+        return None
+    rent["basis"] = "per_unit"
+    return "CTX_BASIS_UNIT_WHOLE"
+
+
+# Room type from the whole text when the room field was found but named no type (task P2). Order matters:
+# "căn hộ mini" is a CCMN, "nhà trọ" is a phòng trọ, a lone "phòng" is a phòng trọ. Shared/bed posts and
+# non-housing rentals (văn phòng, mặt bằng, kho) keep "unknown".
+_ROOM_INFER = [
+    (re.compile(r"\bcan ho mini\b"), "ccmn"),
+    (re.compile(r"\b(?:nha|day|khu)\s+tro\b"), "phong_tro"),
+    (re.compile(r"\b(?:studio|duplex)\b"), "can_ho_dich_vu"),
+    (re.compile(r"\bcan ho\b"), "can_ho_dich_vu"),
+    (re.compile(r"\bnguyen can\b|\bcho thue (?:can )?nha\b(?!\s*tro)"), "nha_nguyen_can"),
+    (re.compile(r"\bphong\b|\btro\b"), "phong_tro"),
+]
+_NOT_HOUSING_RE = re.compile(r"\bvan phong\b|\bmat bang\b|\bkiot\b|\bki ot\b|\bkho\s+(?:xuong|bai|hang)\b|\bxuong\b")
+_APARTMENT_RE = re.compile(r"\bchung cu\b(?!\s*mini)|\bcan ho\s+\d\s?(?:pn|phong ngu)\b")
+
+
+def ctx_room_type(room: dict, *, listing_count: int, text: str) -> str | None:
+    """Infer the property type of a single-listing post whose room field was answered without a type."""
+    if room.get("property_type") != "unknown" or room.get("decision") != "answered" or listing_count != 1:
+        return None
+    folded = fold(text)
+    if _NOT_HOUSING_RE.search(folded) or per_person_signal(text):
+        return None
+    for pattern, ptype in _ROOM_INFER:
+        if not pattern.search(folded):
+            continue
+        # A flat in an ordinary apartment block is not a serviced apartment; studios/duplexes still are.
+        if ptype == "can_ho_dich_vu" and _APARTMENT_RE.search(folded) and not re.search(r"\b(?:studio|duplex)\b", folded):
+            return None
+        room["property_type"] = ptype
+        return "CTX_ROOM_TYPE"
     return None
 
 
@@ -281,21 +367,29 @@ def _num(s: str) -> int | float:
     return int(value) if value.is_integer() else value
 
 
+MIN_AREA_M2 = 6  # no rentable room is smaller; a smaller number is a width, a height or a typo
+
+
 def parse_area(quote: str) -> dict:
+    """Area from one quote. "AxB" (metres, optionally "AmxBm") is A*B; a value below MIN_AREA_M2 is not an
+    area at all and is dropped rather than stored (e.g. "DT 2.7m" is a width)."""
     folded = fold(quote)
     area = {"amount_form": "none", "value_m2": None, "min_m2": None, "max_m2": None, "from_dimensions": False}
     m = re.search(rf"({_NUMF})\s?(?:-|–|~|den)\s?({_NUMF})\s?{_M2}", folded)
     if m:
-        area.update(amount_form="range", min_m2=_num(m.group(1)), max_m2=_num(m.group(2)))
+        low, high = _num(m.group(1)), _num(m.group(2))
+        if low >= MIN_AREA_M2:
+            area.update(amount_form="range", min_m2=low, max_m2=high)
         return area
-    m = re.search(rf"({_NUMF})\s?x\s?({_NUMF})", folded)
+    m = re.search(rf"({_NUMF})\s?m?\s?x\s?({_NUMF})", folded)
     if m:
         value = float(m.group(1).replace(",", ".")) * float(m.group(2).replace(",", "."))
-        area.update(amount_form="exact", value_m2=int(value) if value.is_integer() else round(value, 2),
-                    from_dimensions=True)
+        if value >= MIN_AREA_M2:
+            area.update(amount_form="exact", value_m2=int(value) if value.is_integer() else round(value, 2),
+                        from_dimensions=True)
         return area
     m = re.search(rf"({_NUMF})\s?{_M2}", folded) or re.search(rf"(?:dt|dien tich)\s*:?\s*({_NUMF})\s?m\b", folded)
-    if m:
+    if m and _num(m.group(1)) >= MIN_AREA_M2:
         area.update(amount_form="exact", value_m2=_num(m.group(1)))
     return area
 
@@ -303,10 +397,10 @@ def parse_area(quote: str) -> dict:
 # --- room (§4) ----------------------------------------------------------------
 
 PROPERTY_PATTERNS = [
-    (re.compile(r"\b(?:ccmn|chung cu mini)\b"), "ccmn"),
-    (re.compile(r"\b(?:can ho dich vu|chdv)\b"), "can_ho_dich_vu"),
-    (re.compile(r"\b(?:nha nguyen can|nha rieng)\b"), "nha_nguyen_can"),
-    (re.compile(r"\bphong (?:tro|khep kin)\b"), "phong_tro"),
+    (re.compile(r"\b(?:ccmn|chung cu mini|can ho mini)\b"), "ccmn"),
+    (re.compile(r"\b(?:can ho dich vu|chdv|duplex|studio)\b"), "can_ho_dich_vu"),
+    (re.compile(r"\b(?:nha nguyen can|nguyen can|nha rieng)\b"), "nha_nguyen_can"),
+    (re.compile(r"\bphong (?:tro|khep kin)\b|\b(?:nha|day|khu) tro\b"), "phong_tro"),
 ]
 _PRIVATE_RE = re.compile(r"\bkhep kin\b|\b(?:wc|vs|ve sinh|nha ve sinh) rieng\b")
 _MEZZ_RE = re.compile(r"\bgac lung\b|\bco gac\b|\bgac xep\b")

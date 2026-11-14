@@ -7,11 +7,13 @@ import { AtomicText } from '@/features/landing/examples';
 import { FILTER_TYPES } from './filters';
 import styles from './FilterBar.module.css';
 
-export function FilterBar({ wards, demo }: { wards:string[]; demo?:boolean }) {
+export type DistrictOption = { key:string; label:string; count:number };
+
+export function FilterBar({ wards, demo, districts=[] }: { wards:string[]; demo?:boolean; districts?:DistrictOption[] }) {
   const router=useRouter(); const pathname=usePathname(); const params=useSearchParams();
   const [pending,startTransition]=useTransition(); const [open,setOpen]=useState(false);
   const dialog=useRef<HTMLDialogElement>(null); const trigger=useRef<HTMLButtonElement>(null);
-  const activeCount=params.getAll('phuong').length+params.getAll('loai').length+['gia_min','gia_max','dt_min','dt_max','co_gia'].filter(k=>params.get(k)).length;
+  const activeCount=params.getAll('khu_vuc').length+params.getAll('phuong').length+params.getAll('loai').length+['gia_min','gia_max','dt_min','dt_max','co_gia','chi_da_duyet'].filter(k=>params.get(k)).length;
   const close=()=>dialog.current?.close();
   useEffect(()=>{
     if(!open)return;
@@ -39,7 +41,7 @@ export function FilterBar({ wards, demo }: { wards:string[]; demo?:boolean }) {
     if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus()}
     else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus()}
   };
-  const fields=(mobile:boolean)=><FilterForm key={`${mobile}-${params}`} wards={wards} params={params} pending={pending} mobile={mobile} submit={submit} clear={clear} close={close} />;
+  const fields=(mobile:boolean)=><FilterForm key={`${mobile}-${params}`} wards={wards} districts={districts} params={params} pending={pending} mobile={mobile} submit={submit} clear={clear} close={close} />;
   return <aside className={styles.bar} aria-label="Bộ lọc tin" aria-busy={pending}>
     <div className={styles.desktop}>{fields(false)}</div>
     <button ref={trigger} className={styles.mobileToggle} type="button" aria-expanded={open} aria-controls="listing-filter-dialog" onClick={()=>{dialog.current?.showModal();setOpen(true)}}><SlidersHorizontal size={17} aria-hidden="true" />Bộ lọc{activeCount?` · ${activeCount}`:''}</button>
@@ -47,16 +49,18 @@ export function FilterBar({ wards, demo }: { wards:string[]; demo?:boolean }) {
     <p className={styles.pending} role="status">{pending?'Đang cập nhật danh sách…':''}</p>
   </aside>;
 }
-function FilterForm({wards,params,pending,mobile,submit,clear,close}:{wards:string[];params:ReturnType<typeof useSearchParams>;pending:boolean;mobile:boolean;submit:(e:FormEvent<HTMLFormElement>)=>void;clear:()=>void;close:()=>void}) {
+function FilterForm({wards,districts,params,pending,mobile,submit,clear,close}:{wards:string[];districts:DistrictOption[];params:ReturnType<typeof useSearchParams>;pending:boolean;mobile:boolean;submit:(e:FormEvent<HTMLFormElement>)=>void;clear:()=>void;close:()=>void}) {
   const prefix=mobile?'mobile':'desktop';
   return <form onSubmit={submit} className={styles.form}>
     <header className={styles.head}><h2 id={mobile?'mobile-filter-title':undefined}>Lọc tin</h2>{mobile&&<button type="button" className={styles.close} onClick={close} aria-label="Đóng bộ lọc" autoFocus><X size={20} aria-hidden="true" /></button>}</header>
     <div className={styles.fields}>
+    <fieldset className={styles.group}><legend>Khu vực (quận cũ)</legend>{districts.length?districts.map(d=><label className={styles.check} key={d.key}><input type="checkbox" name="khu_vuc" value={d.key} defaultChecked={params.getAll('khu_vuc').includes(d.key)} /><span><AtomicText text={d.label} /> · {d.count.toLocaleString('vi-VN')}</span></label>):<p className={styles.help}>Chưa có tin nào xác định được quận cũ.</p>}<p className={styles.help}>Theo địa danh trước 07/2025, đọc từ phường mới hoặc tên quận trong bài.</p></fieldset>
     <fieldset className={styles.group}><legend>Phường</legend>{wards.length?wards.map(ward=><label className={styles.check} key={ward}><input type="checkbox" name="phuong" value={ward} defaultChecked={params.getAll('phuong').includes(ward)} /><span><AtomicText text={ward} /></span></label>):<p className={styles.help}>Chưa tải được phường hoặc kho chưa có tin.</p>}</fieldset>
     <fieldset className={styles.group}><legend>Loại phòng</legend>{FILTER_TYPES.map(type=><label className={styles.check} key={type}><input type="checkbox" name="loai" value={type} defaultChecked={params.getAll('loai').includes(type)} /><span>{PROPERTY_LABEL[type]}</span></label>)}</fieldset>
     <RangeField prefix={prefix} label="Giá thuê · triệu/tháng" minKey="gia_min" maxKey="gia_max" step="0.1" params={params} />
     <RangeField prefix={prefix} label="Diện tích · m²" minKey="dt_min" maxKey="dt_max" step="1" params={params} />
     <label className={styles.check}><input type="checkbox" name="co_gia" value="1" defaultChecked={params.get('co_gia')==='1'} /><span>Chỉ tin có giá</span></label>
+    <label className={styles.check}><input type="checkbox" name="chi_da_duyet" value="1" defaultChecked={params.get('chi_da_duyet')==='1'} /><span>Chỉ tin đã duyệt</span></label>
     <label className={styles.sort}><span>Sắp xếp</span><select name="sap_xep" defaultValue={params.get('sap_xep')??'newest'}><option value="newest">Mới nhất</option><option value="price_asc">Giá tăng dần</option><option value="price_desc">Giá giảm dần</option></select></label>
     <p className={styles.help}>Giá thuê không bao gồm phí. Bộ lọc đã áp dụng được lưu trên URL.</p>
     </div>
