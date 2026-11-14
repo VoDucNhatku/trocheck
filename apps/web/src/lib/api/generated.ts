@@ -786,7 +786,7 @@ export interface components {
              */
             status: "ok" | "insufficient_data" | "not_comparable";
             /** Reason Codes */
-            reason_codes: ("too_few_samples" | "price_not_exact" | "basis_unknown" | "ward_unresolved" | "area_missing_broad_group")[];
+            reason_codes: ("too_few_samples" | "price_not_exact" | "basis_unknown" | "ward_unresolved" | "area_missing_broad_group" | "area_band_relaxed")[];
             criteria: components["schemas"]["ComparisonCriteria"];
             /**
              * Scope
@@ -851,6 +851,11 @@ export interface components {
             broad_group: boolean;
             /** Old District Key */
             old_district_key?: string | null;
+            /**
+             * Area Band Relaxed
+             * @default false
+             */
+            area_band_relaxed?: boolean;
         };
         /** Contributed */
         Contributed: {

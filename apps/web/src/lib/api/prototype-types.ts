@@ -145,7 +145,8 @@ export type ComparisonReason =
   | 'price_not_exact'
   | 'basis_unknown'
   | 'ward_unresolved'
-  | 'area_missing_broad_group';
+  | 'area_missing_broad_group'
+  | 'area_band_relaxed';
 
 export interface Comparison {
   status: 'ok' | 'insufficient_data' | 'not_comparable';
@@ -158,6 +159,7 @@ export interface Comparison {
     area_band: string | null;
     window_days: number;
     broad_group: boolean;
+    area_band_relaxed?: boolean;
   };
   n: number;
   median: number | null;

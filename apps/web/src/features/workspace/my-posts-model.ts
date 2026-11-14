@@ -43,7 +43,8 @@ export function statusExplanation(post: MyPost): string {
 export function comparisonText(c: ExtractedListing['comparison']): string {
   if (c.status === 'insufficient_data' && c.scope === 'old_district') {
     // Tier 2 (ADR-0010): say which district and which pool the count came from.
-    return `Chưa đủ tin ở ${c.scope_label || 'quận cũ'} để so (${c.n} tin tương tự, không cùng phường, ${POOL_LABEL[c.pool]}).`;
+    const areaNote = c.reason_codes?.includes('area_band_relaxed') ? ', mọi diện tích' : '';
+    return `Chưa đủ tin ở ${c.scope_label || 'quận cũ'} để so (${c.n} tin tương tự, không cùng phường, ${POOL_LABEL[c.pool]}${areaNote}).`;
   }
   if (c.status === 'insufficient_data') return `Chưa đủ tin trong khu vực để so (${c.n} tin tương tự).`;
   // The existing service compares against the mean, not the median. Keep its exact message.

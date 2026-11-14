@@ -162,6 +162,7 @@ export const REASON_TEXT: Record<ComparisonReason, string> = {
   basis_unknown: 'Không rõ giá theo phòng hay theo người',
   ward_unresolved: 'Chưa xác định được phường',
   area_missing_broad_group: 'Thiếu diện tích, chỉ so được với nhóm rộng',
+  area_band_relaxed: 'Nhóm quận cũ chưa đủ tin cùng diện tích, so với mọi diện tích',
 };
 
 export function dataRangeSentence(from: string | null, to: string | null): string {
