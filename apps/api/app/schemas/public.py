@@ -110,6 +110,7 @@ class ListingCard(BaseModel):
     text_complete: bool
     # "Bình Thạnh (cũ)" when the listing belongs to exactly one old district (ward or single mention).
     old_district: str | None = None
+    old_district_key: str | None = None
 
 
 class ListingsResponse(BaseModel):

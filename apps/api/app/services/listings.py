@@ -53,14 +53,13 @@ def _districts_of(session: Session, listings: list[Listing]) -> dict[str, tuple[
     return {k: tuple(v) for k, v in found.items()}
 
 
-def old_district_label(listing: Listing, districts: tuple[str, ...]) -> str | None:
+def old_district_key(listing: Listing, districts: tuple[str, ...]) -> str | None:
     row = m.MarketRow(listing_id=listing.id, cluster_id=listing.id, is_demo=False, contributed=True,
                       review_status=listing.review_status, rent_form=listing.rent_form, rent_vnd=None,
                       rent_period=None, rent_basis=None, ward_code=listing.ward_code, ward_name=listing.ward_name,
                       property_type=listing.property_type, area_m2=None, area_from_dimensions=False,
                       observed_at=listing.observed_at, districts=districts, multi_area=bool(listing.multi_area))
-    key = m.old_district_of(row)
-    return m.district_label(key) if key else None
+    return m.old_district_of(row)
 
 
 def search(session: Session, settings: Settings, *, wards=None, types=None, price_min=None, price_max=None,
@@ -109,7 +108,9 @@ def search(session: Session, settings: Settings, *, wards=None, types=None, pric
     items = []
     for lst in rows:
         card = serialize.card(lst, lst.post)
-        card["old_district"] = old_district_label(lst, districts.get(lst.id, ()))
+        key = old_district_key(lst, districts.get(lst.id, ()))
+        card["old_district_key"] = key
+        card["old_district"] = m.district_label(key) if key else None
         items.append(card)
     return {"items": items, "total": total,
             "hidden_no_price": hidden_no_price, "data_as_of": iso(as_of), "page": page, "page_size": page_size,
