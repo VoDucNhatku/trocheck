@@ -16,13 +16,13 @@ export function ListingCard({ card, comparison }: { card: Card; comparison?: Com
   const tone=delta==null?undefined:comparison?.verdict;
   return <Link href={`/tin/${card.listing_id}?demo=${card.is_demo}`} className={styles.card}>
     <div className={styles.media}>
-      <span className={styles.badge}>{card.is_demo?'Ví dụ tự tạo':'Đã che liên hệ'}</span>
+      <span className={styles.badge}>{card.is_demo?'Ví dụ tự tạo':card.review_status==='needs_review'?'Chưa duyệt · đã che liên hệ':'Đã che liên hệ'}</span>
       <ImageOff size={30} strokeWidth={1.25} aria-hidden="true" />
       <span>{card.is_demo?'Ảnh phòng (ví dụ)':'Chưa có ảnh hiển thị'}</span>
     </div>
     <div className={styles.content}>
       <p className={styles.type}>{PROPERTY_LABEL[card.property_type]}</p>
-      <h2 className={styles.place}><AtomicText text={card.ward_name?.trim()||'Chưa rõ phường'} />{card.landmark&&<> · <AtomicText text={card.landmark} /></>}</h2>
+      <h2 className={styles.place}><AtomicText text={card.ward_name?.trim()||card.old_district||'Chưa rõ phường'} />{card.ward_name&&card.old_district&&<> · <AtomicText text={card.old_district} /></>}{card.landmark&&<> · <AtomicText text={card.landmark} /></>}</h2>
       {!card.text_complete&&<span className={styles.partial}>Chữ chưa đầy đủ</span>}
       <p className={`${styles.price} ${head.missing?styles.missing:''}`}><AtomicText text={head.main} />{head.suffix&&<small>{head.suffix}</small>}</p>
       {!head.missing&&card.rent.basis==='unknown'&&<p className={styles.note}>Chưa rõ cách tính giá</p>}

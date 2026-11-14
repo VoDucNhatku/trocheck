@@ -47,3 +47,52 @@ export function marketSearchUrl(ward: string, type: string, demo: boolean): stri
   if (ward) params.set('phuong', ward);
   return '/tim-tro?' + params.toString();
 }
+
+/** View options kept apart from MarketFilters: by old district (default on real data) or by new ward. */
+export type MarketView = { view: 'quan' | 'phuong'; area: string; accepted: boolean };
+
+export function marketView(query: Record<string, string | string[] | undefined>, demo = false): MarketView {
+  const first = (key: string) => { const value = query[key]; return (Array.isArray(value) ? value[0] : value) ?? ''; };
+  const raw = first('xem');
+  // Demo posts carry no old-district data, so a demo store opens on the ward table.
+  const view = raw === 'phuong' || raw === 'quan' ? raw : demo ? 'phuong' : 'quan';
+  const area = first('khu_vuc');
+  return { view, area: /^[a-z0-9-]{1,40}$/.test(area) ? area : '', accepted: first('nguon') === 'da-duyet' };
+}
+
+/** Query string for GET /market/summary. The ward view keeps the original request untouched. */
+export function marketApiQuery(filters: MarketFilters, view: MarketView): string {
+  const params = new URLSearchParams(marketQuery(filters));
+  if (view.view === 'quan') {
+    params.delete('ward');
+    params.set('group_by', 'old_district');
+    if (view.accepted) params.set('pool', 'accepted');
+  }
+  return params.toString();
+}
+
+/** URL of this page with the view options. */
+export function marketPageHref(filters: MarketFilters, view: MarketView): string {
+  const params = new URLSearchParams(marketQuery(view.view === 'quan' ? { ...filters, ward: '' } : filters));
+  params.set('xem', view.view);
+  if (view.view === 'quan' && view.area) params.set('khu_vuc', view.area);
+  if (view.view === 'quan' && view.accepted) params.set('nguon', 'da-duyet');
+  return '/thi-truong?' + params.toString();
+}
+
+export function marketDistricts(cells: MarketCell[]) {
+  const districts = new Map<string, { key: string; name: string; filter: string; cells: MarketCell[] }>();
+  for (const cell of cells) {
+    if (!cell.district_key) continue;
+    const district = districts.get(cell.district_key) ?? { key: cell.district_key, name: cell.district_name || cell.district_key, filter: cell.district_key, cells: [] };
+    district.cells.push(cell); districts.set(cell.district_key, district);
+  }
+  return [...districts.values()];
+}
+
+export function marketDistrictSearchUrl(area: string, type: string, demo: boolean, accepted: boolean): string {
+  const params = new URLSearchParams({ loai: type, demo: String(demo) });
+  if (area) params.set('khu_vuc', area);
+  if (accepted) params.set('chi_da_duyet', '1');
+  return '/tim-tro?' + params.toString();
+}

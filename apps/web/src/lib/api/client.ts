@@ -16,4 +16,4 @@ export const getListing = cache(async (id: string, demo?: boolean) => {
 });
 export const getComparison = (id: string, demo?: boolean) => api().comparison(id, demo);
 export const getStatsOverview = (demo?: boolean) => api().overview(demo);
-export const getCatalog = cache((demo?: boolean) => collectCatalog((page) => api().listings({ demo, page, page_size: 100 })));
+export const getCatalog = cache((demo?: boolean) => collectCatalog((page) => api().listings({ demo, page, page_size: 100, pool: 'all' })));

@@ -1309,6 +1309,10 @@ export interface components {
             is_demo: boolean;
             /** Text Complete */
             text_complete: boolean;
+            /** Old District */
+            old_district?: string | null;
+            /** Old District Key */
+            old_district_key?: string | null;
         };
         /** ListingDetail */
         ListingDetail: {
@@ -1389,6 +1393,10 @@ export interface components {
             ward_code: string | null;
             /** Ward Name */
             ward_name: string | null;
+            /** District Key */
+            district_key?: string | null;
+            /** District Name */
+            district_name?: string | null;
             /**
              * Property Type
              * @enum {string}
@@ -1438,6 +1446,18 @@ export interface components {
             data_to: string | null;
             /** Is Demo */
             is_demo: boolean;
+            /**
+             * Group By
+             * @default ward
+             * @enum {string}
+             */
+            group_by?: "ward" | "old_district";
+            /**
+             * Pool
+             * @default accepted
+             * @enum {string}
+             */
+            pool?: "accepted" | "auto_checked";
         };
         /** MyPost */
         MyPost: {
@@ -1865,6 +1885,21 @@ export interface components {
             total_listings: number;
             /** Eligible Listings */
             eligible_listings: number;
+            /**
+             * Store Listings
+             * @default 0
+             */
+            store_listings?: number;
+            /**
+             * Accepted Listings
+             * @default 0
+             */
+            accepted_listings?: number;
+            /**
+             * Store Districts
+             * @default 0
+             */
+            store_districts?: number;
             /** Excluded Counts */
             excluded_counts: {
                 [key: string]: number;
@@ -2437,6 +2472,10 @@ export interface operations {
                 sort?: "price_asc" | "price_desc" | "newest";
                 page?: number;
                 page_size?: number;
+                /** @description Old-district keys, e.g. thu-duc. */
+                area?: string[];
+                /** @description all: shared store incl. auto-checked listings */
+                pool?: "all" | "accepted";
                 demo?: boolean | null;
             };
             header?: never;
@@ -2582,6 +2621,11 @@ export interface operations {
                 ward?: string[];
                 type?: string[];
                 basis?: "per_unit" | "per_person";
+                group_by?: "ward" | "old_district";
+                /** @description Old-district keys (group_by=old_district). */
+                area?: string[];
+                /** @description old_district only: auto_checked (default) or accepted */
+                pool?: ("accepted" | "auto_checked") | null;
                 demo?: boolean | null;
             };
             header?: never;

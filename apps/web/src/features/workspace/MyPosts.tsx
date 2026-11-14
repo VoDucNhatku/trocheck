@@ -96,12 +96,13 @@ export function MyPosts() {
       <p className={s.muted}>{summary.quota.remaining == null ? 'Tài khoản không áp dụng giới hạn gửi bài mỗi ngày.' : `Còn ${summary.quota.remaining} bài mới trong ngày, tính theo giờ Việt Nam.`} Bài gửi trùng không dùng thêm lượt.</p>
     </div>}
     <OnboardingChecklist summary={summary} />
-    <p className={styles.note}>Bài đang chờ duyệt chỉ hiển thị với người gửi trong trang này. So sánh dùng tin thật đã được chấp nhận, không dùng dữ liệu demo; đây là giá chào thuê.</p>
+    <p className={styles.note}>Trang này chỉ hiện bài bạn gửi; không ai biết ai đã gửi bài nào. Giá được so với kho chung: trước hết các tin đã duyệt cùng phường, nếu chưa đủ 10 tin thì cùng quận cũ, kể cả tin chưa duyệt đã qua kiểm tra tự động (có ghi rõ), không dùng dữ liệu demo; đây là giá chào thuê.</p>
     <div className={a.filters} role="group" aria-label="Lọc trạng thái bài">
       {(Object.keys(GROUP_LABEL) as StatusGroup[]).map(value => <button key={value} type="button" aria-pressed={value === group}
         onClick={() => query && setQuery({ ...query, group: value, page: 1 })}>{GROUP_LABEL[value]}{summary && <span> · {summary.counts[value]}</span>}</button>)}
     </div>
-    {query && <MyPostsFilterBar query={query} options={options} busy={!data && !error} onApply={setQuery} onClear={clear} />}
+    {/* A new account has nothing to filter yet: the checklist above says what to do first. */}
+    {query && (summary == null || summary.counts.all > 0) && <MyPostsFilterBar query={query} options={options} busy={!data && !error} onApply={setQuery} onClear={clear} />}
     <div aria-live="polite" aria-busy={!data && !error}>
       {error ? <><ErrorNotice message={error} retry={() => setReload(reload + 1)} />{query && hasAnyFilter(query) && <Button variant="secondary" onClick={clear}>Xóa lọc</Button>}</>
         : !data || !query ? <Loading label="Đang tải bài đã gửi…" />
