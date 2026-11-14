@@ -22,3 +22,7 @@ Proposal: so giá với trung vị nhóm tương tự (khu vực, loại hình, 
 ## Xem lại khi
 
 Kho đủ lớn để dùng thêm tiêu chí (nội thất), hoặc dữ liệu pilot cho thấy khoảng diện tích quá hẹp/rộng.
+
+## Sửa đổi
+
+[ADR-0010](ADR-0010-so-gia-theo-quan-cu.md) (đề xuất) thêm tầng 2: khi nhóm cùng phường thiếu hoặc N < 10, so với tin cùng một quận cũ, có nhãn "không cùng phường". Tầng 1 của ADR này không đổi và vẫn được thử trước.

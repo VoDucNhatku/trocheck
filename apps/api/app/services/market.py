@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import Settings
 from app.core.ids import iso, utcnow
-from app.models import Listing, Post, PostVersion
+from app.models import Listing, ListingDistrict, Post, PostVersion
 from app.pipeline import market as m
 from app.pipeline.dedup import TfIdf
 
@@ -17,14 +17,28 @@ def config(settings: Settings) -> m.MarketConfig:
                           similar_count=settings.market_similar_count)
 
 
-def to_row(listing: Listing, post: Post, text: str = "") -> m.MarketRow:
+def to_row(listing: Listing, post: Post, text: str = "", districts: tuple[str, ...] = ()) -> m.MarketRow:
     return m.MarketRow(
         listing_id=listing.id, cluster_id=listing.cluster_id or listing.id, is_demo=post.is_demo,
         contributed=post.contributed, review_status=listing.review_status, rent_form=listing.rent_form,
         rent_vnd=listing.rent_amount_vnd, rent_period=listing.rent_period, rent_basis=listing.rent_basis,
         ward_code=listing.ward_code, ward_name=listing.ward_name, property_type=listing.property_type,
         area_m2=listing.area_m2, area_from_dimensions=listing.area_from_dimensions,
-        observed_at=listing.observed_at, text=text)
+        observed_at=listing.observed_at, text=text, districts=districts, multi_area=bool(listing.multi_area),
+        review_reasons=tuple(listing.review_reasons or ()), post_status=post.status or "")
+
+
+def load_districts(session: Session, *, demo: bool) -> dict[str, tuple[str, ...]]:
+    """listing id -> old-district keys the post names as its own place (current listings of this dataset)."""
+    found: dict[str, list[str]] = {}
+    query = (select(ListingDistrict.listing_id, ListingDistrict.district_key)
+             .join(Listing, Listing.id == ListingDistrict.listing_id)
+             .join(Post, Post.id == Listing.post_id)
+             .where(Listing.is_current.is_(True), Post.is_demo.is_(demo))
+             .order_by(ListingDistrict.listing_id, ListingDistrict.district_key))
+    for listing_id, key in session.execute(query):
+        found.setdefault(listing_id, []).append(key)
+    return {k: tuple(v) for k, v in found.items()}
 
 
 def load_rows(session: Session, *, demo: bool, with_text: bool = False) -> list[m.MarketRow]:
@@ -32,7 +46,9 @@ def load_rows(session: Session, *, demo: bool, with_text: bool = False) -> list[
              .join(Post, Post.id == Listing.post_id)
              .join(PostVersion, PostVersion.id == Post.current_version_id)
              .where(Listing.is_current.is_(True), Post.is_demo.is_(demo)))
-    return [to_row(lst, post, text if with_text else "") for lst, post, text in session.execute(query)]
+    districts = load_districts(session, demo=demo)
+    return [to_row(lst, post, text if with_text else "", districts.get(lst.id, ()))
+            for lst, post, text in session.execute(query)]
 
 
 def pool(session: Session, settings: Settings, *, demo: bool, with_text: bool = False):
@@ -42,20 +58,26 @@ def pool(session: Session, settings: Settings, *, demo: bool, with_text: bool = 
 
 def comparison(session: Session, listing: Listing, settings: Settings) -> dict:
     post = listing.post
-    target = to_row(listing, post, post.current_version.text if post.current_version else "")
-    eligible, _ = pool(session, settings, demo=post.is_demo, with_text=True)
+    own = tuple(session.scalars(select(ListingDistrict.district_key)
+                                .where(ListingDistrict.listing_id == listing.id)
+                                .order_by(ListingDistrict.district_key)))
+    target = to_row(listing, post, post.current_version.text if post.current_version else "", own)
+    rows = load_rows(session, demo=post.is_demo, with_text=True)
     cfg = config(settings)
-    c = m.compare(target, eligible, cfg)
+    c = m.compare_tiered(target, rows, now=utcnow(), cfg=cfg, demo=post.is_demo)
     similar = []
-    if c.group:
-        tfidf = TfIdf([r.text for r in c.group] + [target.text])
-        ranked = sorted(c.group, key=lambda r: tfidf.cosine(target.text, r.text), reverse=True)
+    # Only accepted (public) listings are ever named; the auto_checked pool contributes numbers only.
+    shown = [r for r in c.group if r.review_status in m.ACCEPTED_STATUSES]
+    if shown:
+        tfidf = TfIdf([r.text for r in shown] + [target.text])
+        ranked = sorted(shown, key=lambda r: tfidf.cosine(target.text, r.text), reverse=True)
         similar = [{"listing_id": r.listing_id, "rent_vnd": r.rent_vnd, "area_m2": r.area_m2}
                    for r in ranked[:cfg.similar_count]]
     return {
         "status": c.status,
         "reason_codes": c.reason_codes,
         "criteria": c.criteria,
+        "scope": c.scope, "scope_label": c.scope_label, "pool": c.pool,
         "n": c.stats.n,
         "mean_vnd": c.stats.mean, "mean_per_m2": c.stats.mean_per_m2,
         "median": c.stats.median, "p25": c.stats.p25, "p75": c.stats.p75,

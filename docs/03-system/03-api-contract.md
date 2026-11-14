@@ -111,6 +111,16 @@ Không dùng demo ngay cả khi `DEMO_MODE=true`; `comparison.is_demo=false`.
 Tỷ lệ hiện hữu so với **trung bình**, không phải trung vị. `insufficient_data` / `not_comparable` giữ lý do thật,
 không sinh giá hoặc phần trăm giả. Web ghi rõ nguồn so sánh và tính chất giá chào thuê.
 
+Hai tầng so sánh ([ADR-0010](../decisions/ADR-0010-so-gia-theo-quan-cu.md), đề xuất): `Comparison` (đường dẫn
+`GET /listings/{id}/comparison` và `comparison` trong `/me/posts`) có thêm ba trường bắt buộc.
+`scope`: `ward` (nhóm cùng phường, như trên) hoặc `old_district` (nhóm cùng một quận cũ, chỉ khi tầng phường
+thiếu phường hoặc N < 10). `scope_label`: tên phường, hoặc quận cũ kèm "(cũ)", ví dụ "Bình Thạnh (cũ)".
+`pool`: `accepted` (tin đã duyệt) hoặc `auto_checked` (thêm tin thật chưa duyệt đã qua kiểm tra tự động; chỉ
+xảy ra ở `old_district` khi tin đã duyệt chưa đủ N ≥ 10). `criteria.old_district_key` có giá trị ở tầng quận cũ,
+`null` ở tầng phường. Tầng quận cũ không dùng vùng lân cận, bài nhiều khu vực (`multi_area`) hay dữ liệu demo;
+`message` luôn ghi quận cũ, "không cùng phường" và nguồn tin. `similar` chỉ chứa tin đã duyệt (công khai), kể cả khi
+`pool = auto_checked`; số liệu tổng hợp không lộ nội dung hay người gửi của tin khác. Các trường cũ không đổi.
+
 `GET /api/v1/me/posts/summary`: cùng xác thực và phạm vi sở hữu, trả
 `{counts: {all, published, waiting, other}, quota: {used, limit, remaining, timezone}}`.
 `timezone="Asia/Ho_Chi_Minh"`; `used` dùng đúng bộ đếm ingest hiện hữu: số bài **mới**
