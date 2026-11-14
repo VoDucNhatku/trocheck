@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { api } from '@/lib/workspace/client';
 import { ROLE_NAME, type SessionUser } from '@/lib/workspace/types';
 import { Button } from './ui';
+import { OnboardingChecklist } from './Onboarding';
 import { ExtensionTokens } from './ExtensionTokens';
 import { PersonalNav } from './PersonalNav';
 import s from './account-notices.module.css';
@@ -61,6 +62,7 @@ export function Account({ user }: { user: SessionUser }) {
         <section className={s.panel} aria-labelledby="account-email-title"><div className={s.panelHead}><h2 id="account-email-title">Email</h2><span className={s.muted}>{profile.google_connected ? 'Đã xác minh qua Google' : 'Email đã đăng ký'}</span></div><label className={s.field}><span>Email tài khoản</span><input type="email" disabled value={profile.email || ''} placeholder="Chưa có thông tin" aria-describedby="email-status" /></label><p id="email-status" className={s.note}>{profile.google_connected ? 'Email được cập nhật từ Google khi bạn đăng nhập.' : 'Chưa thể thay đổi email tại đây.'}</p></section>
         {profile.local_login_enabled !== false && <section className={s.panel} aria-labelledby="account-password-title"><h2 id="account-password-title">Đổi mật khẩu</h2><p className={s.note}>Dùng email đã gắn với tài khoản để yêu cầu đặt lại mật khẩu. Tài khoản chưa gắn email cần liên hệ quản trị nhóm.</p><ul className={s.rules} aria-label="Điều kiện mật khẩu"><li>Ít nhất 8 ký tự</li><li>Một chữ hoa</li></ul><Link href="/quen-mat-khau" className={s.primary}>Yêu cầu đặt lại mật khẩu</Link></section>}
         <section className={s.panel} aria-labelledby="account-google-title"><div className={s.panelHead}><h2 id="account-google-title">Đăng nhập bằng Google</h2><span className={s.badge}>{profile.google_connected ? 'Đã kết nối' : 'Chưa kết nối'}</span></div><p className={s.note} id="google-status">{profile.google_connected ? 'Bạn đang dùng tài khoản đã kết nối Google và có thể tiếp tục đăng nhập bằng Google.' : 'Tài khoản này dùng tên tài khoản và mật khẩu. Chưa hỗ trợ liên kết với Google tại đây.'}</p></section>
+        <OnboardingChecklist />
         <ExtensionTokens />
         <p><Link className={s.textLink} href="/bai-cua-toi">Xem bài đã gửi bằng tiện ích</Link></p>
         <section className={s.panel} aria-labelledby="account-history-title"><h2 id="account-history-title">Bài đã phân tích</h2><p className={s.note}>Chưa có danh sách lịch sử tại đây. Để xem lại một bài, mở liên kết bản đọc bạn đã lưu sau khi phân tích.</p><Link className={s.textLink} href="/phan-tich">Phân tích bài mới</Link></section>

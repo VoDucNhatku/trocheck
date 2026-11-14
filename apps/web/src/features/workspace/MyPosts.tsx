@@ -7,6 +7,7 @@ import { formatVnd, PROPERTY_LABEL } from '@/lib/format';
 import { AtomicText } from '@/features/landing/examples';
 import { Button, Empty, ErrorNotice, Intro, Loading, s } from './ui';
 import { PersonalNav } from './PersonalNav';
+import { OnboardingChecklist } from './Onboarding';
 import { MyPostsFilterBar } from './MyPostsFilterBar';
 import { activeFilterCount, areaMatchLabel, comparisonText, DEFAULT_QUERY, GROUP_LABEL, hasAnyFilter, myPostsApiQuery, myPostsUrlQuery,
   parseMyPostsQuery, placeText, resultPhrases, safeOriginalLink, STATUS_LABEL, statusExplanation, wideningAdvice,
@@ -93,6 +94,7 @@ export function MyPosts() {
       <p className={styles.quota}>Hôm nay đã gửi <strong>{summary.quota.used}{summary.quota.limit == null ? ' bài · không giới hạn' : `/${summary.quota.limit} bài`}</strong></p>
       <p className={s.muted}>{summary.quota.remaining == null ? 'Tài khoản không áp dụng giới hạn gửi bài mỗi ngày.' : `Còn ${summary.quota.remaining} bài mới trong ngày, tính theo giờ Việt Nam.`} Bài gửi trùng không dùng thêm lượt.</p>
     </div>}
+    <OnboardingChecklist summary={summary} />
     <p className={styles.note}>Bài đang chờ duyệt chỉ hiển thị với người gửi trong trang này. So sánh dùng tin thật đã được chấp nhận, không dùng dữ liệu demo; đây là giá chào thuê.</p>
     <div className={a.filters} role="group" aria-label="Lọc trạng thái bài">
       {(Object.keys(GROUP_LABEL) as StatusGroup[]).map(value => <button key={value} type="button" aria-pressed={value === group}

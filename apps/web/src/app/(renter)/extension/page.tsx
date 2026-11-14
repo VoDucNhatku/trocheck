@@ -18,9 +18,16 @@ export default function ExtensionPage() {
       <aside className={styles.panel} aria-labelledby="install-title">
         <h2 id="install-title">Cách cài</h2>
         <ol className={styles.steps}>
-          <li><span>Tải và giải nén file. Mở <code>chrome://extensions</code> trên Chrome hoặc <code>edge://extensions</code> trên Microsoft Edge, bật Developer mode, chọn Load unpacked và chọn thư mục <code>trocheck-collector</code>. Hai trình duyệt dùng cùng các bước cài.</span></li>
-          <li><span>Vào <Link href="/tai-khoan">Tài khoản</Link>, đăng nhập và bấm “Kết nối extension trên trình duyệt này”. Không cần sao chép mã.</span></li>
-          <li><span>Mở một nhóm Facebook hoặc tìm kiếm bài viết rồi cuộn. Nếu Facebook đã mở trước khi cài, tải lại trang đó một lần.</span></li>
+          <li><span><b>Tải và cài vào trình duyệt.</b>
+            <span className={styles.sub}>Bấm “Tải extension” bên dưới rồi giải nén file <code>trocheck-collector.zip</code> thành một thư mục <code>trocheck-collector</code>, để ở nơi bạn không xóa.</span>
+            <span className={styles.sub}>Mở <code>chrome://extensions</code> trên Chrome hoặc <code>edge://extensions</code> trên Microsoft Edge, bật Developer mode, chọn Load unpacked và chọn thư mục vừa giải nén. Hai trình duyệt dùng cùng các bước cài.</span>
+            <span className={styles.sub}>Bấm biểu tượng ghép hình trên thanh công cụ và ghim TrọCheck Collector để dễ mở lại.</span></span></li>
+          <li><span><b>Kết nối tài khoản.</b>
+            <span className={styles.sub}>Vào <Link href="/tai-khoan">Tài khoản</Link>, đăng nhập và bấm “Kết nối extension trên trình duyệt này”. Không cần sao chép mã. Trang sẽ báo “Đã kết nối với extension” và danh sách kết nối hiện thêm một dòng.</span>
+            <span className={styles.sub}>Nếu trang báo chưa tìm thấy extension, kiểm tra extension đang bật rồi tải lại trang Tài khoản.</span></span></li>
+          <li><span><b>Mở Facebook và cuộn.</b>
+            <span className={styles.sub}>Tìm “phòng trọ” kèm tên khu vực (ví dụ “phòng trọ Thủ Đức”) hoặc mở một nhóm cho thuê, rồi cuộn xuống. Nếu Facebook đã mở trước khi cài, tải lại trang đó một lần.</span>
+            <span className={styles.sub}>Sau khi cuộn, quay lại <Link href="/bai-cua-toi">Bài của tôi</Link> để xem bài đã gửi, giá và khu vực đọc được.</span></span></li>
         </ol>
         <div className={styles.actions}>
           <a className={styles.primary} href={DOWNLOAD_URL} download>Tải extension</a>

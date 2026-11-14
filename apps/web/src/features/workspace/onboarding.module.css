@@ -1,0 +1,15 @@
+.box { margin:0 0 24px; padding:24px; background:var(--night2); border:1px solid var(--edge); border-top:3px solid var(--accent); border-radius:var(--r-lg); }
+.box h2 { font-size:20px; line-height:1.5; font-weight:600; margin:0 0 6px; }
+.lead { color:var(--muted); font-size:13px; margin:0 0 18px; }
+.steps { list-style:none; margin:0; padding:0; display:grid; gap:16px; }
+.steps li { display:grid; grid-template-columns:32px minmax(0,1fr); gap:14px; align-items:start; }
+.mark { width:32px; height:32px; display:grid; place-items:center; border:1px solid var(--edge2); border-radius:var(--r-md); font-size:14px; font-weight:600; color:var(--on-night2); }
+.steps li[data-done=true] .mark { background:var(--accent-subtle); border-color:var(--accent); color:var(--hl-text); }
+.steps li[data-next] .mark { border-color:var(--accent); color:var(--hl-text); }
+.steps strong { display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:15px; font-weight:600; }
+.state { font-size:12px; font-weight:500; color:var(--muted); border:1px solid var(--edge2); border-radius:var(--r-md); padding:1px 8px; }
+.steps li[data-done=true] .state { color:var(--hl-text); border-color:var(--accent); }
+.steps p { margin:4px 0 0; color:var(--on-night2); font-size:14px; line-height:1.7; overflow-wrap:anywhere; }
+.link { display:inline-flex; align-items:center; min-height:44px; color:var(--hl-text); font-size:14px; font-weight:600; text-decoration:underline; text-underline-offset:3px; }
+.link:focus-visible { outline:2px solid var(--focus); outline-offset:3px; }
+@media(max-width:600px) { .box { padding:18px; } }
