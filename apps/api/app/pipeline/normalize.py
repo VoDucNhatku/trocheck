@@ -281,21 +281,29 @@ def _num(s: str) -> int | float:
     return int(value) if value.is_integer() else value
 
 
+MIN_AREA_M2 = 6  # no rentable room is smaller; a smaller number is a width, a height or a typo
+
+
 def parse_area(quote: str) -> dict:
+    """Area from one quote. "AxB" (metres, optionally "AmxBm") is A*B; a value below MIN_AREA_M2 is not an
+    area at all and is dropped rather than stored (e.g. "DT 2.7m" is a width)."""
     folded = fold(quote)
     area = {"amount_form": "none", "value_m2": None, "min_m2": None, "max_m2": None, "from_dimensions": False}
     m = re.search(rf"({_NUMF})\s?(?:-|–|~|den)\s?({_NUMF})\s?{_M2}", folded)
     if m:
-        area.update(amount_form="range", min_m2=_num(m.group(1)), max_m2=_num(m.group(2)))
+        low, high = _num(m.group(1)), _num(m.group(2))
+        if low >= MIN_AREA_M2:
+            area.update(amount_form="range", min_m2=low, max_m2=high)
         return area
-    m = re.search(rf"({_NUMF})\s?x\s?({_NUMF})", folded)
+    m = re.search(rf"({_NUMF})\s?m?\s?x\s?({_NUMF})", folded)
     if m:
         value = float(m.group(1).replace(",", ".")) * float(m.group(2).replace(",", "."))
-        area.update(amount_form="exact", value_m2=int(value) if value.is_integer() else round(value, 2),
-                    from_dimensions=True)
+        if value >= MIN_AREA_M2:
+            area.update(amount_form="exact", value_m2=int(value) if value.is_integer() else round(value, 2),
+                        from_dimensions=True)
         return area
     m = re.search(rf"({_NUMF})\s?{_M2}", folded) or re.search(rf"(?:dt|dien tich)\s*:?\s*({_NUMF})\s?m\b", folded)
-    if m:
+    if m and _num(m.group(1)) >= MIN_AREA_M2:
         area.update(amount_form="exact", value_m2=_num(m.group(1)))
     return area
 

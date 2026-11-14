@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from app.core.ids import iso
 from app.models import Evidence, FieldValue, Listing, Post
+from app.pipeline.normalize import MIN_AREA_M2
 
 META_KEYS = ("decision", "abstain_reason", "agreement", "evidence")
 SINGLE_FIELDS = ("rent", "area", "room", "location")
@@ -78,7 +79,7 @@ def lookup_columns(listing: dict) -> dict:
         "rent_form": rent.get("amount_form"),
         "rent_basis": rent.get("basis"),
         "rent_period": rent.get("period"),
-        "area_m2": area.get("value_m2"),
+        "area_m2": area.get("value_m2") if (area.get("value_m2") or 0) >= MIN_AREA_M2 else None,
         "area_from_dimensions": bool(area.get("from_dimensions")),
         "property_type": room.get("property_type"),
         "ward_code": loc.get("ward_code"),

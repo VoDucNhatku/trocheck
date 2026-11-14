@@ -216,3 +216,32 @@ def test_ctx_basis_not_applied_to_multi_listing():
     rent = n.parse_rent("5tr")
     n.ctx_basis_unit_single(rent, property_type="ccmn", listing_count=2, text="CCMN P1 5tr P2 6tr")
     assert rent["basis"] == "unknown"
+
+
+@pytest.mark.parametrize("span,value", [
+    ("2.7x10", 27), ("2,7 x 10", 27), ("2.7m x 10m", 27), ("2.7mx10m", 27), ("4m x 8m", 32), ("3.5 x 12m", 42),
+    ("30m2", 30), ("6m2", 6), ("DT 30m", 30),
+])
+def test_area_from_dimensions_is_the_product_never_the_first_number(span, value):
+    area = n.parse_area(span)
+    assert area["amount_form"] == "exact" and area["value_m2"] == value
+
+
+@pytest.mark.parametrize("span", ["2.7m2", "5m2", "DT 2.7m", "diện tích 3m", "2x2", "1.5 x 3m", "3-5m2"])
+def test_area_below_six_square_metres_is_not_stored(span):
+    area = n.parse_area(span)
+    assert area == {"amount_form": "none", "value_m2": None, "min_m2": None, "max_m2": None,
+                    "from_dimensions": False}
+
+
+def test_dimension_area_through_the_regex_rule_and_the_pipeline():
+    from app.pipeline.engine import run_pipeline
+
+    def areas(text):
+        return [listing["area"] for listing in run_pipeline(text).extraction["listings"]]
+
+    assert [a["value_m2"] for a in areas("Cho thuê nhà nguyên căn Quận 7, ngang 2.7m x 10m, giá 9tr/tháng.")] == [27]
+    absent = areas("Cho thuê phòng trọ Quận 7, giá 3tr/tháng.")[0]
+    assert absent["value_m2"] is None and absent["amount_form"] == "none"
+    tiny = areas("Cho thuê phòng trọ Quận 7, DT 2.7m, giá 3tr/tháng.")[0]
+    assert tiny["value_m2"] is None and tiny["amount_form"] == "none"
