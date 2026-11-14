@@ -108,6 +108,8 @@ class ListingCard(BaseModel):
     review_status: ReviewStatus
     is_demo: bool
     text_complete: bool
+    # "Bình Thạnh (cũ)" when the listing belongs to exactly one old district (ward or single mention).
+    old_district: str | None = None
 
 
 class ListingsResponse(BaseModel):
@@ -192,6 +194,10 @@ class Comparison(BaseModel):
 class StatsOverview(BaseModel):
     total_listings: int
     eligible_listings: int
+    # Shared store (ADR-0010): listings usable for comparison by old district, accepted or auto-checked.
+    store_listings: int = 0
+    accepted_listings: int = 0
+    store_districts: int = 0
     excluded_counts: dict[str, int]
     updated_at: str | None
     is_demo: bool

@@ -184,11 +184,15 @@ def list_listings(ward: list[str] = Query(default=[]), type: list[str] = Query(d
                   area_min: float | None = None, area_max: float | None = None, has_price: bool | None = None,
                   sort: Literal["price_asc", "price_desc", "newest"] = "newest",
                   page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100),
+                  area: list[str] = Query(default=[], max_length=40, description="Old-district keys, e.g. thu-duc."),
+                  pool: Literal["all", "accepted"] = Query("accepted", description="all: shared store incl. auto-checked listings"),
                   demo: bool = Depends(demo_flag), session: Session = Depends(get_session),
                   settings: Settings = Depends(settings_dep)):
+    areas = tuple(dict.fromkeys(area))
+    my_posts.validate(my_posts.Filters(areas=areas))
     return listings.search(session, settings, wards=ward, types=type, price_min=price_min, price_max=price_max,
                            area_min=area_min, area_max=area_max, has_price=has_price, sort=sort, page=page,
-                           page_size=page_size, demo=demo)
+                           page_size=page_size, demo=demo, pool=pool, areas=list(areas))
 
 
 @router.get("/listings/{listing_id}", tags=["renter"], response_model=ListingDetail, response_model_exclude_unset=True,
@@ -207,9 +211,20 @@ def get_comparison(listing_id: str, user: User | None = Depends(optional_user), 
 
 @router.get("/market/summary", tags=["renter"], response_model=dto.MarketSummaryDTO)
 def market_summary(ward: list[str] = Query(default=[]), type: list[str] = Query(default=[]),
-                   basis: Literal["per_unit", "per_person"] = "per_unit", demo: bool = Depends(demo_flag),
+                   basis: Literal["per_unit", "per_person"] = "per_unit",
+                   group_by: Literal["ward", "old_district"] = "ward",
+                   area: list[str] = Query(default=[], max_length=40, description="Old-district keys (group_by=old_district)."),
+                   pool: Literal["accepted", "auto_checked"] | None = Query(
+                       None, description="old_district only: auto_checked (default) or accepted"),
+                   demo: bool = Depends(demo_flag),
                    session: Session = Depends(get_session), settings: Settings = Depends(settings_dep)):
-    return market.summary(session, settings, wards=ward, types=type, basis=basis, demo=demo)
+    areas = tuple(dict.fromkeys(area))
+    my_posts.validate(my_posts.Filters(areas=areas))
+    if group_by == "ward" and pool == "auto_checked":
+        raise ApiError(422, message="Bộ lọc không hợp lệ",
+                       field_errors={"pool": "Nguồn tin chưa duyệt chỉ dùng khi xem theo quận cũ"})
+    return market.summary(session, settings, wards=ward, types=type, basis=basis, demo=demo, group_by=group_by,
+                          areas=list(areas), pool_name=pool)
 
 
 @router.get("/stats/overview", tags=["renter"], response_model=StatsOverview,

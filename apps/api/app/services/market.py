@@ -91,8 +91,61 @@ def comparison(session: Session, listing: Listing, settings: Settings) -> dict:
     }
 
 
+def store_pool(session: Session, settings: Settings, *, demo: bool, pool_name: str = m.POOL_AUTO_CHECKED):
+    """The shared store grouped by old district (ADR-0010): rows usable for tier-2 comparison, latest per
+    cluster, plus why the others are left out."""
+    rows = load_rows(session, demo=demo)
+    now, cfg = utcnow(), config(settings)
+    excluded: dict[str, int] = {}
+    for row in rows:
+        for reason in m.district_pool_reasons(row, now=now, cfg=cfg, demo=demo, pool=pool_name):
+            excluded[reason] = excluded.get(reason, 0) + 1
+    return m.district_pool(rows, now=now, cfg=cfg, demo=demo, pool=pool_name), excluded
+
+
+def _district_summary(session: Session, settings: Settings, *, areas: list[str] | None, types: list[str] | None,
+                      basis: str, demo: bool, pool_name: str) -> dict:
+    eligible, excluded = store_pool(session, settings, demo=demo, pool_name=pool_name)
+    cfg = config(settings)
+    cells: dict[tuple, list[m.MarketRow]] = {}
+    for row in eligible:
+        key = m.old_district_of(row)
+        if row.rent_basis != basis or key is None:
+            continue
+        if areas and key not in areas:
+            continue
+        if types and row.property_type not in types:
+            continue
+        cells.setdefault((key, row.property_type), []).append(row)
+    # Districts with the most listings first: the table opens on the areas the store knows best.
+    totals: dict[str, int] = {}
+    for (key, _), rows in cells.items():
+        totals[key] = totals.get(key, 0) + len(rows)
+    out = []
+    for (key, ptype), rows in sorted(cells.items(), key=lambda kv: (-totals[kv[0][0]], m.district_label(kv[0][0]),
+                                                                    kv[0][1])):
+        stats = m.group_stats(rows, cfg)
+        out.append({"ward_code": None, "ward_name": None, "district_key": key, "district_name": m.district_label(key),
+                    "property_type": ptype, "basis": basis,
+                    "mean_vnd": stats.mean, "mean_per_m2": stats.mean_per_m2,
+                    "n": stats.n, "median": stats.median, "p25": stats.p25, "p75": stats.p75,
+                    "median_per_m2": stats.median_per_m2, "n_per_m2": stats.n_per_m2,
+                    "data_from": stats.data_from, "data_to": stats.data_to})
+    dates = sorted(r.observed_at for r in eligible)
+    return {"cells": out, "excluded_counts": excluded, "min_n": cfg.min_n, "window_days": cfg.window_days,
+            "data_from": dates[0].date().isoformat() if dates else None,
+            "data_to": dates[-1].date().isoformat() if dates else None,
+            "is_demo": demo, "group_by": "old_district", "pool": pool_name}
+
+
 def summary(session: Session, settings: Settings, *, wards: list[str] | None, types: list[str] | None,
-            basis: str, demo: bool) -> dict:
+            basis: str, demo: bool, group_by: str = "ward", areas: list[str] | None = None,
+            pool_name: str | None = None) -> dict:
+    """group_by=ward keeps the original rules (accepted listings, same ward). group_by=old_district uses the
+    shared store; pool defaults to auto_checked there (accepted + auto-checked), accepted on request."""
+    if group_by == "old_district":
+        return _district_summary(session, settings, areas=areas, types=types, basis=basis, demo=demo,
+                                 pool_name=pool_name or m.POOL_AUTO_CHECKED)
     eligible, excluded = pool(session, settings, demo=demo)
     cfg = config(settings)
     cells: dict[tuple, list[m.MarketRow]] = {}
@@ -128,7 +181,11 @@ def overview(session: Session, settings: Settings, *, demo: bool) -> dict:
     total = session.scalar(select(func.count()).select_from(Listing).join(Post, Post.id == Listing.post_id)
                            .where(Listing.is_current.is_(True), Post.is_demo.is_(demo)))
     eligible, excluded = pool(session, settings, demo=demo)
+    store, _ = store_pool(session, settings, demo=demo)
+    accepted, _ = store_pool(session, settings, demo=demo, pool_name=m.POOL_ACCEPTED)
     updated = session.scalar(select(func.max(Listing.created_at)).join(Post, Post.id == Listing.post_id)
                              .where(Post.is_demo.is_(demo)))
     return {"total_listings": total, "eligible_listings": len(eligible), "excluded_counts": excluded,
+            "store_listings": len(store), "accepted_listings": len(accepted),
+            "store_districts": len({m.old_district_of(r) for r in store}),
             "updated_at": iso(updated), "is_demo": demo}
