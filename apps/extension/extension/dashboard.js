@@ -330,7 +330,7 @@ async function loadConnection() {
   document.querySelector("#trocheck-token").placeholder = saved.trocheckToken ? "Đã lưu token; để trống để giữ nguyên" : "Dán token từ trang Tài khoản";
   document.querySelector("#auto-send").checked = saved.trocheckAutoSend !== false;
   document.querySelector("#trocheck-status").textContent = saved.trocheckToken
-    ? `Đã kết nối: ${saved.trocheckAccount || "tài khoản TrọCheck"}. ${saved.trocheckSync?.error || saved.trocheckSync?.lastResult || ""}` : "Chưa kết nối. Mở trang Tài khoản để kết nối một lần.";
+    ? `Đã kết nối: ${saved.trocheckAccount || "tài khoản TrọCheck"}. ${saved.trocheckSync?.error || saved.trocheckSync?.lastResult || ""}${saved.trocheckSync?.error || !(saved.trocheckSync?.imagesNextAttempt > Date.now()) ? "" : ` ${saved.trocheckSync.imagesError}`}` : "Chưa kết nối. Mở trang Tài khoản để kết nối một lần.";
   return saved;
 }
 
