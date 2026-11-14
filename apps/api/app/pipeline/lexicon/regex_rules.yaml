@@ -5,7 +5,7 @@
 # view: folded = lowercase without diacritics ("phòng" -> "phong");
 #       lower  = lowercase with diacritics (needed where unaccented text is ambiguous).
 # Shared building blocks are written as {NUM}, {MONEY}, {SUFFIX}, {INCLUDES}, {NAME}.
-version: "1.2.0"
+version: "1.3.0"
 
 blocks:
   NUM: '\d+(?:[.,]\d+)*'
@@ -111,8 +111,8 @@ rules:
   - id: ROOM_TYPE
     label: ROOM
     view: folded
-    pattern: '\b(?:ccmn|chung cu mini|can ho dich vu|chdv|nha nguyen can|nha rieng|phong tro(?:\s+khep kin)?|phong khep kin)\b'
-    examples: ["CCMN", "căn hộ dịch vụ", "phòng trọ khép kín", "nhà nguyên căn"]
+    pattern: '\b(?:ccmn|chung cu mini|can ho mini|can ho dich vu|chdv|nha nguyen can|nguyen can|nha rieng|phong tro(?:\s+khep kin)?|phong khep kin|(?:nha|day|khu) tro|duplex|studio)\b'
+    examples: ["CCMN", "căn hộ dịch vụ", "phòng trọ khép kín", "nhà nguyên căn", "nguyên căn", "dãy trọ", "duplex", "căn hộ mini"]
     not_examples: ["phòng 2 người"]
   - id: ROOM_BED_BATH
     label: ROOM

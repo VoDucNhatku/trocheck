@@ -11,7 +11,7 @@ from decimal import Decimal
 
 from app.pipeline.preprocess import fold
 
-NORMALIZER_VERSION = "1.1.0"
+NORMALIZER_VERSION = "1.2.0"
 
 # --- money ------------------------------------------------------------------
 
@@ -243,6 +243,39 @@ def ctx_basis_unit_whole(rent: dict, *, property_type: str, listing_count: int, 
     return "CTX_BASIS_UNIT_WHOLE"
 
 
+# Room type from the whole text when the room field was found but named no type (task P2). Order matters:
+# "căn hộ mini" is a CCMN, "nhà trọ" is a phòng trọ, a lone "phòng" is a phòng trọ. Shared/bed posts and
+# non-housing rentals (văn phòng, mặt bằng, kho) keep "unknown".
+_ROOM_INFER = [
+    (re.compile(r"\bcan ho mini\b"), "ccmn"),
+    (re.compile(r"\b(?:nha|day|khu)\s+tro\b"), "phong_tro"),
+    (re.compile(r"\b(?:studio|duplex)\b"), "can_ho_dich_vu"),
+    (re.compile(r"\bcan ho\b"), "can_ho_dich_vu"),
+    (re.compile(r"\bnguyen can\b|\bcho thue (?:can )?nha\b(?!\s*tro)"), "nha_nguyen_can"),
+    (re.compile(r"\bphong\b|\btro\b"), "phong_tro"),
+]
+_NOT_HOUSING_RE = re.compile(r"\bvan phong\b|\bmat bang\b|\bkiot\b|\bki ot\b|\bkho\s+(?:xuong|bai|hang)\b|\bxuong\b")
+_APARTMENT_RE = re.compile(r"\bchung cu\b(?!\s*mini)|\bcan ho\s+\d\s?(?:pn|phong ngu)\b")
+
+
+def ctx_room_type(room: dict, *, listing_count: int, text: str) -> str | None:
+    """Infer the property type of a single-listing post whose room field was answered without a type."""
+    if room.get("property_type") != "unknown" or room.get("decision") != "answered" or listing_count != 1:
+        return None
+    folded = fold(text)
+    if _NOT_HOUSING_RE.search(folded) or per_person_signal(text):
+        return None
+    for pattern, ptype in _ROOM_INFER:
+        if not pattern.search(folded):
+            continue
+        # A flat in an ordinary apartment block is not a serviced apartment; studios/duplexes still are.
+        if ptype == "can_ho_dich_vu" and _APARTMENT_RE.search(folded) and not re.search(r"\b(?:studio|duplex)\b", folded):
+            return None
+        room["property_type"] = ptype
+        return "CTX_ROOM_TYPE"
+    return None
+
+
 # --- fees (§2) ----------------------------------------------------------------
 
 FEE_KEYWORDS = [
@@ -364,10 +397,10 @@ def parse_area(quote: str) -> dict:
 # --- room (§4) ----------------------------------------------------------------
 
 PROPERTY_PATTERNS = [
-    (re.compile(r"\b(?:ccmn|chung cu mini)\b"), "ccmn"),
-    (re.compile(r"\b(?:can ho dich vu|chdv)\b"), "can_ho_dich_vu"),
-    (re.compile(r"\b(?:nha nguyen can|nha rieng)\b"), "nha_nguyen_can"),
-    (re.compile(r"\bphong (?:tro|khep kin)\b"), "phong_tro"),
+    (re.compile(r"\b(?:ccmn|chung cu mini|can ho mini)\b"), "ccmn"),
+    (re.compile(r"\b(?:can ho dich vu|chdv|duplex|studio)\b"), "can_ho_dich_vu"),
+    (re.compile(r"\b(?:nha nguyen can|nguyen can|nha rieng)\b"), "nha_nguyen_can"),
+    (re.compile(r"\bphong (?:tro|khep kin)\b|\b(?:nha|day|khu) tro\b"), "phong_tro"),
 ]
 _PRIVATE_RE = re.compile(r"\bkhep kin\b|\b(?:wc|vs|ve sinh|nha ve sinh) rieng\b")
 _MEZZ_RE = re.compile(r"\bgac lung\b|\bco gac\b|\bgac xep\b")
