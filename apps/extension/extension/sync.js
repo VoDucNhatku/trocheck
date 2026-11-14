@@ -45,7 +45,9 @@ async function sendNote() {
   const config = await settings();
   if (!config.trocheckToken) return "Chưa kết nối tài khoản nên bài chỉ lưu trên máy. Bấm biểu tượng TrọCheck để kết nối.";
   const sync = config.trocheckSync;
-  return sync?.blocked || (sync?.daily && sync.nextAttempt > Date.now()) ? sync.error : "";
+  if (sync?.blocked || (sync?.daily && sync.nextAttempt > Date.now())) return sync.error;
+  // Only photos are capped: posts still go, so this is information, not a failure.
+  return sync?.imagesNextAttempt > Date.now() ? sync.imagesError : "";
 }
 
 async function refreshBadges() {
@@ -64,20 +66,48 @@ async function scheduleSend() {
   }
 }
 
+const DAY_MS = 25 * 60 * 60 * 1000;
+const dailyDelay = error => Math.min(error.retryAfter * 1000 + 60000, DAY_MS);
+
+/** Pause state for photos, kept apart from the post pause: a new cap, else a still-running earlier one. */
+function imagesPause(sync, cap) {
+  if (cap) {
+    return { imagesNextAttempt: Date.now() + dailyDelay(cap),
+      imagesError: `${cap.message} Bài vẫn gửi bình thường; ảnh còn lại sẽ gửi tiếp sau 0 giờ.` };
+  }
+  return sync?.imagesNextAttempt > Date.now() ? { imagesNextAttempt: sync.imagesNextAttempt, imagesError: sync.imagesError } : {};
+}
+
+/** Wakes the worker when photos are allowed again, unless an earlier alarm is already set. */
+async function wakeForImages(pause, replaceRecovery = false) {
+  if (!pause.imagesNextAttempt) return;
+  const existing = await chrome.alarms?.get?.(SEND_ALARM);
+  if (!existing || replaceRecovery || existing.scheduledTime > pause.imagesNextAttempt) await chrome.alarms?.create(SEND_ALARM, { when: pause.imagesNextAttempt });
+}
+
 function sendStored(manual = false) {
   if (sending) return sending.then(answer => manual && (answer.paused || answer.empty) ? sendStored(true) : answer);
   sending = (async () => {
     const config = await settings();
     if (!config.trocheckToken) return { ok: false, error: "Chưa kết nối. Mở trang Tài khoản để kết nối extension." };
     if (!manual && (config.trocheckAutoSend === false || config.trocheckSync?.blocked || config.trocheckSync?.nextAttempt > Date.now())) return { ok: true, paused: true };
-    if (!manual && !(await TroStorage.readUnsent()).length && !(await TroStorage.readImagesToUpload()).length) return { ok: true, empty: true };
+    const imagesPaused = !manual && config.trocheckSync?.imagesNextAttempt > Date.now();
+    if (!manual && !(await TroStorage.readUnsent()).length && (imagesPaused || !(await TroStorage.readImagesToUpload()).length)) {
+      if (imagesPaused && config.trocheckAutoSend !== false) await wakeForImages(imagesPause(config.trocheckSync));
+      return { ok: true, empty: true };
+    }
     // Persist a recovery alarm before fetching, in case the worker is suspended.
     if (config.trocheckAutoSend !== false) await chrome.alarms?.create(SEND_ALARM, { when: Date.now() + 120000 });
     try {
       const result = await TroCheck.sendUnsent({ storage: TroStorage, apiUrl: config.trocheckApiUrl || "", token: config.trocheckToken,
-        version: chrome.runtime.getManifest().version });
+        version: chrome.runtime.getManifest().version, imagesPaused });
       if ((await settings()).trocheckToken === config.trocheckToken) {
-        await saveSettings({ trocheckSync: { lastResult: `Lần gửi gần nhất: ${result.total} bài, ${result.images.uploaded} ảnh mới${result.rejected ? `, ${result.rejected} bài bị từ chối` : ""}.`, lastSent: Date.now() } });
+        const pause = imagesPause(config.trocheckSync, result.imagesCap);
+        await saveSettings({ trocheckSync: { lastResult: `Lần gửi gần nhất: ${result.total} bài, ${result.images.uploaded} ảnh mới${result.rejected ? `, ${result.rejected} bài bị từ chối` : ""}.`, lastSent: Date.now(),
+          // Without a photo cap this run, an unfinished earlier pause stays; a manual run that went through clears it.
+          ...(result.images.paused || result.imagesCap ? pause : {}) } });
+        // The recovery alarm set before sending is no longer needed once nothing waits but paused photos.
+        if (config.trocheckAutoSend !== false) await wakeForImages(pause, !(await TroStorage.readUnsent()).length);
       }
       return { ok: true, result };
     } catch (error) {
@@ -87,7 +117,7 @@ function sendStored(manual = false) {
       // A daily cap says how long until the store takes posts again: wait for that, not for a minute.
       const daily = limited && Boolean(error.retryAfter);
       const attempts = (config.trocheckSync?.attempts || 0) + (limited ? 0 : 1);
-      const delay = daily ? Math.min(error.retryAfter * 1000 + 60000, 25 * 60 * 60 * 1000)
+      const delay = daily ? dailyDelay(error)
         : limited ? 70000 : Math.min(60 * 60 * 1000, 60000 * 2 ** Math.min(attempts - 1, 6));
       const nextAttempt = Date.now() + delay;
       const reason = blocked ? error.message
@@ -95,9 +125,13 @@ function sendStored(manual = false) {
         : limited ? `${error.message} Phần còn lại vẫn ở trên máy và sẽ tự gửi tiếp sau khoảng một phút.`
           : `${error.message} Dữ liệu vẫn ở trên máy; sẽ tự gửi lại sau ${Math.ceil(delay / 60000)} phút.`;
       if ((await settings()).trocheckToken === config.trocheckToken) {
-        await saveSettings({ trocheckSync: { blocked, daily, error: reason, attempts, nextAttempt: blocked ? 0 : nextAttempt } });
+        const pause = imagesPause(config.trocheckSync, error.imagesCap);
+        await saveSettings({ trocheckSync: { blocked, daily, error: reason, attempts, nextAttempt: blocked ? 0 : nextAttempt, ...pause } });
         if (blocked) await chrome.alarms?.clear?.(SEND_ALARM);
-        else if (config.trocheckAutoSend !== false) await chrome.alarms?.create(SEND_ALARM, { when: nextAttempt });
+        else if (config.trocheckAutoSend !== false) {
+          await chrome.alarms?.create(SEND_ALARM, { when: nextAttempt });
+          await wakeForImages(pause);
+        }
       }
       return { ok: false, error: reason };
     } finally { await refreshBadges(); }

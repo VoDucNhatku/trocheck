@@ -15,7 +15,7 @@ test('popup links to submitted posts on the same web app as account connection',
   assert.equal(link.href, 'https://trocheck.vercel.app/bai-cua-toi');
   assert.equal(link.target, '_blank');
   assert.match(link.rel, /noopener/);
-  assert.equal(JSON.parse(script('manifest.json')).version, '0.3.3');
+  assert.equal(JSON.parse(script('manifest.json')).version, '0.3.4');
 });
 
 function popup(t, sendMessage, { url = 'https://www.facebook.com/groups/42/', state = {} } = {}) {
