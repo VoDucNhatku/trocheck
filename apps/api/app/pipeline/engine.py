@@ -179,7 +179,9 @@ def _apply_context_rules(listing: dict, *, post_type: str, listing_count: int, t
     rent = listing["rent"]
     applied = [n.ctx_period_month(rent, post_type=post_type),
                n.ctx_basis_unit_single(rent, property_type=listing["room"]["property_type"],
-                                       listing_count=listing_count, text=text)]
+                                       listing_count=listing_count, text=text),
+               n.ctx_basis_unit_whole(rent, property_type=listing["room"]["property_type"],
+                                      listing_count=listing_count, text=text)]
     applied = [a for a in applied if a]
     if applied and rent.get("evidence"):
         # Record context rules on the evidence so reviewers see what was inferred (§6).

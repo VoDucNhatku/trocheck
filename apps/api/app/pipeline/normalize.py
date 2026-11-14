@@ -11,7 +11,7 @@ from decimal import Decimal
 
 from app.pipeline.preprocess import fold
 
-NORMALIZER_VERSION = "1.0.0"
+NORMALIZER_VERSION = "1.1.0"
 
 # --- money ------------------------------------------------------------------
 
@@ -201,6 +201,46 @@ def ctx_basis_unit_single(rent: dict, *, property_type: str, listing_count: int,
         rent["basis"] = "per_unit"
         return "CTX_BASIS_UNIT_SINGLE"
     return None
+
+
+# Price stated for the whole unit: no per-person signal anywhere outside the fee lines (task N1).
+_UNIT_WORD_RE = re.compile(r"\b(?:phong|can ho|can|studio|duplex|nguyen can|nha|chdv|ccmn)\b")
+_UNIT_TYPES = {"phong_tro", "ccmn", "can_ho_dich_vu", "nha_nguyen_can"}
+_FEE_CLAUSE_RE = re.compile(
+    r"\b(?:dien|nuoc|xe|rac|wifi|internet|mang|dich vu|dv|ve sinh|phi|gui|thang may|truyen hinh|coc)\b")
+_CLAUSE_SPLIT_RE = re.compile(r"[\n;|•·]+|(?<!\d)[.,](?!\d)|\s[-–—]\s|\s\+\s")
+_MONEY_AFTER = r"\d[\d.,]*\s?(?:tr|trieu|cu|k|nghin|ngan|d|vnd)\b"
+_PERSON_SIGNAL_RE = re.compile("|".join([
+    r"/\s?(?:\d+\s*)?(?:nguoi|ng)\b",                                    # 2tr/nguoi, 3tr/2 nguoi
+    r"\b(?:moi|tung|dau)\s*nguoi\b|\btheo\s+(?:dau\s+)?nguoi\b|\btinh\s+(?:theo\s+)?(?:dau\s+)?nguoi\b",
+    r"\d\s?(?:tr|trieu|cu|k|nghin|d)\d{0,3}\s*/?\s*(?:1\s*|mot\s*)(?:nguoi|ng)\b",   # 1tr2 1 nguoi
+    rf"\b\d{{1,2}}\s*(?:nguoi|ng)\b\s*[:=\-]?\s*(?:gia\s*)?{_MONEY_AFTER}",  # "1 nguoi 2tr5, 2 nguoi 3tr"
+    r"\bo\s*ghep\b|\bghep\b|\bshare\b|\bsharing\b|\bslot\b|\bktx\b|\bky\s*tuc\s*xa\b",
+    r"\bdorm\b|\bhostel\b|\bsleep\s?box\b|\bcapsule\b",
+    r"\bgiuong\s+tang\b|\b(?:thue|con|trong|tim|can|gia)\s+(?:\d+\s+)?giuong\b|\b\d+\s*giuong\s+(?:trong|con)\b|\bgiuong\s*/",
+]))
+
+
+def per_person_signal(text: str) -> bool:
+    """True when the post prices heads or beds, not the whole unit. Clauses about fees (điện, nước, xe,
+    rác, wifi, dịch vụ, cọc...) are skipped: '100k/người' there is a fee unit, not the rent's."""
+    for clause in _CLAUSE_SPLIT_RE.split(fold(text)):
+        if clause and not _FEE_CLAUSE_RE.search(clause) and _PERSON_SIGNAL_RE.search(clause):
+            return True
+    return False
+
+
+def ctx_basis_unit_whole(rent: dict, *, property_type: str, listing_count: int, text: str) -> str | None:
+    """Rent of a whole room/flat/house with no per-person signal is per unit (inferred, recorded as
+    CTX_BASIS_UNIT_WHOLE). Covers phòng trọ and unknown types that CTX_BASIS_UNIT_SINGLE leaves out."""
+    if rent["basis"] != "unknown" or listing_count != 1 or rent["amount_form"] == "none":
+        return None
+    if property_type not in _UNIT_TYPES and not _UNIT_WORD_RE.search(fold(text)):
+        return None
+    if per_person_signal(text):
+        return None
+    rent["basis"] = "per_unit"
+    return "CTX_BASIS_UNIT_WHOLE"
 
 
 # --- fees (§2) ----------------------------------------------------------------
