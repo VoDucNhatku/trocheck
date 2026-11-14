@@ -7,6 +7,7 @@ mean or median, `insufficient_data`. P25-P75 describe spread; they are not a con
 Tier 2 (ADR-0010, `compare_tiered`): when the ward group is missing or has N < min_n, the same listing may be
 compared with the listings of its old district (single-district or ward match only, never a multi-area ad),
 first among accepted listings, then among real listings that passed the automatic checks.
+Within each pool, a small area-band group may expand to all areas when that reaches min_n.
 """
 from __future__ import annotations
 
@@ -188,6 +189,7 @@ def compare(target: MarketRow, pool: list[MarketRow], cfg: MarketConfig) -> Comp
         "property_type": target.property_type, "basis": target.rent_basis,
         "area_band": band, "window_days": cfg.window_days, "broad_group": broad,
         "old_district_key": None,
+        "area_band_relaxed": False,
     }
     empty = group_stats([], cfg)
     if reasons or not target.property_type or target.property_type == "unknown":
@@ -308,7 +310,8 @@ def _tier2_group(target: MarketRow, key: str, pool_rows: list[MarketRow], band: 
 def compare_tiered(target: MarketRow, rows: list[MarketRow], *, now: datetime, cfg: MarketConfig,
                    demo: bool) -> Comparison:
     """Tier 1 (ward group, accepted listings) as `compare`; tier 2 only when tier 1 is `insufficient_data`
-    or `not_comparable` solely because the ward is missing. Tier 2 never relaxes price, basis, type or area."""
+    or `not_comparable` solely because the ward is missing. Each tier 2 pool may relax area when the band
+    is too small; price, basis, type, period, window and multi-area restrictions remain unchanged."""
     ward_pool, _ = eligible_pool(rows, now=now, cfg=cfg, demo=demo)
     tier1 = compare(target, ward_pool, cfg)
     tier1 = replace(tier1, scope_label=target.ward_name)
@@ -329,7 +332,14 @@ def compare_tiered(target: MarketRow, rows: list[MarketRow], *, now: datetime, c
     label = district_label(key)
     last = None
     for pool in (POOL_ACCEPTED, POOL_AUTO_CHECKED):
-        group = _tier2_group(target, key, district_pool(rows, now=now, cfg=cfg, demo=demo, pool=pool), band)
+        pool_rows = district_pool(rows, now=now, cfg=cfg, demo=demo, pool=pool)
+        group = _tier2_group(target, key, pool_rows, band)
+        if len(group) < cfg.min_n and band is not None:
+            relaxed_group = _tier2_group(target, key, pool_rows, None)
+            if len(relaxed_group) >= cfg.min_n:
+                group = relaxed_group
+                base_reasons = [*base_reasons, "area_band_relaxed"]
+                criteria = {**criteria, "broad_group": True, "area_band_relaxed": True}
         stats = group_stats(group, cfg)
         last = (pool, group, stats)
         if stats.n >= cfg.min_n:
@@ -359,7 +369,8 @@ def scope_note(c: Comparison) -> str:
     """Where the group comes from when it is not the ward tier. Always shown with a tier 2 sentence."""
     if c.scope != "old_district":
         return ""
-    return f"không cùng phường, {POOL_NOTE.get(c.pool, '')}"
+    area_note = ", mọi diện tích" if "area_band_relaxed" in c.reason_codes else ""
+    return f"không cùng phường, {POOL_NOTE.get(c.pool, '')}{area_note}"
 
 
 def verdict_sentence(c: Comparison, rent_form: str | None = None, *, min_n: int = 10) -> str:

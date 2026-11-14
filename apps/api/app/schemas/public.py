@@ -159,6 +159,7 @@ class ComparisonCriteria(BaseModel):
     window_days: int
     broad_group: bool
     old_district_key: str | None = None  # tier 2 only (scope = old_district)
+    area_band_relaxed: bool = False
 
 
 class SimilarListing(BaseModel):
@@ -169,7 +170,8 @@ class SimilarListing(BaseModel):
 
 class Comparison(BaseModel):
     status: Literal["ok", "insufficient_data", "not_comparable"]
-    reason_codes: list[Literal["too_few_samples", "price_not_exact", "basis_unknown", "ward_unresolved", "area_missing_broad_group"]]
+    reason_codes: list[Literal["too_few_samples", "price_not_exact", "basis_unknown", "ward_unresolved",
+                               "area_missing_broad_group", "area_band_relaxed"]]
     criteria: ComparisonCriteria
     scope: Literal["ward", "old_district"]
     scope_label: str | None

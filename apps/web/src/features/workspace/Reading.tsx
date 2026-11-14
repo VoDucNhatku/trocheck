@@ -6,6 +6,7 @@ import type { Comparison, Evidence, Listing } from '@/lib/api/types';
 import type { AnalysisResult } from '@/lib/workspace/types';
 import { api, messageOf } from '@/lib/workspace/client';
 import { AnalysisEvidence, preservePhrases as keepPhrases } from './AnalysisEvidence';
+import { comparisonPlace, comparisonScopeNote } from './comparison-scope';
 import { evidenceKey } from '@/lib/evidence';
 import { PROPERTY_LABEL, REASON_TEXT, dataRangeSentence, formatVnd } from '@/lib/format';
 import { Button, DataBadge, Empty, ErrorNotice, Intro, Loading, Modal, s } from './ui';
@@ -79,7 +80,8 @@ function ComparisonSection({ listingId, demo, rentReason }: { listingId: string;
   if (rentReason) return <section className={r.comparison}><h2>So với nhóm</h2><p>Chưa thể so sánh vì giá thuê chưa xác định.</p><p className={s.hint}>{rentReason}</p></section>;
   return <section className={r.comparison}><h2>So với nhóm</h2>
     {error ? <ErrorNotice message={error} retry={() => setReload(reload + 1)} /> : !value ? <p className={s.muted} role="status">Đang tìm nhóm tương tự…</p> : <>
-      <p style={{ fontSize: 17, fontWeight: 500 }}>{keepPhrases(value.status === 'not_comparable' ? value.message : value.status === 'insufficient_data' || value.n < 10 ? `Chưa đủ dữ liệu để kết luận: mới có ${value.n} tin tương tự (cần ít nhất 10).` : value.status === 'ok' && value.mean_vnd == null ? 'Chưa có giá trung bình từ máy chủ để so sánh.' : value.message)}</p><p className={s.description}>{keepPhrases(PROPERTY_LABEL[value.criteria.property_type ?? 'unknown'] + ' · ' + (value.criteria.ward_name ?? 'Chưa rõ phường'))} · {keepPhrases(value.criteria.basis === 'per_unit' ? 'Theo phòng' : value.criteria.basis === 'per_person' ? 'Theo người' : 'Chưa rõ cơ sở tính')} · <span className={a.phrase}>{value.n.toLocaleString('vi-VN')} tin tương tự</span></p>
+      <p style={{ fontSize: 17, fontWeight: 500 }}>{keepPhrases(value.status === 'not_comparable' ? value.message : value.status === 'insufficient_data' || value.n < 10 ? `Chưa đủ dữ liệu để kết luận: mới có ${value.n} tin tương tự (cần ít nhất 10).` : value.status === 'ok' && value.mean_vnd == null ? 'Chưa có giá trung bình từ máy chủ để so sánh.' : value.message)}</p><p className={s.description}>{keepPhrases(PROPERTY_LABEL[value.criteria.property_type ?? 'unknown'] + ' · ' + comparisonPlace(value, value.criteria.ward_name))} · {keepPhrases(value.criteria.basis === 'per_unit' ? 'Theo phòng' : value.criteria.basis === 'per_person' ? 'Theo người' : 'Chưa rõ cơ sở tính')} · <span className={a.phrase}>{value.n.toLocaleString('vi-VN')} tin tương tự</span></p>
+      {comparisonScopeNote(value) && <p className={s.hint} data-scope={value.scope} data-pool={value.pool}>{keepPhrases(comparisonScopeNote(value)!)}</p>}
       {value.n >= 10 && value.status === 'ok' && value.mean_vnd != null && <p className={s.description}>Giá trung bình <span className={a.phrase}>{formatVnd(value.mean_vnd)}</span> {keepPhrases('/tháng')}{value.mean_per_m2 != null && <> · <span className={a.phrase}>{formatVnd(value.mean_per_m2)}</span>{keepPhrases('/m²/tháng')}</>}</p>}
       {value.reason_codes.length > 0 && <ul className={s.questions}>{value.reason_codes.map(reason => <li key={reason}>{keepPhrases(REASON_TEXT[reason])}</li>)}</ul>}
       <p className={s.hint} style={{ marginTop: 16 }}>{dataRangeSentence(value.data_from, value.data_to)}</p><DataBadge demo={value.is_demo} />

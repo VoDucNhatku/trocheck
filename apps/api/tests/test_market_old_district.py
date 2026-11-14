@@ -139,13 +139,75 @@ def test_other_districts_do_not_count():
     assert run(row(500, 3.0, cluster="T"), rows).stats.n == 9
 
 
-def test_price_basis_room_type_and_area_band_are_not_relaxed():
+@pytest.mark.parametrize("ward", [None, "W1"])
+@pytest.mark.parametrize("review_status,pool", [("auto_accepted", "accepted"), ("needs_review", "auto_checked")])
+def test_tier2_relaxes_area_only_when_the_same_pool_has_enough_samples(ward, review_status, pool):
+    rows = prices(4, area=20, review_status=review_status)
+    rows += prices(4, 20, area=45, review_status=review_status)
+    rows += prices(4, 40, area=None, review_status=review_status)
+    c = run(row(500, 3.0, ward=ward, area=20, cluster="T"), rows)
+    assert c.status == "ok" and c.scope == "old_district" and c.pool == pool
+    assert c.stats.n == 12 and set(r.listing_id for r in c.group) == set(r.listing_id for r in rows)
+    assert "area_band_relaxed" in c.reason_codes and "too_few_samples" not in c.reason_codes
+    assert c.criteria["area_band_relaxed"] is True and c.criteria["broad_group"] is True
+    assert c.criteria["area_band"] == "[20,30)"
+    message = verdict_sentence(c)
+    assert ", mọi diện tích" in message and "[20,30) m²" not in message
+
+
+@pytest.mark.parametrize("review_status,pool", [("auto_accepted", "accepted"), ("needs_review", "auto_checked")])
+def test_tier2_keeps_area_band_when_it_already_has_ten(review_status, pool):
+    rows = prices(10, review_status=review_status) + prices(8, 30, area=45, review_status=review_status)
+    c = run(row(500, cluster="T"), rows)
+    assert c.status == "ok" and c.pool == pool and c.stats.n == 10
+    assert "area_band_relaxed" not in c.reason_codes and not c.criteria.get("area_band_relaxed", False)
+    assert c.criteria["broad_group"] is False and ", mọi diện tích" not in verdict_sentence(c)
+
+
+def test_tier2_without_target_area_keeps_the_existing_broad_group_reason():
+    c = run(row(500, area=None, cluster="T"), prices(4) + prices(8, 20, area=None))
+    assert c.status == "ok" and c.pool == "accepted" and c.stats.n == 12
+    assert "area_missing_broad_group" in c.reason_codes and "area_band_relaxed" not in c.reason_codes
+    assert c.criteria["area_band"] is None and c.criteria["broad_group"] is True
+    assert not c.criteria.get("area_band_relaxed", False)
+
+
+def test_accepted_relaxed_area_beats_auto_checked_matching_area():
+    accepted = prices(4) + prices(8, 20, area=45)
+    c = run(row(500, cluster="T"), accepted + unaccepted(6, 50))
+    assert c.status == "ok" and c.pool == "accepted" and c.stats.n == 12
+    assert "area_band_relaxed" in c.reason_codes and c.criteria["area_band_relaxed"] is True
+    assert all(r.review_status == "auto_accepted" for r in c.group)
+
+
+@pytest.mark.parametrize("ward", [None, "W1"])
+def test_failed_area_relaxation_keeps_the_original_insufficient_result(ward):
+    rows = prices(4, ward=ward) + prices(5, 20, area=45)
+    c = run(row(500, ward=ward, cluster="T"), rows)
+    assert c.status == "insufficient_data" and c.stats.n == 4
+    assert c.scope == ("ward" if ward else "old_district")
+    assert "area_band_relaxed" not in c.reason_codes and not c.criteria.get("area_band_relaxed", False)
+    assert c.criteria["broad_group"] is False
+
+
+@pytest.mark.parametrize("change", [dict(rent_form="range"), dict(rent_period="day"), dict(rent_basis="per_person"),
+                                    dict(property_type="ccmn"), dict(observed_at=NOW - timedelta(days=40)),
+                                    dict(multi_area=True), dict(district="go-vap"), dict(cluster="T")])
+def test_relaxing_area_keeps_other_group_requirements(change):
+    rows = prices(4) + prices(5, 20, area=45) + [row(99, area=None, **change)]
+    c = run(row(500, cluster="T"), rows)
+    assert c.status == "insufficient_data" and c.stats.n == 4
+    assert "area_band_relaxed" not in c.reason_codes
+
+
+def test_price_basis_and_room_type_are_not_relaxed():
     rows = prices(9)
-    rows += [row(30, 3.0, rent_basis="per_person"), row(31, 3.0, property_type="ccmn"), row(32, 3.0, area=45.0)]
+    rows += [row(30, 3.0, rent_basis="per_person"), row(31, 3.0, property_type="ccmn")]
     c = run(row(500, 3.0, cluster="T"), rows)
     assert c.status == "insufficient_data" and c.stats.n == 9
     assert c.criteria["area_band"] == "[20,30)" and c.criteria["broad_group"] is False
     # Without an area the group is broad, as in tier 1, and the reason is recorded.
+    rows += [row(32, 3.0, area=45.0)]
     broad = run(row(500, 3.0, cluster="T", area=None), rows)
     assert broad.status == "ok" and broad.stats.n == 10 and broad.criteria["broad_group"] is True
     assert "area_missing_broad_group" in broad.reason_codes
@@ -367,6 +429,25 @@ def test_end_to_end_public_response_validates_and_names_only_accepted_listings(c
     validate_openapi(api_client, "/api/v1/listings/{listing_id}/comparison", response.json())
     text = response.text
     assert "Mã tin" not in text and "điện 3k5" not in text  # aggregate numbers only, never another post's text
+
+    # Four peers have an area; all other eligible peers still count when the band is relaxed.
+    with api.session() as session:
+        peers = [lid for lid in listing_of.values() if lid != listing_of["w11"]]
+        session.get(Listing, listing_of["w11"]).area_m2 = 20
+        for i, lid in enumerate(peers):
+            session.get(Listing, lid).area_m2 = 25 if i < 4 else None
+        session.commit()
+    relaxed = api_client.get(f"/api/v1/listings/{listing_of['w11']}/comparison")
+    assert relaxed.status_code == 200, relaxed.text
+    body = relaxed.json()
+    assert body == comparison_of(api, listing_of["w11"])
+    assert body["status"] == "ok" and body["pool"] == "auto_checked" and body["n"] == 29
+    assert "area_band_relaxed" in body["reason_codes"] and body["criteria"]["area_band_relaxed"] is True
+    assert body["criteria"]["broad_group"] is True
+    assert "gồm tin chưa duyệt, đã qua kiểm tra tự động, mọi diện tích" in body["message"]
+    assert "[20,30) m²" not in body["message"]
+    assert body["similar"] and {s["listing_id"] for s in body["similar"]} <= accepted
+    validate_openapi(api_client, "/api/v1/listings/{listing_id}/comparison", body)
 
 
 def test_end_to_end_proximity_mentions_do_not_enter_the_district_group(corpus):

@@ -120,6 +120,7 @@ xảy ra ở `old_district` khi tin đã duyệt chưa đủ N ≥ 10). `criteri
 `null` ở tầng phường. Tầng quận cũ không dùng vùng lân cận, bài nhiều khu vực (`multi_area`) hay dữ liệu demo;
 `message` luôn ghi quận cũ, "không cùng phường" và nguồn tin. `similar` chỉ chứa tin đã duyệt (công khai), kể cả khi
 `pool = auto_checked`; số liệu tổng hợp không lộ nội dung hay người gửi của tin khác. Các trường cũ không đổi.
+`area_band_relaxed`: ở tầng quận cũ, thử `accepted` cùng diện tích → `accepted` mọi diện tích → `auto_checked` cùng diện tích → `auto_checked` mọi diện tích; chỉ nới khi nhóm cùng diện tích thiếu mẫu và nhóm rộng đạt N tối thiểu, trả `criteria.area_band_relaxed = true`, `criteria.broad_group = true` và ghi "mọi diện tích" trong câu nhận định.
 
 `GET /api/v1/me/posts/summary`: cùng xác thực và phạm vi sở hữu, trả
 `{counts: {all, published, waiting, other}, quota: {used, limit, remaining, timezone}}`.
@@ -293,7 +294,7 @@ Bổ sung tương thích ngược; mặc định của API không đổi, web tr
   "similar": [ {"listing_id": "…", "rent_vnd": 5200000, "area_m2": 32} ] }
 ```
 
-Khi `status ≠ ok` thì `median`, `p25`, `p75`, `delta_percent`, `verdict` là `null`; giao diện dùng `reason_codes` để giải thích (`too_few_samples`, `price_not_exact`, `basis_unknown`, `ward_unresolved`, `area_missing_broad_group`).
+Khi `status ≠ ok` thì `median`, `p25`, `p75`, `delta_percent`, `verdict` là `null`; giao diện dùng `reason_codes` để giải thích (`too_few_samples`, `price_not_exact`, `basis_unknown`, `ward_unresolved`, `area_missing_broad_group`, `area_band_relaxed`).
 
 ## 4. Nhóm
 
