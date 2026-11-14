@@ -25,9 +25,10 @@ test('My posts empty state offers installation and connection, filters and error
     } }],
   });
   let fail = false, slow = false, lastQuery = '';
+  const queries = [];
   const server = createServer(async (req, res) => {
     if (req.url?.startsWith('/api/workspace/')) {
-      lastQuery = req.url;
+      lastQuery = req.url; queries.push(req.url);
       if (slow) await new Promise(resolve => setTimeout(resolve, 1200));
       res.setHeader('Content-Type', 'application/json');
       if (fail) { res.statusCode = 503; res.end(JSON.stringify({ error: { message: 'Chưa tải được bài thử nghiệm.' } })); }
@@ -83,8 +84,10 @@ test('My posts empty state offers installation and connection, filters and error
   await expect(page.getByRole('button', { name: 'Thử lại', exact: true })).toBeFocused();
   await page.screenshot({ path: path.join(output, 'error-focused.png'), fullPage: true });
   fail = false;
+  queries.length = 0;
   await page.getByRole('button', { name: 'Thử lại', exact: true }).click();
   await expect(page.getByText('Bạn chưa gửi bài nào', { exact: true })).toBeVisible();
-  assert.ok(lastQuery.includes('me/posts'));
+  // The onboarding checklist also asks for tokens, so check that the retry reloaded the post list, not the order.
+  assert.ok(queries.some(query => query.includes('me/posts?')), queries.join(', '));
   assert.deepEqual(errors, []);
 });
