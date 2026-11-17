@@ -36,6 +36,13 @@ def _accent_key(value: str) -> str:
     return re.sub(r"\s+", " ", unicodedata.normalize("NFC", value).casefold()).strip(" ,.")
 
 
+@lru_cache
+def _multiword_ward_pattern(names: frozenset[str]) -> re.Pattern:
+    alternatives = "|".join(re.escape(name) for name in sorted(names, key=lambda name: (-len(name), name))
+                            if " " in name)
+    return re.compile(r"\b(?:" + alternatives + r")\b")
+
+
 @dataclass(frozen=True)
 class Ward:
     code: str
@@ -135,6 +142,8 @@ class Places:
                 end = prefix.end() + len(name)
                 if text.startswith(name, prefix.end()) and not (text[end:end + 1].isalnum() or text[end:end + 1] == "_"):
                     ward_ranges.append((prefix.start(), end))
+        bare_ward_ranges = [(match.start(), match.end()) for match in
+                            _multiword_ward_pattern(frozenset(ward_names)).finditer(text)]
         unconfirmed = []
         covered = []
         inside_wards = []
@@ -164,12 +173,18 @@ class Places:
         for name, codes in names.items():
             bare = _DISTRICT_CATEGORY.sub("", name)
             for match in re.finditer(r"\b" + re.escape(bare) + r"\b", text):
+                if bare.isdigit() and (re.match(r"[.,]\d", text[match.end():])
+                                       or re.search(r"\d[.,]$", text[:match.start()])):
+                    continue  # A decimal price in a comma-separated sentence is not a district number.
                 if bare.isdigit() and not (re.search(r",\s*$", text[:match.start()])
                                            and re.match(r"\s*(?:[,.;]|$)", text[match.end():])):
                     continue
                 if _ward_words(text, match.start()):
                     continue
-                if any(start <= match.start() and match.end() <= end for start, end in ward_ranges):
+                if (any(start <= match.start() and match.end() <= end for start, end in ward_ranges)
+                        or any(start <= match.start() and match.end() <= end
+                               and (start < match.start() or match.end() < end)
+                               for start, end in bare_ward_ranges)):
                     if code not in codes:
                         inside_wards.append(name)
                     continue

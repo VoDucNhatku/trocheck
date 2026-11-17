@@ -1,14 +1,21 @@
 """M9 against the DB: load listing rows, delegate the rules to app.pipeline.market."""
 from __future__ import annotations
 
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
+import re
+from collections import Counter
+from dataclasses import replace
+from functools import lru_cache
+
+from sqlalchemy import and_, func, or_, select
+from sqlalchemy.orm import Session, load_only
 
 from app.core.config import Settings
 from app.core.ids import iso, utcnow
 from app.models import Listing, ListingDistrict, Post, PostVersion
 from app.pipeline import market as m
-from app.pipeline.dedup import TfIdf
+from app.pipeline.old_districts import area_catalog, district_scan
+from app.pipeline.places import real_places
+from app.pipeline.preprocess import fold
 
 
 def config(settings: Settings) -> m.MarketConfig:
@@ -28,7 +35,8 @@ def to_row(listing: Listing, post: Post, text: str = "", districts: tuple[str, .
         review_reasons=tuple(listing.review_reasons or ()), post_status=post.status or "")
 
 
-def load_districts(session: Session, *, demo: bool) -> dict[str, tuple[str, ...]]:
+def load_districts(session: Session, *, demo: bool,
+                   listing_ids: list[str] | None = None) -> dict[str, tuple[str, ...]]:
     """listing id -> old-district keys the post names as its own place (current listings of this dataset)."""
     found: dict[str, list[str]] = {}
     query = (select(ListingDistrict.listing_id, ListingDistrict.district_key)
@@ -36,6 +44,10 @@ def load_districts(session: Session, *, demo: bool) -> dict[str, tuple[str, ...]
              .join(Post, Post.id == Listing.post_id)
              .where(Listing.is_current.is_(True), Post.is_demo.is_(demo))
              .order_by(ListingDistrict.listing_id, ListingDistrict.district_key))
+    if listing_ids is not None:
+        if not listing_ids:
+            return {}
+        query = query.where(ListingDistrict.listing_id.in_(listing_ids))
     for listing_id, key in session.execute(query):
         found.setdefault(listing_id, []).append(key)
     return {k: tuple(v) for k, v in found.items()}
@@ -56,23 +68,85 @@ def pool(session: Session, settings: Settings, *, demo: bool, with_text: bool = 
     return m.eligible_pool(rows, now=utcnow(), cfg=config(settings), demo=demo)
 
 
+def _targets(session: Session, listings: list[Listing]) -> list[m.MarketRow]:
+    posts = {post.id: post for post in session.scalars(
+        select(Post).where(Post.id.in_({lst.post_id for lst in listings}))
+        .options(load_only(Post.id, Post.is_demo, Post.contributed, Post.status, Post.current_version_id)))}
+    own: dict[str, list[str]] = {}
+    for lid, key in session.execute(select(ListingDistrict.listing_id, ListingDistrict.district_key)
+                                    .where(ListingDistrict.listing_id.in_([lst.id for lst in listings]))
+                                    .order_by(ListingDistrict.district_key)):
+        own.setdefault(lid, []).append(key)
+    targets = [to_row(lst, posts[lst.post_id], districts=tuple(own.get(lst.id, ()))) for lst in listings]
+    # Older analysis runs can lack listing_districts. Recover only the target's own district,
+    # with the same proximity / multi-area guards used at extraction. Never persist on a read.
+    missing = {lst.id: posts[lst.post_id].current_version_id for lst, row in zip(listings, targets)
+               if not row.is_demo and not row.districts and not row.multi_area
+               and "outside_hcm_province" not in row.review_reasons and m.old_district_of(row) is None}
+    texts = dict(session.execute(select(PostVersion.id, PostVersion.text)
+                                 .where(PostVersion.id.in_(set(missing.values())))).all()) if missing else {}
+    for i, row in enumerate(targets):
+        if row.listing_id in missing:
+            scan = district_scan(texts.get(missing[row.listing_id], ""))
+            targets[i] = replace(row, districts=scan.keys, multi_area=scan.multi_area)
+    return targets
+
+
+def _candidate_rows(session: Session, targets: list[m.MarketRow]) -> list[m.MarketRow]:
+    locations = []
+    for demo in {row.is_demo for row in targets}:
+        wards = {row.ward_code for row in targets if row.is_demo == demo and row.ward_code}
+        keys = {m.old_district_of(row) for row in targets if row.is_demo == demo and not demo}
+        keys.discard(None)
+        wards.update(code for key in keys if key in area_catalog() for code in area_catalog()[key].ward_codes)
+        mentioned = select(ListingDistrict.listing_id).where(ListingDistrict.district_key.in_(keys))
+        locations.append(and_(Post.is_demo.is_(demo),
+                              or_(Listing.ward_code.in_(wards), Listing.id.in_(mentioned))))
+    location = or_(*locations)
+    # A newer eligible cluster member may live outside the target's location. Include those siblings
+    # so latest_per_cluster still runs BEFORE grouping, as in the full-store comparison.
+    clusters = (select(Listing.cluster_id).join(Post, Post.id == Listing.post_id)
+                .where(Listing.is_current.is_(True), Post.current_version_id.is_not(None),
+                       Listing.cluster_id.is_not(None), location))
+    query = (select(Listing, Post).join(Post, Post.id == Listing.post_id)
+             .options(load_only(Post.id, Post.is_demo, Post.contributed, Post.status))
+             .where(Listing.is_current.is_(True), Post.current_version_id.is_not(None),
+                    Post.is_demo.in_({r.is_demo for r in targets}),
+                    or_(location, Listing.cluster_id.in_(clusters))))
+    pairs = session.execute(query).all()
+    districts = {}
+    for demo in {row.is_demo for row in targets}:
+        districts.update(load_districts(session, demo=demo,
+                                        listing_ids=[lst.id for lst, post in pairs if post.is_demo == demo]))
+    return [to_row(lst, post, districts=districts.get(lst.id, ())) for lst, post in pairs]
+
+
+def comparisons(session: Session, listings: list[Listing], settings: Settings) -> dict[str, dict]:
+    """Compare a page with one candidate load. Return listing_id -> the existing response shape.
+
+    No peer text is loaded: similar cards are chosen by area, then rent distance, then id.
+    Only an unresolved target without persisted district mentions needs its current text.
+    """
+    if not listings:
+        return {}
+    targets = _targets(session, listings)
+    rows = _candidate_rows(session, targets)
+    cfg, now = config(settings), utcnow()
+    return {row.listing_id: _comparison_body(row, m.compare_tiered(row, rows, now=now, cfg=cfg,
+                                                                 demo=row.is_demo), cfg) for row in targets}
+
+
 def comparison(session: Session, listing: Listing, settings: Settings) -> dict:
-    post = listing.post
-    own = tuple(session.scalars(select(ListingDistrict.district_key)
-                                .where(ListingDistrict.listing_id == listing.id)
-                                .order_by(ListingDistrict.district_key)))
-    target = to_row(listing, post, post.current_version.text if post.current_version else "", own)
-    rows = load_rows(session, demo=post.is_demo, with_text=True)
-    cfg = config(settings)
-    c = m.compare_tiered(target, rows, now=utcnow(), cfg=cfg, demo=post.is_demo)
-    similar = []
+    return comparisons(session, [listing], settings)[listing.id]
+
+
+def _comparison_body(target: m.MarketRow, c: m.Comparison, cfg: m.MarketConfig) -> dict:
     # Only accepted (public) listings are ever named; the auto_checked pool contributes numbers only.
-    shown = [r for r in c.group if r.review_status in m.ACCEPTED_STATUSES]
-    if shown:
-        tfidf = TfIdf([r.text for r in shown] + [target.text])
-        ranked = sorted(shown, key=lambda r: tfidf.cosine(target.text, r.text), reverse=True)
-        similar = [{"listing_id": r.listing_id, "rent_vnd": r.rent_vnd, "area_m2": r.area_m2}
-                   for r in ranked[:cfg.similar_count]]
+    shown = sorted((r for r in c.group if r.review_status in m.ACCEPTED_STATUSES), key=lambda r: (
+        abs(r.area_m2 - target.area_m2) if r.area_m2 is not None and target.area_m2 is not None else float("inf"),
+        abs(r.rent_vnd - target.rent_vnd), r.listing_id))
+    similar = [{"listing_id": r.listing_id, "rent_vnd": r.rent_vnd, "area_m2": r.area_m2}
+               for r in shown[:cfg.similar_count]]
     return {
         "status": c.status,
         "reason_codes": c.reason_codes,
@@ -85,10 +159,71 @@ def comparison(session: Session, listing: Listing, settings: Settings) -> dict:
         "delta_percent": c.delta_percent, "verdict": c.verdict,
         "data_from": c.stats.data_from, "data_to": c.stats.data_to,
         "similar": similar,
-        "message": m.verdict_sentence(c, listing.rent_form, min_n=cfg.min_n),
+        "message": m.verdict_sentence(c, target.rent_form, min_n=cfg.min_n),
         "disclaimer": m.disclaimer(c) if c.stats.data_from else None,
-        "is_demo": post.is_demo,
+        "is_demo": target.is_demo,
     }
+
+
+@lru_cache
+def _report_location_patterns() -> tuple[tuple[re.Pattern, str], ...]:
+    """Output vocabulary is exclusively canonical geography, never a substring of a private post."""
+    places = real_places()
+    names = {ward.name for ward in places.wards.values()}
+    names.update(row["old_ward_name"] for row in places.former_wards.values())
+    names.update(district.name for district in area_catalog().values())
+    patterns = []
+    for name in sorted(names):
+        if len(name) > 80:
+            continue
+        bare = re.sub(r"^(?:phuong|xa|thi tran|quan|huyen|thanh pho|thi xa) ", "", fold(name))
+        # Numbers need a location prefix: a price, house number or phone is not a ward phrase.
+        phrase = fold(name) if bare.isdigit() else bare
+        patterns.append((re.compile(rf"(?<!\w){re.escape(phrase)}(?!\w)"), name))
+    return tuple(patterns)
+
+
+def eligibility_report(session: Session, settings: Settings) -> dict:
+    """Read-only real-market diagnostic, using exactly the ward baseline's exclusion rules.
+
+    Unknown free-form locations are withheld rather than risking a person's name, contact or URL.
+    Each canonical phrase counts once per unresolved listing, even if repeated in its text.
+    """
+    with session.no_autoflush:
+        rows = load_rows(session, demo=False)
+        cfg, now = config(settings), utcnow()
+        eligible, excluded = m.eligible_pool(rows, now=now, cfg=cfg, demo=False)
+        kept = {row.listing_id for row in eligible}
+        combinations: Counter = Counter()
+        unresolved = []
+        for row in rows:
+            reasons = m.exclusion_reasons(row, now=now, cfg=cfg, demo=False)
+            if not reasons and row.listing_id not in kept:
+                reasons = ["older_in_cluster"]
+            if reasons:
+                combinations[tuple(sorted(reasons))] += 1
+            if "ward_unresolved" in reasons:
+                unresolved.append(row.listing_id)
+        phrases: Counter = Counter()
+        # Chunk ids so the report also works on SQLite builds with a small bind-parameter limit.
+        for start in range(0, len(unresolved), 500):
+            query = (select(PostVersion.text).join(Post, Post.current_version_id == PostVersion.id)
+                     .join(Listing, Listing.post_id == Post.id)
+                     .where(Listing.id.in_(unresolved[start:start + 500])))
+            for text in session.scalars(query):
+                # Do not interpret contact links as location evidence.
+                cleaned = fold(re.sub(r"(?:https?://|www\.)\S+", " ", text, flags=re.IGNORECASE))
+                found = {name for pattern, name in _report_location_patterns() if pattern.search(cleaned)}
+                phrases.update(found or {"[unrecognized location withheld]"})
+        return {
+            "total_listings": len(rows), "eligible_listings": len(eligible),
+            "excluded_counts": excluded,
+            "reason_combinations": [{"reasons": list(reasons), "n": n}
+                                    for reasons, n in sorted(combinations.items(), key=lambda item: (-item[1], item[0]))[:10]],
+            "unresolved_location_phrases": [{"phrase": phrase, "n": n}
+                                            for phrase, n in sorted(phrases.items(), key=lambda item: (-item[1], item[0]))[:30]],
+            "location_phrase_policy": "canonical geography only; unknown phrases withheld; once per listing",
+        }
 
 
 def store_pool(session: Session, settings: Settings, *, demo: bool, pool_name: str = m.POOL_AUTO_CHECKED):

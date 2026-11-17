@@ -171,6 +171,7 @@ class Comparison:
     scope: str = "ward"                 # "ward" (tier 1) | "old_district" (tier 2)
     scope_label: str | None = None      # ward name, or "Bình Thạnh (cũ)"
     pool: str = "accepted"              # "accepted" | "auto_checked" (tier 2 fallback)
+    tiers: list[dict] = field(default_factory=list)
 
 
 def compare(target: MarketRow, pool: list[MarketRow], cfg: MarketConfig) -> Comparison:
@@ -315,6 +316,10 @@ def compare_tiered(target: MarketRow, rows: list[MarketRow], *, now: datetime, c
     ward_pool, _ = eligible_pool(rows, now=now, cfg=cfg, demo=demo)
     tier1 = compare(target, ward_pool, cfg)
     tier1 = replace(tier1, scope_label=target.ward_name)
+    attempts = []
+    if tier1.status != "not_comparable":
+        attempts.append({"level": "ward", "pool": POOL_ACCEPTED, "n": tier1.stats.n})
+    tier1.tiers = attempts
     if tier1.status == "ok" or demo:  # demo data has no old-district mentions and never feeds a real baseline
         return tier1
     if tier1.status == "not_comparable" and set(tier1.reason_codes) != {"ward_unresolved"}:
@@ -334,8 +339,10 @@ def compare_tiered(target: MarketRow, rows: list[MarketRow], *, now: datetime, c
     for pool in (POOL_ACCEPTED, POOL_AUTO_CHECKED):
         pool_rows = district_pool(rows, now=now, cfg=cfg, demo=demo, pool=pool)
         group = _tier2_group(target, key, pool_rows, band)
+        attempts.append({"level": "old_district", "pool": pool, "n": len(group)})
         if len(group) < cfg.min_n and band is not None:
             relaxed_group = _tier2_group(target, key, pool_rows, None)
+            attempts.append({"level": "old_district_relaxed", "pool": pool, "n": len(relaxed_group)})
             if len(relaxed_group) >= cfg.min_n:
                 group = relaxed_group
                 base_reasons = [*base_reasons, "area_band_relaxed"]
@@ -349,12 +356,12 @@ def compare_tiered(target: MarketRow, rows: list[MarketRow], *, now: datetime, c
                 verdict = ("lower" if delta < -cfg.near_percent else "higher" if delta > cfg.near_percent
                            else "near")
             return Comparison("ok", base_reasons, criteria, stats, delta, verdict, group,
-                              scope="old_district", scope_label=label, pool=pool)
+                              scope="old_district", scope_label=label, pool=pool, tiers=attempts)
     if tier1.status == "insufficient_data":
         return tier1  # the ward group result stands; tier 2 had nothing better to say
     pool, group, stats = last
     return Comparison("insufficient_data", base_reasons + ["too_few_samples"], criteria, stats, None, None, group,
-                      scope="old_district", scope_label=label, pool=pool)
+                      scope="old_district", scope_label=label, pool=pool, tiers=attempts)
 
 
 PROPERTY_LABELS = {"phong_tro": "phòng trọ", "ccmn": "chung cư mini", "can_ho_dich_vu": "căn hộ dịch vụ",
@@ -378,11 +385,13 @@ def verdict_sentence(c: Comparison, rent_form: str | None = None, *, min_n: int 
     if c.status == "not_comparable" and "price_not_exact" in c.reason_codes and rent_form in FORM_LABELS:
         return f"Bài ghi giá dạng {FORM_LABELS[rent_form]}, chưa so sánh được."
     if c.status == "insufficient_data":
+        tried = (" Đã thử: " + "; ".join(f"{t['level']}/{t['pool']}: {t['n']}" for t in c.tiers) + "."
+                 if c.tiers else "")
         if c.scope == "old_district":
             return (f"Chưa đủ dữ liệu để nhận định: mới có {c.stats.n} tin tương tự ở {c.scope_label} "
-                    f"({scope_note(c)}; cần ít nhất {min_n}).")
+                    f"({scope_note(c)}; cần ít nhất {min_n})." + tried)
         return (f"Chưa đủ dữ liệu để nhận định: mới có {c.stats.n} tin tương tự "
-                f"(cần ít nhất {min_n}).")
+                f"(cần ít nhất {min_n})." + tried)
     if c.status != "ok":
         return "Chưa so sánh được."
     kind = PROPERTY_LABELS.get(c.criteria["property_type"], "")

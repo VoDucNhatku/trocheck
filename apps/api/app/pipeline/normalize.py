@@ -11,16 +11,16 @@ from decimal import Decimal
 
 from app.pipeline.preprocess import fold
 
-NORMALIZER_VERSION = "1.2.0"
+NORMALIZER_VERSION = "1.3.0"
 
 # --- money ------------------------------------------------------------------
 
 _NUM = r"\d+(?:[.,]\d+)*"
 MONEY_TOKEN_RE = re.compile(
     rf"(?P<num>{_NUM})\s?"
-    r"(?:(?P<big>trieu|tr|cu)(?:\s?(?P<tail>\d{1,3})(?!\d|[.,]\d))?"
+    r"(?:(?P<big>trieu|tr|cu)(?:\s?(?P<tail>\d{1,3})(?!\d|[.,]\d)(?P<tail_k>k\b)?)?"
     r"|(?P<small>k|nghin|ngan)(?P<ktail>\d)?(?![a-z\d])"
-    r"|(?P<vnd>vnd|dong|d)\b)?"
+    r"|(?P<vnd>vnd|dong|dd|d)\b)?"
 )
 _GROUPED_RE = re.compile(r"^\d{1,3}(?:[.,]\d{3})+$")
 
@@ -45,7 +45,7 @@ def money_value(token: str, default_unit: str | None = None) -> int | None:
         value = _decimal(num) * 1_000_000
         tail = m.group("tail")
         if tail:
-            value += int(tail) * 10 ** (6 - len(tail))
+            value += int(tail) * (1_000 if m.group("tail_k") else 10 ** (6 - len(tail)))
         return int(value)
     if m.group("small") or default_unit == "k":
         value = _decimal(num) * 1_000
@@ -71,8 +71,8 @@ def _unit_of(token: str) -> str | None:
 
 
 _MONEY_FIND_RE = re.compile(
-    rf"{_NUM}\s?(?:(?:trieu|tr|cu)(?:\s?\d{{1,3}}(?!\d|[.,]\d)(?!\s?(?:m2|m\b|met|k\b|tr|nguoi|ng\b|pn|wc|phong|x\b|%)))?(?![a-z])"
-    r"|(?:k|nghin|ngan)\d?(?![a-z\d])|(?:vnd|dong|d)\b)?"
+    rf"{_NUM}\s?(?:(?:trieu|tr|cu)(?:\s?\d{{1,3}}k\b|\s?\d{{1,3}}(?!\d|[.,]\d)(?!\s?(?:m2|m\b|met|k\b|tr|nguoi|ng\b|pn|wc|phong|x\b|%)))?(?![a-z])"
+    r"|(?:k|nghin|ngan)\d?(?![a-z\d])|(?:vnd|dong|dd|d)\b)?"
 )
 
 _HIDDEN_RE = re.compile(
