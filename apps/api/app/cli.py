@@ -8,6 +8,7 @@
     python -m app.cli purge                        # retention (co-so-du-lieu §3)
     python -m app.cli remove-post POST_ID          # removal request
     python -m app.cli reprocess-real [--limit 500] # re-read real posts stored with older extraction rules
+    python -m app.cli eligibility-report           # read-only aggregate eligibility diagnostic
 """
 from __future__ import annotations
 
@@ -157,6 +158,13 @@ def reprocess_real(args) -> None:
     print("reprocess-real:", json.dumps(counts, ensure_ascii=False))
 
 
+def eligibility_report(_args) -> None:
+    from app.services.market import eligibility_report as report
+
+    with session_scope() as session:
+        print(json.dumps(report(session, get_settings()), ensure_ascii=False))
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="python -m app.cli")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -178,10 +186,11 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--limit", type=int, default=1000)
     p = sub.add_parser("reprocess-real")
     p.add_argument("--limit", type=int, default=500)
+    sub.add_parser("eligibility-report")
     args = parser.parse_args(argv)
     {"init-db": lambda a: init_db(), "ensure-admin": ensure_admin, "create-user": create_user, "seed": seed, "import-gold": import_gold,
      "purge": purge, "remove-post": remove_post, "bot-review-backlog": bot_review_backlog,
-     "reprocess-real": reprocess_real}[args.cmd](args)
+     "reprocess-real": reprocess_real, "eligibility-report": eligibility_report}[args.cmd](args)
 
 
 if __name__ == "__main__":
