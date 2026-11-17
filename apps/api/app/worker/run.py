@@ -12,6 +12,8 @@ import argparse
 import logging
 import os
 import socket
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
+from threading import get_ident
 from datetime import timedelta
 
 from app.core.config import Settings, get_settings
@@ -46,7 +48,7 @@ class SpentBudget:
 
 def client_for(session, job, llm: LlmClient | None, settings: Settings) -> LlmClient | None:
     if llm is None or not settings.llm_daily_call_limit or llm_calls_today(session) < settings.llm_daily_call_limit:
-        return llm
+        return jobs.BudgetedClient(llm, session, settings, job) if llm is not None else None
     version = session.get(PostVersion, job.post_version_id) if job.post_version_id else None
     # Someone is waiting for an analysis: answer now with Regex only. Collected posts can wait a day.
     if version is not None and version.post.mode == "assess":
@@ -105,7 +107,7 @@ def run_one(settings: Settings, llm: LlmClient | None, worker_id: str, *, demo_o
 def drain(settings: Settings | None = None, llm: LlmClient | None = None, *, limit: int = 10_000,
           demo_only: bool = False) -> int:
     settings = settings or get_settings()
-    worker_id = f"{socket.gethostname()}:{os.getpid()}"
+    worker_id = f"{socket.gethostname()}:{os.getpid()}:{get_ident()}"
     done = 0
     while done < limit and run_one(settings, llm, worker_id, demo_only=demo_only):
         done += 1
@@ -113,18 +115,62 @@ def drain(settings: Settings | None = None, llm: LlmClient | None = None, *, lim
 
 
 def run_loop(settings: Settings, llm: LlmClient | None, worker_id: str) -> None:
+    from app.worker.wakeup import QueueWakeup
+
+    url = getattr(settings, "database_url", "")
+    wakeup = QueueWakeup(url) if url.startswith(("postgres:", "postgresql:", "postgresql+")) else jobs.queue_changed
     minimum = max(0.1, min(settings.worker_poll_seconds, 60.0))
     delay = minimum
-    while True:
-        # Clear before claiming so a commit during the query cannot be lost before waiting.
-        jobs.queue_changed.clear()
-        if run_one(settings, llm, worker_id):
-            delay = minimum
-            continue
-        if jobs.queue_changed.wait(delay):
-            delay = minimum
-        else:
-            delay = min(60.0, delay * 2)
+    try:
+        while True:
+            wakeup.clear()
+            if run_one(settings, llm, worker_id):
+                delay = minimum
+                continue
+            if wakeup.wait(delay):
+                delay = minimum
+            else:
+                delay = min(60.0, delay * 2)
+    finally:
+        if isinstance(wakeup, QueueWakeup):
+            wakeup.close()
+
+
+def run_workers(settings: Settings, llm_factory=make_llm, *, once: bool = False) -> int:
+    """One idle poller feeds independent session-owning workers only when work exists."""
+    from app.worker.wakeup import QueueWakeup
+
+    wakeup = QueueWakeup(settings.database_url) if settings.database_url.startswith(
+        ("postgres:", "postgresql:", "postgresql+")) else jobs.queue_changed
+    minimum = max(0.1, min(settings.worker_poll_seconds, 60.0))
+    delay, completed = minimum, 0
+    clients = [llm_factory(settings) for _ in range(settings.worker_concurrency)]
+    prefix = f"{socket.gethostname()}:{os.getpid()}"
+    try:
+        with ThreadPoolExecutor(max_workers=settings.worker_concurrency) as pool:
+            while True:
+                wakeup.clear()
+                pending = {pool.submit(run_one, settings, clients[0], f"{prefix}:0"): 0}
+                while pending:
+                    ready, _ = wait(pending, return_when=FIRST_COMPLETED)
+                    had_work = False
+                    for future in ready:
+                        pending.pop(future)
+                        if future.result():
+                            completed += 1
+                            had_work = True
+                    if had_work:
+                        delay = minimum
+                        occupied = set(pending.values())
+                        for slot in range(settings.worker_concurrency):
+                            if slot not in occupied:
+                                pending[pool.submit(run_one, settings, clients[slot], f"{prefix}:{slot}")] = slot
+                if once:
+                    return completed
+                delay = minimum if wakeup.wait(delay) else min(60.0, delay * 2)
+    finally:
+        if isinstance(wakeup, QueueWakeup):
+            wakeup.close()
 
 
 def main() -> None:
@@ -133,13 +179,11 @@ def main() -> None:
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     settings = get_settings()
-    llm = make_llm(settings)
-    log.info("worker started, llm=%s", "on" if llm else "off (regex only)")
+    log.info("worker started, concurrency=%d", settings.worker_concurrency)
     if args.once:
-        log.info("processed %d jobs", drain(settings, llm))
+        log.info("processed %d jobs", run_workers(settings, once=True))
         return
-    worker_id = f"{socket.gethostname()}:{os.getpid()}"
-    run_loop(settings, llm, worker_id)
+    run_workers(settings)
 
 
 if __name__ == "__main__":

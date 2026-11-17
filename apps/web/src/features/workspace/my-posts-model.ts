@@ -8,11 +8,11 @@ export type ExtractedListing = DTO['ExtractedListing'];
 export type StatusGroup = 'all' | 'published' | 'waiting' | 'other';
 
 export const STATUS_LABEL: Record<MyPost['status'], string> = {
-  received: 'Đang xử lý', needs_review: 'Đang chờ duyệt', published: 'Đã công khai',
+  received: 'Đang chờ đọc bài', needs_review: 'Đang chờ duyệt', published: 'Đã công khai',
   rejected: 'Không được duyệt', not_rental: 'Không phải tin cho thuê', failed: 'Xử lý gặp lỗi',
 };
 export const GROUP_LABEL: Record<StatusGroup, string> = {
-  all: 'Tất cả', published: 'Đã công khai', waiting: 'Đang xử lý / chờ duyệt', other: 'Không đăng / gặp lỗi',
+  all: 'Tất cả', published: 'Đã công khai', waiting: 'Đang chờ đọc / chờ duyệt', other: 'Không đăng / gặp lỗi',
 };
 const REASONS: Record<string, string> = {
   basis_unknown: 'Giá chưa rõ tính theo phòng hay người',
@@ -28,6 +28,7 @@ const REASONS: Record<string, string> = {
 };
 
 export function statusExplanation(post: MyPost): string {
+  if (post.progress) return progressText(post.progress);
   if (post.status === 'received') return 'Máy chủ đã nhận bài và đang chờ hoàn tất xử lý.';
   if (post.status === 'published') return 'Bài có tin đã được công khai trong kho tìm trọ.';
   if (post.status === 'not_rental') return 'Nội dung được phân loại không phải bài chào thuê.';
@@ -38,6 +39,33 @@ export function statusExplanation(post: MyPost): string {
   if (post.listings.some(lst => !lst.ward_code)) return 'Chưa rõ phường.';
   if (post.listings.some(lst => lst.price_basis === 'unknown')) return REASONS.basis_unknown + '.';
   return 'Cần người duyệt đối chiếu thông tin trước khi công khai.';
+}
+
+export const STAGE_LABEL: Record<string, string> = {
+  queued: 'đang chờ', reading: 'đang đọc giá, diện tích, vị trí', asking_ai: 'đang hỏi AI',
+  needs_review: 'chờ duyệt', published: 'đã công khai', not_published: 'không đăng', failed: 'gặp lỗi',
+};
+
+export function waitText(seconds: number | null | undefined): string {
+  if (seconds == null) return '';
+  return seconds < 60 ? `khoảng ${Math.max(1, Math.ceil(seconds))} giây` : `khoảng ${Math.ceil(seconds / 60)} phút`;
+}
+
+export function progressText(progress: NonNullable<MyPost['progress']>): string {
+  const label = STAGE_LABEL[progress.stage] || 'đang chờ';
+  const position = progress.queue_position == null ? '' : ` · vị trí ${progress.queue_position}`;
+  const estimate = waitText(progress.estimated_wait_seconds);
+  const reason = ['llm_daily_limit', 'review_bot_daily_limit'].includes(progress.reason || '') ? 'Đã hết lượt AI hôm nay, chờ sang ngày mới'
+    : progress.reason === 'not_rental' ? 'Không phải bài chào thuê'
+    : progress.reason === 'rejected' ? 'Tin bị từ chối hoặc đánh dấu trùng'
+    : progress.stage === 'failed' ? (progress.reason === 'TimeoutError' ? 'Hết thời gian chờ đọc bài' : 'Chưa đọc được bài sau các lần thử') : progress.reason;
+  return label[0].toUpperCase() + label.slice(1) + position + (estimate ? ` (${estimate})` : '') + (reason ? ` · ${reason}` : '');
+}
+
+export function stageSummary(summary: MyPostsSummary): string {
+  const estimate = waitText(summary.estimated_wait_seconds);
+  return Object.entries(summary.stage_counts || {}).filter(([, count]) => count > 0)
+    .map(([stage, count]) => `${count} bài ${STAGE_LABEL[stage] || stage}${stage === 'queued' && estimate ? ` (${estimate})` : ''}`).join(' · ');
 }
 
 export function comparisonText(c: ExtractedListing['comparison']): string {

@@ -9,6 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base
 from app.core.ids import new_id, utcnow
+from app.models.llm_budget import LlmDailyUsage  # noqa: F401
 
 
 def _id() -> Mapped[str]:
@@ -133,6 +134,9 @@ class Job(Base):
                                                         index=True)
     requested_by: Mapped[str | None] = mapped_column(String(26))
     status: Mapped[str] = mapped_column(String(20), default="queued")
+    stage: Mapped[str | None] = mapped_column(String(20))
+    started_at: Mapped[datetime | None] = mapped_column(DateTime)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime)
     attempt: Mapped[int] = mapped_column(Integer, default=0)
     run_after: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
     locked_by: Mapped[str | None] = mapped_column(String(100))

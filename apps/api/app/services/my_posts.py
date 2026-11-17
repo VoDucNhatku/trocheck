@@ -1,5 +1,7 @@
 """Private reads, with SQL status grouping shared by pagination and summary."""
 import re
+import math
+from statistics import median
 from dataclasses import dataclass
 
 from sqlalchemy import case, exists, func, literal, or_, select
@@ -7,8 +9,8 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.core.config import Settings
 from app.core.errors import ApiError
-from app.core.ids import iso
-from app.models import ExtractionRun, Job, Listing, ListingDistrict, Post, PostImage, PostSubmission, User
+from app.core.ids import iso, utcnow
+from app.models import ExtractionRun, Job, Listing, ListingDistrict, Post, PostImage, PostSubmission, ReviewEvent, User
 from app.pipeline.old_districts import area_catalog, districts_of_ward
 from app.services import ingest, listings, market, users
 
@@ -210,6 +212,7 @@ def search(session: Session, user: User, settings: Settings, *, group: str, page
     total_sent = session.scalar(select(func.count()).select_from(_owned(user)))
     rows = session.execute(select(sub).order_by(*order).offset((page - 1) * limit).limit(limit)).all()
     ids = [r.post_id for r in rows]
+    progress = _progress(session, {r.post_id: r.status for r in rows})
     posts = {p.id: p for p in session.scalars(select(Post).where(Post.id.in_(ids))
                                              .options(selectinload(Post.current_version)))}
     extracted: dict[str, list] = {pid: [] for pid in ids}
@@ -258,7 +261,8 @@ def search(session: Session, user: User, settings: Settings, *, group: str, page
         items.append({"post_id": post.id, "received_at": iso(row.sent_at),
                       "source_group_name": post.source_group_name, "permalink": post.permalink,
                       "excerpt": post.current_version.text[:200] if post.current_version else "",
-                      "status": row.status, "reason_codes": reasons, "photo_count": photos.get(post.id, 0),
+                      "status": row.status, "progress": progress[post.id],
+                      "reason_codes": reasons, "photo_count": photos.get(post.id, 0),
                       "listing_total": listing_totals.get(post.id, 0), "listings": extracted[post.id]})
     return {"items": items, "total": total, "page": page, "limit": limit, "comparison_baseline": "real_accepted",
             "matched_listings": int(matched_listings or 0), "total_sent": total_sent}
@@ -323,5 +327,85 @@ def summary(session: Session, user: User, settings: Settings) -> dict:
     # Deliberately the existing ingest counter: new collected posts, not duplicate submissions.
     used = ingest.daily_used(session, user)
     capped = bool(settings.ingest_daily_limit) and not users.has_role(user, "collector")
-    return {"counts": counts, "quota": {"used": used, "limit": settings.ingest_daily_limit if capped else None,
+    progress = _progress(session, dict(session.execute(select(owned.c.post_id, owned.c.status)).all()))
+    stages = {stage: sum(p["stage"] == stage for p in progress.values()) for stage in STAGES}
+    waits = [p["estimated_wait_seconds"] for p in progress.values() if p["estimated_wait_seconds"] is not None]
+    return {"counts": counts, "stage_counts": stages,
+            "active": any(stages[s] for s in ("queued", "reading", "asking_ai")),
+            "estimated_wait_seconds": max(waits) if waits else None,
+            "quota": {"used": used, "limit": settings.ingest_daily_limit if capped else None,
                                        "remaining": ingest.daily_left(session, user, settings)}}
+
+
+STAGES = ("queued", "reading", "asking_ai", "needs_review", "published", "not_published", "failed")
+
+
+def _progress(session: Session, statuses: dict[str, str]) -> dict:
+    if not statuses:
+        return {}
+    latest, reviewing = {}, {}
+    for post_id, job in session.execute(select(Post.id, Job).join(Job, Job.post_version_id == Post.current_version_id)
+            .where(Post.id.in_(statuses), Job.kind.in_(("extract", "reprocess", "bot_review")))
+            .order_by(Job.created_at.desc(), Job.id.desc())):
+        if job.kind == "bot_review":
+            if job.status in ("queued", "running"):
+                reviewing.setdefault(post_id, job)
+        else:
+            latest.setdefault(post_id, job)
+    for post_id, job in reviewing.items():
+        if statuses[post_id] == "needs_review":
+            latest[post_id] = job
+    ranked = select(Job.id, func.row_number().over(order_by=(Job.run_after > utcnow(),
+                    Job.kind == "bot_review", Job.created_at, Job.id)).label("position")).where(
+                    Job.status == "queued").subquery()
+    positions = dict(session.execute(select(ranked).where(ranked.c.id.in_(
+        [j.id for j in latest.values() if j.status == "queued"]))).all())
+    durations = session.execute(select(Job.started_at, Job.finished_at).where(
+        Job.status.in_(("succeeded", "failed")), Job.started_at.is_not(None),
+        Job.finished_at >= Job.started_at).order_by(Job.finished_at.desc(), Job.id.desc()).limit(50)).all()
+    duration = median((end - start).total_seconds() for start, end in durations) if len(durations) >= 5 else None
+    result = {}
+    rejection_reasons = {}
+    for post_id, reason in session.execute(select(Listing.post_id, ReviewEvent.reason)
+            .join(ReviewEvent, ReviewEvent.listing_id == Listing.id)
+            .join(ExtractionRun, ExtractionRun.id == Listing.run_id).join(Post, Post.id == Listing.post_id)
+            .where(Listing.post_id.in_(statuses), Listing.is_current.is_(True),
+                   ExtractionRun.post_version_id == Post.current_version_id,
+                   ReviewEvent.action.in_(("reject", "duplicate")))
+            .order_by(ReviewEvent.created_at.desc(), ReviewEvent.id.desc())):
+        if reason:
+            rejection_reasons.setdefault(post_id, reason)
+    for post_id, status in statuses.items():
+        job = latest.get(post_id)
+        stage = {"received": "queued", "rejected": "not_published", "not_rental": "not_published"}.get(status, status)
+        position = None
+        estimate = None
+        reason = None
+        if job is not None and (status == "received" or (status == "needs_review" and job.kind == "bot_review")):
+            if job.status == "running":
+                stage = "asking_ai" if job.stage == "asking_ai" else "reading"
+            elif job.status == "queued":
+                stage = "queued"
+                position = positions.get(job.id)
+                if job.error_code in ("llm_daily_limit", "review_bot_daily_limit") and job.run_after > utcnow():
+                    reason = job.error_code
+                if duration is not None and position is not None and job.run_after <= utcnow():
+                    estimate = math.ceil(position * duration)
+        if stage == "failed":
+            # Exception messages may contain private provider details; expose only a short code.
+            reason = (job.error_code if job else None) or "processing_failed"
+        elif stage == "not_published":
+            reason = "not_rental" if status == "not_rental" else rejection_reasons.get(post_id, "rejected")
+        result[post_id] = {"stage": stage, "queue_position": position,
+                           "estimated_wait_seconds": estimate, "reason": reason,
+                           "started_at": iso(job.started_at) if job and job.started_at else None,
+                           "finished_at": iso(job.finished_at) if job and job.finished_at else None}
+    return result
+
+
+def progress(session: Session, user: User, post_id: str) -> dict:
+    owned = _owned(user)
+    row = session.execute(select(owned.c.post_id, owned.c.status).where(owned.c.post_id == post_id)).first()
+    if row is None:
+        raise ApiError(404, code="post_not_found", message="Không tìm thấy bài đã gửi.")
+    return _progress(session, {row.post_id: row.status})[post_id]

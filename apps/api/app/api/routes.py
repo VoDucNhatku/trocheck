@@ -134,6 +134,15 @@ def my_submitted_posts(response: Response, group: mine.StatusGroup = "all", page
     return my_posts.search(session, user, settings, group=group, page=page, limit=limit, filters=filters)
 
 
+@router.get("/me/posts/{post_id}/progress", tags=["account"], response_model=mine.PostProgress,
+            responses={401: {"model": ErrorResponse}, 404: {"model": ErrorResponse}})
+def my_post_progress(post_id: str, response: Response, user: User = Depends(current_user),
+                     session: Session = Depends(get_session)):
+    response.headers["Cache-Control"] = "private, no-store"
+    response.headers["Vary"] = "Cookie, Authorization"
+    return my_posts.progress(session, user, post_id)
+
+
 @router.post("/ingest/batch", tags=["extension"])
 def ingest_batch(body: IngestBatch, user: User = Depends(current_user),
                  session: Session = Depends(get_session), settings: Settings = Depends(settings_dep)):
