@@ -149,5 +149,12 @@
     return { ...totals, total: unsent.length, images, imagesCap };
   }
 
-  global.TroCheck = { DEFAULT_API_URL, BATCH_SIZE, normalizeApiUrl, toIngestPost, whoAmI, sendUnsent, sendImages };
+  const ownProgress = async options => {
+    const [summary, posts] = await Promise.all([
+      call({ ...options, path: "/me/posts/summary" }),
+      call({ ...options, path: "/me/posts?limit=50&rental_only=false" }),
+    ]);
+    return { summary, items: posts.items };
+  };
+  global.TroCheck = { DEFAULT_API_URL, BATCH_SIZE, normalizeApiUrl, toIngestPost, whoAmI, ownProgress, sendUnsent, sendImages };
 })(globalThis);

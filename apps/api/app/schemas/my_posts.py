@@ -1,7 +1,7 @@
 """Private submission transport; contains no other sender's identity."""
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.schemas.public import Comparison, PropertyType
 
@@ -40,6 +40,15 @@ class ExtractedListing(BaseModel):
     comparison: Comparison
 
 
+class PostProgress(BaseModel):
+    stage: Literal["queued", "reading", "asking_ai", "needs_review", "published", "not_published", "failed"]
+    queue_position: int | None = None
+    estimated_wait_seconds: int | None = None
+    reason: str | None = None
+    started_at: str | None = None
+    finished_at: str | None = None
+
+
 class MyPost(BaseModel):
     post_id: str
     received_at: str
@@ -47,6 +56,7 @@ class MyPost(BaseModel):
     permalink: str | None
     excerpt: str
     status: PostStatus
+    progress: PostProgress | None = None
     reason_codes: list[str]
     photo_count: int
     listing_total: int
@@ -80,6 +90,9 @@ class DailyQuota(BaseModel):
 class MyPostsSummary(BaseModel):
     counts: StatusCounts
     quota: DailyQuota
+    stage_counts: dict[str, int] = Field(default_factory=dict)
+    active: bool = False
+    estimated_wait_seconds: int | None = None
 
 
 class AreaOption(BaseModel):

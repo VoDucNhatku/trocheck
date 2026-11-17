@@ -184,6 +184,7 @@ def process_job(session: Session, job: Job, *, llm: LlmClient | None, settings: 
     # End even the read transaction before waiting for the model. No ORM access in this gap.
     session.rollback()
     started_at = utcnow()
+    llm = jobs.BudgetedClient(llm, session, settings, job, review=True)
     outcome = review_bot.review(text, fields, reasons, llm)
 
     # Fence an expired/reclaimed job, then serialize result writers for this version only.

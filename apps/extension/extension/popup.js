@@ -2,6 +2,7 @@
 
 const status = document.querySelector("#status");
 const download = document.querySelector("#download");
+const serverProgress = globalThis.TroPostProgress?.mount(document.querySelector("#post-progress"));
 // The popup's existing account connection destination is the configured web base.
 const WEB_BASE_URL = "https://trocheck.vercel.app";
 document.querySelector("#my-posts").href = WEB_BASE_URL + "/bai-cua-toi";
@@ -71,6 +72,7 @@ loadStatus().catch(() => { status.textContent = "Không đọc được trạng 
 document.querySelector("#connect").addEventListener("click", () => chrome.tabs.create({ url: WEB_BASE_URL + "/tai-khoan" }));
 document.querySelector("#disconnect").addEventListener("click", async () => {
   await chrome.runtime.sendMessage({ type: "DISCONNECT" });
+  serverProgress?.refresh();
   await loadStatus();
 });
 

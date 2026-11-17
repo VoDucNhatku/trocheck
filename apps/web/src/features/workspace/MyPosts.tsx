@@ -11,7 +11,7 @@ import { OnboardingChecklist } from './Onboarding';
 import { MyPostsFilterBar } from './MyPostsFilterBar';
 import { comparisonScopeNote } from './comparison-scope';
 import { activeFilterCount, areaMatchLabel, comparisonText, DEFAULT_QUERY, GROUP_LABEL, hasAnyFilter, myPostsApiQuery, myPostsUrlQuery,
-  parseMyPostsQuery, placeText, resultPhrases, safeOriginalLink, STATUS_LABEL, statusExplanation, wideningAdvice,
+  parseMyPostsQuery, placeText, progressText, resultPhrases, safeOriginalLink, stageSummary, STATUS_LABEL, statusExplanation, wideningAdvice,
   type ExtractedListing, type MyPostsData, type MyPostsFilters, type MyPostsQuery, type MyPostsSummary, type StatusGroup } from './my-posts-model';
 import a from './account-notices.module.css';
 import styles from './my-posts.module.css';
@@ -79,6 +79,24 @@ export function MyPosts() {
     return () => controller.abort();
   }, [key, reload]);
   useEffect(() => {
+    if (!summary?.active || !key) return;
+    const controller = new AbortController();
+    let pending = false;
+    const timer = setInterval(async () => {
+      if (pending) return;
+      pending = true;
+      try {
+        const [posts, totals] = await Promise.all([
+          api<MyPostsData>('me/posts?' + key, { signal: controller.signal }),
+          api<MyPostsSummary>('me/posts/summary', { signal: controller.signal }),
+        ]);
+        if (!controller.signal.aborted) { setData(posts); setSummary(totals); setError(''); }
+      } catch (caught) { if (!controller.signal.aborted) setError(messageOf(caught)); }
+      finally { pending = false; }
+    }, 5000);
+    return () => { clearInterval(timer); controller.abort(); };
+  }, [summary?.active, key]);
+  useEffect(() => {
     // Filter options are a convenience: the list still works when they fail to load.
     const controller = new AbortController();
     api<MyPostsFilters>('me/posts/filters', { signal: controller.signal })
@@ -92,6 +110,7 @@ export function MyPosts() {
   return <div className={styles.page}>
     <Intro title="Bài của tôi" description="Theo dõi bài bạn đã gửi bằng tiện ích và thông tin máy chủ đã đọc được."><PersonalNav current="posts" /></Intro>
     {summary && <div className={styles.summary} aria-label="Tổng quan bài đã gửi">
+      <p role="status">{stageSummary(summary)}</p>
       <p className={styles.quota}>Hôm nay đã gửi <strong>{summary.quota.used}{summary.quota.limit == null ? ' bài · không giới hạn' : `/${summary.quota.limit} bài`}</strong></p>
       <p className={s.muted}>{summary.quota.remaining == null ? 'Tài khoản không áp dụng giới hạn gửi bài mỗi ngày.' : `Còn ${summary.quota.remaining} bài mới trong ngày, tính theo giờ Việt Nam.`} Bài gửi trùng không dùng thêm lượt.</p>
     </div>}
@@ -112,7 +131,7 @@ export function MyPosts() {
         <div className={styles.cards}>{data.items.map(post => {
           const original = safeOriginalLink(post.permalink);
           return <article key={post.post_id} className={styles.card}>
-            <header className={styles.cardHead}><div><h2><AtomicText text={post.source_group_name || 'Bài gửi trực tiếp'} /></h2><p className={s.muted}>Đã nhận <time dateTime={post.received_at}>{new Date(post.received_at).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}</time> · <span className={styles.phrase}>{post.photo_count} ảnh đã tải lên</span></p></div><span className={styles.badge} data-status={post.status}>{STATUS_LABEL[post.status]}</span></header>
+            <header className={styles.cardHead}><div><h2><AtomicText text={post.source_group_name || 'Bài gửi trực tiếp'} /></h2><p className={s.muted}>Đã nhận <time dateTime={post.received_at}>{new Date(post.received_at).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' })}</time> · <span className={styles.phrase}>{post.photo_count} ảnh đã tải lên</span></p></div><span className={styles.badge} data-status={post.status}>{post.progress ? progressText(post.progress) : STATUS_LABEL[post.status]}</span></header>
             <p className={styles.excerpt}><AtomicText text={post.excerpt || 'Bài chưa có nội dung để hiển thị.'} /></p>
             <p className={styles.explanation}><AtomicText text={statusExplanation(post)} /></p>
             {post.listing_total > post.listings.length && <p className={styles.partial}>Bài có <span className={styles.phrase}>{post.listing_total} tin</span>, đang hiện <span className={styles.phrase}>{post.listings.length} tin khớp</span> bộ lọc.</p>}
