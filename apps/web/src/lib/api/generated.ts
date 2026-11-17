@@ -817,6 +817,8 @@ export interface components {
              * @enum {string}
              */
             pool: "accepted" | "auto_checked";
+            /** Tiers */
+            tiers?: components["schemas"]["ComparisonTier"][];
             /** N */
             n: number;
             /** Mean Vnd */
@@ -873,6 +875,21 @@ export interface components {
              * @default false
              */
             area_band_relaxed?: boolean;
+        };
+        /** ComparisonTier */
+        ComparisonTier: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "ward" | "old_district" | "old_district_relaxed";
+            /**
+             * Pool
+             * @enum {string}
+             */
+            pool: "accepted" | "auto_checked";
+            /** N */
+            n: number;
         };
         /** Contributed */
         Contributed: {

@@ -230,13 +230,15 @@ def search(session: Session, user: User, settings: Settings, *, group: str, page
     price = monthly_price()
     listing_order = {"price_asc": (price.is_(None), price.asc()), "price_desc": (price.is_(None), price.desc()),
                      "area_desc": (Listing.area_m2.is_(None), Listing.area_m2.desc())}.get(f.sort, ())
-    for lst in session.scalars(select(Listing).join(ExtractionRun, ExtractionRun.id == Listing.run_id)
+    page_listings = list(session.scalars(select(Listing).join(ExtractionRun, ExtractionRun.id == Listing.run_id)
                               .join(Post, Post.id == Listing.post_id)
                               .where(Listing.post_id.in_(ids), Listing.is_current.is_(True),
                                      ExtractionRun.post_version_id == Post.current_version_id,
                                      *_listing_conditions(f))
                               .options(selectinload(Listing.fields))
-                              .order_by(*listing_order, Listing.listing_index)):
+                              .order_by(*listing_order, Listing.listing_index)))
+    comparisons = market.comparisons(session, page_listings, settings)
+    for lst in page_listings:
         location = next((fv.value_json for fv in lst.fields if fv.field == "location"), {})
         extracted[lst.post_id].append({
             "listing_id": lst.id, "review_status": lst.review_status, "reason_codes": lst.review_reasons,
@@ -249,8 +251,8 @@ def search(session: Session, user: User, settings: Settings, *, group: str, page
             "area_match": area_match(lst, f.areas) if f.areas else None,
             "old_districts": [{"key": key, "name": area_catalog()[key].name} for key in mentions.get(lst.id, [])
                               if key in area_catalog()],
-            # market.comparison chooses the target's dataset. Owned posts are always non-demo.
-            "comparison": market.comparison(session, lst, settings),
+            # The batch chooses each target's dataset. Owned posts are always non-demo.
+            "comparison": comparisons[lst.id],
         })
     photos = dict(session.execute(select(PostImage.post_id, func.count()).where(PostImage.post_id.in_(ids))
                                   .group_by(PostImage.post_id)).all())

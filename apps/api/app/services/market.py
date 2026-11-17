@@ -151,7 +151,7 @@ def _comparison_body(target: m.MarketRow, c: m.Comparison, cfg: m.MarketConfig) 
         "status": c.status,
         "reason_codes": c.reason_codes,
         "criteria": c.criteria,
-        "scope": c.scope, "scope_label": c.scope_label, "pool": c.pool,
+        "scope": c.scope, "scope_label": c.scope_label, "pool": c.pool, "tiers": c.tiers,
         "n": c.stats.n,
         "mean_vnd": c.stats.mean, "mean_per_m2": c.stats.mean_per_m2,
         "median": c.stats.median, "p25": c.stats.p25, "p75": c.stats.p75,

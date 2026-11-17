@@ -5,7 +5,7 @@ No pipeline or statistics rules live in these transport models.
 """
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 PropertyType = Literal["phong_tro", "ccmn", "can_ho_dich_vu", "nha_nguyen_can", "unknown"]
 Basis = Literal["per_unit", "per_person", "unknown"]
@@ -168,6 +168,12 @@ class SimilarListing(BaseModel):
     area_m2: float | None
 
 
+class ComparisonTier(BaseModel):
+    level: Literal["ward", "old_district", "old_district_relaxed"]
+    pool: Literal["accepted", "auto_checked"]
+    n: int
+
+
 class Comparison(BaseModel):
     status: Literal["ok", "insufficient_data", "not_comparable"]
     reason_codes: list[Literal["too_few_samples", "price_not_exact", "basis_unknown", "ward_unresolved",
@@ -176,6 +182,7 @@ class Comparison(BaseModel):
     scope: Literal["ward", "old_district"]
     scope_label: str | None
     pool: Literal["accepted", "auto_checked"]
+    tiers: list[ComparisonTier] = Field(default_factory=list)
     n: int
     mean_vnd: int | None = None
     mean_per_m2: int | None = None

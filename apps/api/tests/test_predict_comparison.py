@@ -75,8 +75,10 @@ def test_insufficient_response_names_every_attempt_and_count(api):
         add_listing(session, "other-area", area_m2=35)
         body = market.comparison(session, target, api.settings)
     assert body["status"] == "insufficient_data"
-    for attempt in ("ward/accepted: 1", "old_district/accepted: 2", "old_district_relaxed/accepted: 3",
-                    "old_district/auto_checked: 2", "old_district_relaxed/auto_checked: 3"):
+    for attempt in ("cùng phường (chỉ gồm tin đã duyệt) 1 tin", "quận cũ (chỉ gồm tin đã duyệt) 2 tin",
+                    "quận cũ, mọi diện tích (chỉ gồm tin đã duyệt) 3 tin",
+                    "quận cũ (gồm tin chưa duyệt, đã qua kiểm tra tự động) 2 tin",
+                    "quận cũ, mọi diện tích (gồm tin chưa duyệt, đã qua kiểm tra tự động) 3 tin"):
         assert attempt in body["message"]
 
 

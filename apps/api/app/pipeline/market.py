@@ -370,6 +370,8 @@ FORM_LABELS = {"starting_from": "từ…", "range": "khoảng…", "none": "khô
 
 
 POOL_NOTE = {"accepted": "chỉ gồm tin đã duyệt", "auto_checked": "gồm tin chưa duyệt, đã qua kiểm tra tự động"}
+TIER_LABEL = {"ward": "cùng phường", "old_district": "quận cũ",
+              "old_district_relaxed": "quận cũ, mọi diện tích"}
 
 
 def scope_note(c: Comparison) -> str:
@@ -385,7 +387,8 @@ def verdict_sentence(c: Comparison, rent_form: str | None = None, *, min_n: int 
     if c.status == "not_comparable" and "price_not_exact" in c.reason_codes and rent_form in FORM_LABELS:
         return f"Bài ghi giá dạng {FORM_LABELS[rent_form]}, chưa so sánh được."
     if c.status == "insufficient_data":
-        tried = (" Đã thử: " + "; ".join(f"{t['level']}/{t['pool']}: {t['n']}" for t in c.tiers) + "."
+        tried = (" Đã thử: " + "; ".join(
+            f"{TIER_LABEL[t['level']]} ({POOL_NOTE[t['pool']]}) {t['n']} tin" for t in c.tiers) + "."
                  if c.tiers else "")
         if c.scope == "old_district":
             return (f"Chưa đủ dữ liệu để nhận định: mới có {c.stats.n} tin tương tự ở {c.scope_label} "
