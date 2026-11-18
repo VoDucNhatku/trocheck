@@ -12,6 +12,7 @@ const retryUnknownButton = document.querySelector("#retry-unknown");
 const extractButton = document.querySelector("#extract");
 const settingsStatus = document.querySelector("#settings-status");
 const clearStatus = document.querySelector("#clear-status");
+globalThis.TroPostProgress?.mount(document.querySelector("#post-progress"));
 // Same web base as the popup (popup.js is not loaded on this page).
 const WEB_BASE_URL = "https://trocheck.vercel.app";
 document.querySelector("#my-posts-link").href = WEB_BASE_URL + "/bai-cua-toi";
@@ -226,7 +227,7 @@ async function runProcessing(kind) {
       if (kind === "unknown") return !post.extracted && (post.rental_status === "uncertain" || (post.rental_status === "yes" && (post.listing_count === "uncertain" || post.rent_price_status === "uncertain")));
       return !post.extracted && post.rental_status === "yes";
     });
-    processStatus.textContent = `Đang xử lý ${eligible.length} bài…`;
+    processStatus.textContent = `Đang đọc bài và hỏi AI cho ${eligible.length} bài…`;
     for (const post of eligible) {
       if (controller.signal.aborted || await TroStorage.getGeneration() !== generation) { stopped = true; break; }
       if (kind === "extract" && !["single", "multiple"].includes(post.listing_count)) {
@@ -247,7 +248,7 @@ async function runProcessing(kind) {
         if (controller.signal.aborted) { stopped = true; break; }
         failed++;
       }
-      processStatus.textContent = `Đang xử lý: ${succeeded} thành công, ${failed} lỗi.`;
+      processStatus.textContent = `Đang đọc bài và hỏi AI: ${succeeded} thành công, ${failed} lỗi.`;
     }
     processStatus.textContent = `${succeeded} thành công, ${failed} lỗi.${stopped ? " Đã dừng vì dữ liệu vừa thay đổi." : ""}${kind === "extract" && failed ? " Bài chưa rõ số căn được bỏ qua." : ""}`;
     await loadProcessed();

@@ -171,6 +171,7 @@ class Comparison:
     scope: str = "ward"                 # "ward" (tier 1) | "old_district" (tier 2)
     scope_label: str | None = None      # ward name, or "Bình Thạnh (cũ)"
     pool: str = "accepted"              # "accepted" | "auto_checked" (tier 2 fallback)
+    tiers: list[dict] = field(default_factory=list)
 
 
 def compare(target: MarketRow, pool: list[MarketRow], cfg: MarketConfig) -> Comparison:
@@ -307,14 +308,50 @@ def _tier2_group(target: MarketRow, key: str, pool_rows: list[MarketRow], band: 
             and (band is None or area_band(r.area_m2) == band)]
 
 
+@dataclass
+class ComparisonPools:
+    """Request-local pools. Deduplicate globally before indexing by location/type/basis."""
+    rows: list[MarketRow]
+    now: datetime
+    cfg: MarketConfig
+    wards: dict[tuple, list[MarketRow]] = field(default_factory=dict)
+    districts: dict[tuple, dict[tuple, list[MarketRow]]] = field(default_factory=dict)
+
+    def district_group(self, target: MarketRow, key: str, pool: str) -> list[MarketRow]:
+        cache_key = (target.is_demo, pool)
+        if cache_key not in self.districts:
+            groups: dict[tuple, list[MarketRow]] = {}
+            for row in district_pool(self.rows, now=self.now, cfg=self.cfg, demo=target.is_demo, pool=pool):
+                groups.setdefault((old_district_of(row), row.property_type, row.rent_basis), []).append(row)
+            self.districts[cache_key] = groups
+        return self.districts[cache_key].get((key, target.property_type, target.rent_basis), [])
+
+
+def prepare_pools(rows: list[MarketRow], *, now: datetime, cfg: MarketConfig,
+                  demos: set[bool]) -> ComparisonPools:
+    prepared = ComparisonPools(rows, now, cfg)
+    for demo in demos:
+        eligible, _ = eligible_pool(rows, now=now, cfg=cfg, demo=demo)
+        for row in eligible:
+            prepared.wards.setdefault((demo, row.ward_code, row.property_type, row.rent_basis), []).append(row)
+    return prepared
+
+
 def compare_tiered(target: MarketRow, rows: list[MarketRow], *, now: datetime, cfg: MarketConfig,
-                   demo: bool) -> Comparison:
+                   demo: bool, prepared: ComparisonPools | None = None) -> Comparison:
     """Tier 1 (ward group, accepted listings) as `compare`; tier 2 only when tier 1 is `insufficient_data`
     or `not_comparable` solely because the ward is missing. Each tier 2 pool may relax area when the band
     is too small; price, basis, type, period, window and multi-area restrictions remain unchanged."""
-    ward_pool, _ = eligible_pool(rows, now=now, cfg=cfg, demo=demo)
+    if prepared is None:
+        ward_pool, _ = eligible_pool(rows, now=now, cfg=cfg, demo=demo)
+    else:
+        ward_pool = prepared.wards.get((demo, target.ward_code, target.property_type, target.rent_basis), [])
     tier1 = compare(target, ward_pool, cfg)
     tier1 = replace(tier1, scope_label=target.ward_name)
+    attempts = []
+    if tier1.status != "not_comparable":
+        attempts.append({"level": "ward", "pool": POOL_ACCEPTED, "n": tier1.stats.n})
+    tier1.tiers = attempts
     if tier1.status == "ok" or demo:  # demo data has no old-district mentions and never feeds a real baseline
         return tier1
     if tier1.status == "not_comparable" and set(tier1.reason_codes) != {"ward_unresolved"}:
@@ -332,10 +369,13 @@ def compare_tiered(target: MarketRow, rows: list[MarketRow], *, now: datetime, c
     label = district_label(key)
     last = None
     for pool in (POOL_ACCEPTED, POOL_AUTO_CHECKED):
-        pool_rows = district_pool(rows, now=now, cfg=cfg, demo=demo, pool=pool)
+        pool_rows = (district_pool(rows, now=now, cfg=cfg, demo=demo, pool=pool) if prepared is None
+                     else prepared.district_group(target, key, pool))
         group = _tier2_group(target, key, pool_rows, band)
+        attempts.append({"level": "old_district", "pool": pool, "n": len(group)})
         if len(group) < cfg.min_n and band is not None:
             relaxed_group = _tier2_group(target, key, pool_rows, None)
+            attempts.append({"level": "old_district_relaxed", "pool": pool, "n": len(relaxed_group)})
             if len(relaxed_group) >= cfg.min_n:
                 group = relaxed_group
                 base_reasons = [*base_reasons, "area_band_relaxed"]
@@ -349,12 +389,12 @@ def compare_tiered(target: MarketRow, rows: list[MarketRow], *, now: datetime, c
                 verdict = ("lower" if delta < -cfg.near_percent else "higher" if delta > cfg.near_percent
                            else "near")
             return Comparison("ok", base_reasons, criteria, stats, delta, verdict, group,
-                              scope="old_district", scope_label=label, pool=pool)
+                              scope="old_district", scope_label=label, pool=pool, tiers=attempts)
     if tier1.status == "insufficient_data":
         return tier1  # the ward group result stands; tier 2 had nothing better to say
     pool, group, stats = last
     return Comparison("insufficient_data", base_reasons + ["too_few_samples"], criteria, stats, None, None, group,
-                      scope="old_district", scope_label=label, pool=pool)
+                      scope="old_district", scope_label=label, pool=pool, tiers=attempts)
 
 
 PROPERTY_LABELS = {"phong_tro": "phòng trọ", "ccmn": "chung cư mini", "can_ho_dich_vu": "căn hộ dịch vụ",
@@ -363,6 +403,8 @@ FORM_LABELS = {"starting_from": "từ…", "range": "khoảng…", "none": "khô
 
 
 POOL_NOTE = {"accepted": "chỉ gồm tin đã duyệt", "auto_checked": "gồm tin chưa duyệt, đã qua kiểm tra tự động"}
+TIER_LABEL = {"ward": "cùng phường", "old_district": "quận cũ",
+              "old_district_relaxed": "quận cũ, mọi diện tích"}
 
 
 def scope_note(c: Comparison) -> str:
@@ -378,11 +420,14 @@ def verdict_sentence(c: Comparison, rent_form: str | None = None, *, min_n: int 
     if c.status == "not_comparable" and "price_not_exact" in c.reason_codes and rent_form in FORM_LABELS:
         return f"Bài ghi giá dạng {FORM_LABELS[rent_form]}, chưa so sánh được."
     if c.status == "insufficient_data":
+        tried = (" Đã thử: " + "; ".join(
+            f"{TIER_LABEL[t['level']]} ({POOL_NOTE[t['pool']]}) {t['n']} tin" for t in c.tiers) + "."
+                 if c.tiers else "")
         if c.scope == "old_district":
             return (f"Chưa đủ dữ liệu để nhận định: mới có {c.stats.n} tin tương tự ở {c.scope_label} "
-                    f"({scope_note(c)}; cần ít nhất {min_n}).")
+                    f"({scope_note(c)}; cần ít nhất {min_n})." + tried)
         return (f"Chưa đủ dữ liệu để nhận định: mới có {c.stats.n} tin tương tự "
-                f"(cần ít nhất {min_n}).")
+                f"(cần ít nhất {min_n})." + tried)
     if c.status != "ok":
         return "Chưa so sánh được."
     kind = PROPERTY_LABELS.get(c.criteria["property_type"], "")

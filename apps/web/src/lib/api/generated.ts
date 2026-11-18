@@ -136,6 +136,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/posts/{post_id}/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Post Progress */
+        get: operations["my_post_progress_api_v1_me_posts__post_id__progress_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/ingest/batch": {
         parameters: {
             query?: never;
@@ -800,6 +817,8 @@ export interface components {
              * @enum {string}
              */
             pool: "accepted" | "auto_checked";
+            /** Tiers */
+            tiers?: components["schemas"]["ComparisonTier"][];
             /** N */
             n: number;
             /** Mean Vnd */
@@ -856,6 +875,21 @@ export interface components {
              * @default false
              */
             area_band_relaxed?: boolean;
+        };
+        /** ComparisonTier */
+        ComparisonTier: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "ward" | "old_district" | "old_district_relaxed";
+            /**
+             * Pool
+             * @enum {string}
+             */
+            pool: "accepted" | "auto_checked";
+            /** N */
+            n: number;
         };
         /** Contributed */
         Contributed: {
@@ -1481,6 +1515,7 @@ export interface components {
              * @enum {string}
              */
             status: "received" | "needs_review" | "published" | "rejected" | "not_rental" | "failed";
+            progress?: components["schemas"]["PostProgress"] | null;
             /** Reason Codes */
             reason_codes: string[];
             /** Photo Count */
@@ -1534,6 +1569,17 @@ export interface components {
         MyPostsSummary: {
             counts: components["schemas"]["StatusCounts"];
             quota: components["schemas"]["DailyQuota"];
+            /** Stage Counts */
+            stage_counts?: {
+                [key: string]: number;
+            };
+            /**
+             * Active
+             * @default false
+             */
+            active?: boolean;
+            /** Estimated Wait Seconds */
+            estimated_wait_seconds?: number | null;
         };
         /** OldDistrictRef */
         OldDistrictRef: {
@@ -1550,6 +1596,24 @@ export interface components {
             attempt: number;
             /** Error Code */
             error_code: string | null;
+        };
+        /** PostProgress */
+        PostProgress: {
+            /**
+             * Stage
+             * @enum {string}
+             */
+            stage: "queued" | "reading" | "asking_ai" | "needs_review" | "published" | "not_published" | "failed";
+            /** Queue Position */
+            queue_position?: number | null;
+            /** Estimated Wait Seconds */
+            estimated_wait_seconds?: number | null;
+            /** Reason */
+            reason?: string | null;
+            /** Started At */
+            started_at?: string | null;
+            /** Finished At */
+            finished_at?: string | null;
         };
         /** PriceHistory */
         PriceHistory: {
@@ -2270,6 +2334,55 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    my_post_progress_api_v1_me_posts__post_id__progress_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                post_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostProgress"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

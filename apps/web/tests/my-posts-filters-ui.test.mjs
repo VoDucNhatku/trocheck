@@ -109,7 +109,7 @@ test('My posts filter bar keeps filters in the URL, shows counts, place source a
   await expect.poll(() => page.evaluate(() => location.search)).toBe('?khu_vuc=quan-1&gia_min=2.5&ca_khong_thue=1');
   assert.ok(requests.filter(url => url.includes('me/posts?')).at(-1).includes('rental_only=false'));
   // Status tabs work together with filters.
-  await page.getByRole('button', { name: /Đang xử lý/ }).click();
+  await page.getByRole('button', { name: /Đang chờ đọc \/ chờ duyệt/ }).click();
   await expect.poll(() => page.evaluate(() => location.search)).toContain('nhom=waiting');
   assert.ok((await page.evaluate(() => location.search)).includes('khu_vuc=quan-1'));
   await page.getByRole('button', { name: 'Xóa lọc' }).first().click();

@@ -67,6 +67,7 @@ class Settings(BaseSettings):
     job_max_attempts: int = 5
     job_lock_seconds: int = 120
     worker_poll_seconds: float = 1.0
+    worker_concurrency: int = Field(default=2, ge=1, le=10)
 
     # Business rules (gop-trung-va-thong-ke)
     market_min_n: int = 10

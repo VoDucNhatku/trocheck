@@ -160,7 +160,7 @@ async function connectToken(apiUrl, token) {
 
 function controlMessage(message, sender, sendResponse) {
   const internal = sender.url?.startsWith(chrome.runtime.getURL?.(""));
-  const types = ["CONNECT_WEB", "CONNECT_MANUAL", "DISCONNECT", "AUTO_SEND", "SEND_NOW", "GET_STATUS", "COLLECTOR_STATUS"];
+  const types = ["CONNECT_WEB", "CONNECT_MANUAL", "DISCONNECT", "AUTO_SEND", "SEND_NOW", "GET_STATUS", "GET_POST_PROGRESS", "COLLECTOR_STATUS"];
   if (!types.includes(message?.type)) return;
   (async () => {
     if (message.type === "CONNECT_WEB") {
@@ -188,6 +188,14 @@ function controlMessage(message, sender, sendResponse) {
       return { ok: true };
     }
     if (message.type === "SEND_NOW") return sendStored(true);
+    if (message.type === "GET_POST_PROGRESS") {
+      const config = await settings();
+      if (!config.trocheckToken) return { ok: true, connected: false };
+      const progress = await TroCheck.ownProgress({ apiUrl: config.trocheckApiUrl || "", token: config.trocheckToken });
+      // An account switch during the request must not display the old account's posts.
+      if ((await settings()).trocheckToken !== config.trocheckToken) return { ok: true, connected: false };
+      return { ok: true, connected: true, ...progress };
+    }
     const config = await settings();
     const [unsent, page] = await Promise.all([TroStorage.readUnsent(), TroStorage.readPage()]);
     return { ok: true, connected: !!config.trocheckToken, account: config.trocheckAccount,
