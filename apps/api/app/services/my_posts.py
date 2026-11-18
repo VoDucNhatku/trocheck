@@ -4,7 +4,7 @@ import math
 from statistics import median
 from dataclasses import dataclass
 
-from sqlalchemy import case, exists, func, literal, or_, select
+from sqlalchemy import case, func, literal, or_, select, true
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.config import Settings
@@ -15,35 +15,41 @@ from app.pipeline.old_districts import area_catalog, districts_of_ward
 from app.services import ingest, listings, market, users
 
 
-def _current_listings():
-    return (select(Listing).join(ExtractionRun, ExtractionRun.id == Listing.run_id)
-            .where(Listing.post_id == Post.id, Listing.is_current.is_(True),
-                   ExtractionRun.post_version_id == Post.current_version_id).correlate(Post))
-
-
-def _status():
-    latest_job = (select(Job.status).where(Job.post_version_id == Post.current_version_id,
-                                         Job.kind.in_(("extract", "reprocess")))
-                  .order_by(Job.created_at.desc(), Job.id.desc()).limit(1).correlate(Post).scalar_subquery())
-    return case(
-        (latest_job.in_(("queued", "running")), "received"),
-        (latest_job == "failed", "failed"),
-        (Post.status == "failed", "failed"),
-        (Post.status == "rejected_type", "not_rental"),
-        (exists(_current_listings().where(Listing.review_status.in_(listings.VISIBLE)))
-         & Post.contributed.is_(True), "published"),
-        (exists(_current_listings().where(Listing.review_status == "needs_review")), "needs_review"),
-        (exists(_current_listings().where(Listing.review_status.in_(("rejected", "duplicate")))), "rejected"),
-        else_="received",
-    )
+def _owned_posts(user: User):
+    return (select(Post.id.label("post_id"), PostSubmission.first_sent_at.label("sent_at"),
+                   Post.current_version_id, Post.status.label("post_status"), Post.contributed)
+            .join(PostSubmission, PostSubmission.post_id == Post.id)
+            .where(PostSubmission.user_id == user.id, Post.is_demo.is_(False),
+                   (Post.mode == "collect") | Post.contributed.is_(True)))
 
 
 def _owned(user: User):
-    return (select(Post.id.label("post_id"), PostSubmission.first_sent_at.label("sent_at"),
-                   _status().label("status"))
-            .join(PostSubmission, PostSubmission.post_id == Post.id)
-            .where(PostSubmission.user_id == user.id, Post.is_demo.is_(False),
-                   (Post.mode == "collect") | Post.contributed.is_(True)).subquery())
+    owned = _owned_posts(user).cte()
+    flags = (select(Listing.post_id,
+                    func.max(case((Listing.review_status.in_(listings.VISIBLE), 1), else_=0)).label("visible"),
+                    func.max(case((Listing.review_status == "needs_review", 1), else_=0)).label("review"),
+                    func.max(case((Listing.review_status.in_(("rejected", "duplicate")), 1), else_=0)).label("rejected"))
+             .join(ExtractionRun, ExtractionRun.id == Listing.run_id)
+             .join(owned, (owned.c.post_id == Listing.post_id)
+                   & (owned.c.current_version_id == ExtractionRun.post_version_id))
+             .where(Listing.is_current.is_(True)).group_by(Listing.post_id).subquery())
+    ranked = (select(Job.post_version_id, Job.status,
+                     func.row_number().over(partition_by=Job.post_version_id,
+                                            order_by=(Job.created_at.desc(), Job.id.desc())).label("position"))
+              .join(owned, owned.c.current_version_id == Job.post_version_id)
+              .where(Job.kind.in_(("extract", "reprocess"))).subquery())
+    latest = select(ranked).where(ranked.c.position == 1).subquery()
+    status = case(
+        (latest.c.status.in_(("queued", "running")), "received"),
+        (latest.c.status == "failed", "failed"),
+        (owned.c.post_status == "failed", "failed"),
+        (owned.c.post_status == "rejected_type", "not_rental"),
+        ((flags.c.visible == 1) & owned.c.contributed.is_(True), "published"),
+        (flags.c.review == 1, "needs_review"),
+        (flags.c.rejected == 1, "rejected"), else_="received")
+    return (select(owned.c.post_id, owned.c.sent_at, status.label("status"))
+            .outerjoin(flags, flags.c.post_id == owned.c.post_id)
+            .outerjoin(latest, latest.c.post_version_id == owned.c.current_version_id).subquery())
 
 
 GROUPS = {"published": ("published",), "waiting": ("received", "needs_review"),
@@ -206,11 +212,21 @@ def validate(f: Filters) -> None:
 def search(session: Session, user: User, settings: Settings, *, group: str, page: int, limit: int,
            filters: Filters | None = None) -> dict:
     f = filters or Filters()
-    sub, order = _order(_filtered(user, group, f), f)
-    total = session.scalar(select(func.count()).select_from(sub))
-    matched_listings = session.scalar(select(func.coalesce(func.sum(sub.c.matched), 0)).select_from(sub))
-    total_sent = session.scalar(select(func.count()).select_from(_owned(user)))
-    rows = session.execute(select(sub).order_by(*order).offset((page - 1) * limit).limit(limit)).all()
+    # Multiple references materialize the filtered set once on PostgreSQL and SQLite.
+    # The summary's left join preserves counts even when the requested page is empty.
+    filtered = _filtered(user, group, f).cte()
+    sub, order = _order(select(filtered), f)
+    summary = select(func.count().label("total"),
+                     func.coalesce(func.sum(filtered.c.matched), 0).label("matched_listings")).subquery()
+    page_rows = select(sub).order_by(*order).offset((page - 1) * limit).limit(limit).subquery()
+    # Rebind the same ordering to the outer page alias; a subquery's order is not a contract.
+    ordered_page, page_order = _order(select(page_rows), f)
+    result = session.execute(select(ordered_page, summary.c.total, summary.c.matched_listings)
+                             .select_from(summary.outerjoin(ordered_page, true()))
+                             .order_by(*page_order)).all()
+    total, matched_listings = result[0].total, result[0].matched_listings
+    rows = [row for row in result if row.post_id is not None]
+    total_sent = session.scalar(select(func.count()).select_from(_owned_posts(user).subquery()))
     ids = [r.post_id for r in rows]
     progress = _progress(session, {r.post_id: r.status for r in rows})
     posts = {p.id: p for p in session.scalars(select(Post).where(Post.id.in_(ids))

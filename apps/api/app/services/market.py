@@ -108,17 +108,25 @@ def _candidate_rows(session: Session, targets: list[m.MarketRow]) -> list[m.Mark
     clusters = (select(Listing.cluster_id).join(Post, Post.id == Listing.post_id)
                 .where(Listing.is_current.is_(True), Post.current_version_id.is_not(None),
                        Listing.cluster_id.is_not(None), location))
-    query = (select(Listing, Post).join(Post, Post.id == Listing.post_id)
-             .options(load_only(Post.id, Post.is_demo, Post.contributed, Post.status))
+    query = (select(Listing.id.label("listing_id"), Listing.cluster_id, Post.is_demo, Post.contributed,
+                    Listing.review_status, Listing.rent_form, Listing.rent_amount_vnd.label("rent_vnd"),
+                    Listing.rent_period, Listing.rent_basis, Listing.ward_code, Listing.ward_name,
+                    Listing.property_type, Listing.area_m2, Listing.area_from_dimensions,
+                    Listing.observed_at, Listing.multi_area, Listing.review_reasons,
+                    Post.status.label("post_status")).join(Post, Post.id == Listing.post_id)
              .where(Listing.is_current.is_(True), Post.current_version_id.is_not(None),
                     Post.is_demo.in_({r.is_demo for r in targets}),
                     or_(location, Listing.cluster_id.in_(clusters))))
-    pairs = session.execute(query).all()
+    candidates = session.execute(query).mappings().all()
     districts = {}
     for demo in {row.is_demo for row in targets}:
         districts.update(load_districts(session, demo=demo,
-                                        listing_ids=[lst.id for lst, post in pairs if post.is_demo == demo]))
-    return [to_row(lst, post, districts=districts.get(lst.id, ())) for lst, post in pairs]
+                                        listing_ids=[row["listing_id"] for row in candidates if row["is_demo"] == demo]))
+    return [m.MarketRow(**{**row, "cluster_id": row["cluster_id"] or row["listing_id"],
+                          "multi_area": bool(row["multi_area"]),
+                          "review_reasons": tuple(row["review_reasons"] or ()),
+                          "post_status": row["post_status"] or ""},
+                        districts=districts.get(row["listing_id"], ())) for row in candidates]
 
 
 def comparisons(session: Session, listings: list[Listing], settings: Settings) -> dict[str, dict]:
@@ -132,8 +140,10 @@ def comparisons(session: Session, listings: list[Listing], settings: Settings) -
     targets = _targets(session, listings)
     rows = _candidate_rows(session, targets)
     cfg, now = config(settings), utcnow()
+    prepared = m.prepare_pools(rows, now=now, cfg=cfg, demos={row.is_demo for row in targets})
     return {row.listing_id: _comparison_body(row, m.compare_tiered(row, rows, now=now, cfg=cfg,
-                                                                 demo=row.is_demo), cfg) for row in targets}
+                                                                 demo=row.is_demo, prepared=prepared), cfg)
+            for row in targets}
 
 
 def comparison(session: Session, listing: Listing, settings: Settings) -> dict:

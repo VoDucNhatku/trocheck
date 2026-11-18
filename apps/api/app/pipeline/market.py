@@ -308,12 +308,44 @@ def _tier2_group(target: MarketRow, key: str, pool_rows: list[MarketRow], band: 
             and (band is None or area_band(r.area_m2) == band)]
 
 
+@dataclass
+class ComparisonPools:
+    """Request-local pools. Deduplicate globally before indexing by location/type/basis."""
+    rows: list[MarketRow]
+    now: datetime
+    cfg: MarketConfig
+    wards: dict[tuple, list[MarketRow]] = field(default_factory=dict)
+    districts: dict[tuple, dict[tuple, list[MarketRow]]] = field(default_factory=dict)
+
+    def district_group(self, target: MarketRow, key: str, pool: str) -> list[MarketRow]:
+        cache_key = (target.is_demo, pool)
+        if cache_key not in self.districts:
+            groups: dict[tuple, list[MarketRow]] = {}
+            for row in district_pool(self.rows, now=self.now, cfg=self.cfg, demo=target.is_demo, pool=pool):
+                groups.setdefault((old_district_of(row), row.property_type, row.rent_basis), []).append(row)
+            self.districts[cache_key] = groups
+        return self.districts[cache_key].get((key, target.property_type, target.rent_basis), [])
+
+
+def prepare_pools(rows: list[MarketRow], *, now: datetime, cfg: MarketConfig,
+                  demos: set[bool]) -> ComparisonPools:
+    prepared = ComparisonPools(rows, now, cfg)
+    for demo in demos:
+        eligible, _ = eligible_pool(rows, now=now, cfg=cfg, demo=demo)
+        for row in eligible:
+            prepared.wards.setdefault((demo, row.ward_code, row.property_type, row.rent_basis), []).append(row)
+    return prepared
+
+
 def compare_tiered(target: MarketRow, rows: list[MarketRow], *, now: datetime, cfg: MarketConfig,
-                   demo: bool) -> Comparison:
+                   demo: bool, prepared: ComparisonPools | None = None) -> Comparison:
     """Tier 1 (ward group, accepted listings) as `compare`; tier 2 only when tier 1 is `insufficient_data`
     or `not_comparable` solely because the ward is missing. Each tier 2 pool may relax area when the band
     is too small; price, basis, type, period, window and multi-area restrictions remain unchanged."""
-    ward_pool, _ = eligible_pool(rows, now=now, cfg=cfg, demo=demo)
+    if prepared is None:
+        ward_pool, _ = eligible_pool(rows, now=now, cfg=cfg, demo=demo)
+    else:
+        ward_pool = prepared.wards.get((demo, target.ward_code, target.property_type, target.rent_basis), [])
     tier1 = compare(target, ward_pool, cfg)
     tier1 = replace(tier1, scope_label=target.ward_name)
     attempts = []
@@ -337,7 +369,8 @@ def compare_tiered(target: MarketRow, rows: list[MarketRow], *, now: datetime, c
     label = district_label(key)
     last = None
     for pool in (POOL_ACCEPTED, POOL_AUTO_CHECKED):
-        pool_rows = district_pool(rows, now=now, cfg=cfg, demo=demo, pool=pool)
+        pool_rows = (district_pool(rows, now=now, cfg=cfg, demo=demo, pool=pool) if prepared is None
+                     else prepared.district_group(target, key, pool))
         group = _tier2_group(target, key, pool_rows, band)
         attempts.append({"level": "old_district", "pool": pool, "n": len(group)})
         if len(group) < cfg.min_n and band is not None:
